@@ -52,13 +52,7 @@ export class GestionBonCommandesPvComponent implements OnInit {
         this.bon$ = this.ListeBonCommande
         this.clean();
 
-        this.ListeBonCommande.forEach(value =>
-          this.cat.push(value.nomCategorie)
-        )
-
-        this.cat = this.cat.filter(function (elem, index, self) {
-          return index === self.indexOf(elem);
-        })
+        
       }
     });
   }
@@ -90,6 +84,14 @@ export class GestionBonCommandesPvComponent implements OnInit {
         item => this.format(new Date(item.date)) >= this.format(d) && this.format(new Date(item.date)) <= this.format(f)
       )
     }
+
+    this.bon$.forEach(value =>
+      this.cat.push(value.nomCategorie)
+    )
+
+    this.cat = this.cat.filter(function (elem, index, self) {
+      return index === self.indexOf(elem);
+    })
   }
   format(a) {
     return this.datePipe.transform(a, 'dd/MM/yyyy')
@@ -180,7 +182,6 @@ export class GestionBonCommandesPvComponent implements OnInit {
         if (this.ListeBonCommande[i].ListeCommandes != null) {
           if (this.ListeBonCommande[i].ListeCommandes[j].ListeDetailCommande == null) {
             this.ListeBonCommande[i].ListeCommandes[j].ListeDetailCommande = val.objectResponse;
-            console.log(this.ListeBonCommande[i].ListeCommandes[j].ListeDetailCommande)
           }
         }
       }
@@ -219,58 +220,58 @@ export class GestionBonCommandesPvComponent implements OnInit {
 
     })
   }
-  async Envoyer(bon: BonCommandePv) {
+  getData(id:String){
+    return this._bonCommandeService.findByIdCommandeAllDetailCommande(id);
+  }
+
+  Envoyer(bon: BonCommandePv) {
     let find = true
 
-    this._bonCommandeService.findByIdBonCommandeAllCommandes(bon.idBonCommande).subscribe(async val => {
+     this._bonCommandeService.findByIdBonCommandeAllCommandes(bon.idBonCommande).subscribe(async val => {
       if (val.objectResponse.length > 0) {
-        val.objectResponse.forEach(value =>
+         val.objectResponse.forEach(async value =>{
+           var response = await this.getData(value.idCommandePv).toPromise();
+           if (response.objectResponse.length <= 0) {
 
-          this._bonCommandeService.findByIdCommandeAllDetailCommande(value.idCommandePV).subscribe(val2 => {
-            if (val2.objectResponse.length <= 0) {
-              find = false
+            this._GlobalService.showToast("danger", "Erreur", "commande vide");
 
-              console.log(find)
-            }
-          })
+           }
+           else{
+             this.update(bon);
+           }
+           
+        }
         )
-
-        await this.delay(1000);
-      } else {
-
-        this._GlobalService.showToast("danger", "Erreur", "Bon de commande vide")
 
 
       }
-    })
-
-    
-    if (find) {
-      bon.statut = 1;
-      this._bonCommandeService.updateBonCommande(bon).subscribe(respone => {
-        if (respone.result == 1) {
-          
-          let index = this.ListeBonCommande.findIndex(val => val.idBonCommande == bon.idBonCommande);
-          this.ListeBonCommande[index].statut = 1;
-          this._GlobalService.showToast("success", "success", "la Bon Commande ete confirmer avec succès")
-        } else {
-          this._GlobalService.showToast("danger", "Erreur", respone.errorDescription)
-  
-        }
-      }, erreur => {
-        this._GlobalService.showToast("danger", "Erreur", "erreur")
-  
-      })
-    } else if (!find) {
-      this._GlobalService.showToast("danger", "Erreur", "commande vide")
-    }
+      else{
+        this._GlobalService.showToast("danger", "Erreur", "Bon Commande Vide")
+      }
+    });
+   
 
 
   }
-   delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
-}
+  
 
+  update(bon: BonCommandePv) {
+    bon.statut=1;
+    this._bonCommandeService.updateBonCommande(bon).subscribe(respone => {
+      if (respone.result == 1) {
+        
+        let index = this.ListeBonCommande.findIndex(val => val.idBonCommande == bon.idBonCommande);
+        this.ListeBonCommande[index].statut = 1;
+        this._GlobalService.showToast("success", "success", "la Bon Commande ete confirmer avec succès")
+      } else {
+        this._GlobalService.showToast("danger", "Erreur", respone.errorDescription)
+
+      }
+    }, erreur => {
+      this._GlobalService.showToast("danger", "Erreur", "erreur")
+
+    })
+  }
   
   detaili: number;
   bonci: number;

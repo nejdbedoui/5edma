@@ -149,9 +149,12 @@
                   *ngIf="bon.type=='Centrale'">{{bon.type}}</span></td>
               <td>{{getStatus(bon.statut)}}</td>
               <td>{{bon.date|date}}</td>
-              <td *ngIf="bon.statut=='1'">
-                  <i (click)="Traiter(bon)" class="fas fa-truck cursor buttonround editbutton" nbTooltip="Traiter Bon Commande" nbTooltipPlacement="bottom"></i>    
-    
+              <td >
+                  <i *ngIf="bon.statut=='1'" (click)="Traiter(bon)" class="fas fa-truck cursor buttonround editbutton" nbTooltip="Traiter Bon Commande" nbTooltipPlacement="bottom"></i>    
+                  <button  *ngIf="bon.statut=='2'" class="btn btn-primary" style="background-color: white; border-color:white; color:#417bff"
+          (click)="onSubmit(bon)" pInputText
+          pTooltip="Enter your name" tooltipPosition="bottom" placeholder="Bottom"><img
+            src="../../../assets/images/export-pdf.PNG" style="width: 30px" alt="pdf"></button>
               </td>
             </tr>
           </ng-template>

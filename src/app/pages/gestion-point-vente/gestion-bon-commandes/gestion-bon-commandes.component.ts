@@ -8,7 +8,9 @@ import { Prodcut } from '../../../model/Product';
 import { BonCommandePvEndPointService } from '../../../service/bp-api-pos/bon-commande-pv-end-poin/bon-commande-pv-end-point.service';
 import { ProductEndPointService } from '../../../service/bp-api-product/product-end-point/product-end-point.service';
 import { GlobalServiceService } from '../../../service/GlobalService/global-service.service';
-
+const pdfMake = require('pdfmake/build/pdfmake.js');
+const pdfFonts = require('pdfmake/build/vfs_fonts');
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'ngx-gestion-bon-commandes',
   templateUrl: './gestion-bon-commandes.component.html',
@@ -58,13 +60,7 @@ export class GestionBonCommandesComponent implements OnInit {
          
         this.bon$=this.ListeBonCommande
         this.clean();
-        this.ListeBonCommande.forEach(value =>
-          {this.listepointsVente.push(value.nomPointVente);
-          this.cat.push(value.nomCategorie)}
-          )
-    this.cat = this.cat.filter(function(elem, index, self) {
-      return index === self.indexOf(elem);
-  })
+        
       }
     });   
   }
@@ -110,6 +106,13 @@ export class GestionBonCommandesComponent implements OnInit {
       item=> this.format(new Date(item.date)) >= this.format(d) && this.format(new Date(item.date)) <= this.format(f)
     )
     }
+    this.bon$.forEach(value =>
+      {this.listepointsVente.push(value.nomPointVente);
+      this.cat.push(value.nomCategorie)}
+      )
+this.cat = this.cat.filter(function(elem, index, self) {
+  return index === self.indexOf(elem);
+})
 }
 format(a){
   return this.datePipe.transform(a, 'dd/MM/yyyy')
@@ -180,6 +183,7 @@ loading2:boolean=false
       if(val.objectResponse!=null){
        if(this.ListeBonCommande[i].ListeCommandes==null)
         this.ListeBonCommande[i].ListeCommandes=val.objectResponse;
+        this.bon$[i].ListeCommandes = this.ListeBonCommande[i].ListeCommandes;
       }
       this.loading2=false   
     })
@@ -288,7 +292,90 @@ onRowEditCancel(detail: DetailCommandePv, ind: number,rb:number,rc:number) {
 
 
 
+onSubmit(bon:BonCommandePv) {
 
+  let dates = bon.date
+  
+
+  var docDefinition = { pageSize: 'A4',
+  header: {text: 'Facture ', fontSize:30 ,alignment: 'center',bold:true},
+  content: [
+    
+    {	table: {
+      body: [
+        [
+          {
+            border: [false, true, false, false],
+            fillColor: '#eeeeee',
+            text: 'border:\n[false, true, false, true]'
+          },
+          {
+            border: [false, false, false, false],
+            fillColor: '#dddddd',
+            text: 'border:\n[false, false, false, false]'
+          },
+          {
+            border: [true, true, true, true],
+            fillColor: '#eeeeee',
+            text: 'border:\n[true, true, true, true]'
+          }
+        ],
+        [
+          {
+            rowSpan: 3,
+            border: [true, true, true, true],
+            fillColor: '#eeeeff',
+            text: 'rowSpan: 3\n\nborder:\n[true, true, true, true]'
+          },
+          {
+            border: undefined,
+            fillColor: '#eeeeee',
+            text: 'border:\nundefined'
+          },
+          {
+            border: [true, false, false, false],
+            fillColor: '#dddddd',
+            text: 'border:\n[true, false, false, false]'
+          }
+        ],
+        [
+          '',
+          {
+            colSpan: 2,
+            border: [true, true, true, true],
+            fillColor: '#eeffee',
+            text: 'colSpan: 2\n\nborder:\n[true, true, true, true]'
+          },
+          ''
+        ],
+        [
+          '',
+          {
+            border: undefined,
+            fillColor: '#eeeeee',
+            text: 'border:\nundefined'
+          },
+          {
+            border: [false, false, true, true],
+            fillColor: '#dddddd',
+            text: 'border:\n[false, false, true, true]'
+          }
+        ]
+      ]
+    }},
+    
+    {text: "signature client", listType: 'none',bold: true,italics: true,margin: [0, 40, 0, 0]},
+    {text: "signature entreprise", listType: 'none',bold: true,italics: true,margin: [0, -12, 0, 0], alignment:'right'},
+  
+
+]
+
+
+};
+
+pdfMake.createPdf(docDefinition).open();
+
+}
 
 
 
