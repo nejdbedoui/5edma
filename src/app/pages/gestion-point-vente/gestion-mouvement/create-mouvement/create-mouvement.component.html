@@ -1,0 +1,394 @@
+<p-toast></p-toast>
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Ajouter un Nouveau Mouvement</span></div>
+        </div>
+    </nb-card-header>
+    <nb-card-body>
+        <div class="row">
+            <div class="col-sm-2">
+                Produit
+            </div>
+            <div class="ng-autocomplete col-sm-3">
+                <ng-autocomplete [data]="produits" [searchKeyword]="keyword" (selected)='selectEvent($event)'
+                    (inputChanged)='onChangeSearch($event)' (inputFocused)='onFocused($event)'
+                    (inputCleared)='cleardata($event)' [itemTemplate]="itemTemplate" [(ngModel)]='produit.designation'
+                    [notFoundTemplate]="notFoundTemplate">
+                </ng-autocomplete>
+
+                <ng-template #itemTemplate let-item>
+                    <a [innerHTML]="item.designation"></a>
+                </ng-template>
+
+                <ng-template #notFoundTemplate let-notFound>
+                    <div [innerHTML]="notFound"></div>
+                </ng-template>
+            </div>
+            <div class="col-sm-2">
+                <button type="button" nbButton status="success" (click)="displayScan = true" class="button-style"
+                    style=" border-color: white;" [shape]="'round'">Scanner code à barre </button>
+            </div>
+            <div class="col-sm-4" *ngIf="produit.idProduit!=null">
+                <p style="float: right;font-weight: 900;">Quantité dispo : {{produit.produitpointvente.stockReel}}
+                    unités</p>
+            </div>
+        </div>
+        <div style="height: 250px" *ngIf="produit.idProduit==null">
+
+        </div>
+        <br>
+        <div *ngIf="produit.idProduit!=null">
+            <form [formGroup]="mvtForm" (ngSubmit)="createmvt()">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label class="label"> Date :</label>
+                            <p-calendar class="disgness" [locale]="calendar" formControlName="date"
+                                dateFormat="dd/mm/yy" fullWidth nbInput id="dateDebut"></p-calendar>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label class="label"> Type :</label>
+                                <nb-select fullWidth formControlName="type" (selectedChange)="changeType($event)">
+                                    <nb-option *ngFor="let item of Types" [value]="item.value">
+                                        {{ item.label }}
+                                    </nb-option>
+                                </nb-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label class="label"> Operation :<span style="color: red">*</span></label>
+                            <nb-select fullWidth formControlName="sens"
+                                [disabled]="formControls.type.value == 'transfert'">
+                                <nb-option *ngFor="let item of operation" [value]="item.value">
+                                    {{ item.label }}
+                                </nb-option>
+                            </nb-select>
+                            <label *ngIf=" isSubmitted2 && (formControls.sens.errors )" class="label-has-error"><i
+                                    class="fas fa-exclamation-circle"></i>Veuiller choisir votre Operation</label>
+
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label class="label"> Quantité :<span style="color: red">*</span></label>
+                            <input type="number" onkeypress="return event.charCode >= 46" min="0"
+                                formControlName="quantite" maxlength="100" nbInput fullWidth placeholder="quantité"
+                                [ngClass]="{'has-error': isSubmitted2 && (formControls.quantite.errors )}">
+                            <label *ngIf=" isSubmitted2 && (formControls.quantite.errors )" class="label-has-error"><i
+                                    class="fas fa-exclamation-circle"></i>Veuiller choisir votre Quantité</label>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row" *ngIf="formControls.type.value=='transfert'">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="label"> Choisir le point de vente destinataire :<span
+                                    style="color: red">*</span></label>
+                            <nb-select fullWidth formControlName="pv" [status]="isSubmitted2 && verifpv ? 'danger': ''">
+                                <nb-option *ngFor="let item of listpointvente" [value]="item.idPointVente">
+                                    {{ item.designation }}
+                                </nb-option>
+                            </nb-select>
+                            <label *ngIf=" isSubmitted2 && verifpv" class="label-has-error"><i
+                                    class="fas fa-exclamation-circle"></i>Veuiller choisir un Point de vente</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-check">
+                            <label class="label" style="color: #fff;">-</label><br>
+                            <input type="checkbox" formControlName="isconvesion" class="form-check-input"
+                                id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">Convertir en une autre unité</label>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-3" *ngIf="formControls.isconvesion.value">
+                        <div class="form-group">
+                            <label class="label" style="color: #fff;">-</label><br>
+                            <nb-select fullWidth formControlName="convesionType">
+                                <nb-option *ngFor="let item of convesionTypes" [value]="item.value">
+                                    {{ item.label }}
+                                </nb-option>
+                            </nb-select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3" *ngIf="formControls.isconvesion.value">
+                        <div class="form-group">
+                            <label class="label">Quantite (Couversion) :</label><br>
+                            <input type="number" nbInput fullWidth onkeypress="return event.charCode >= 46"
+                                placeholder="Quantite(Couversion)" formControlName="convesionQuantite">
+                        </div>
+                    </div>
+                    <div class="col-sm-3" *ngIf="formControls.type.value=='transfert'">
+                        <div class="form-group">
+                            <label class="label">Prix en :</label><br>
+                            <nb-select fullWidth formControlName="montantTypes">
+                                <nb-option *ngFor="let item of montantTypes" [value]="item.value">
+                                    {{ item.label }}
+                                </nb-option>
+                            </nb-select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3"
+                        *ngIf="formControls.type.value=='transfert' && formControls.montantTypes.value=='HT'">
+                        <div class="form-group">
+                            <label class="label">TVA : <span style="color: red">*</span>:</label><br>
+                            <input type="number" nbInput fullWidth onkeypress="return event.charCode >= 46"
+                                placeholder="Taux de tva" formControlName="tva" required
+                                [ngClass]="{'has-error': isSubmitted2 && checkPrixVente}">
+                            <label *ngIf="isSubmitted2 && checkPrixVente" class="label-has-error"><i
+                                    class="fas fa-exclamation-circle"></i> Veuillez remplir la TVA
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label class="label">Prix de vente {{formControls.montantTypes.value=='HT'?'HT':'TTC'}}
+                                (Total)
+                                : <span style="color: red">*</span></label><br>
+                            <input type="number" nbInput fullWidth onkeypress="return event.charCode >= 46"
+                                placeholder="Prix de vente" required formControlName="prix"
+                                [ngClass]="{'has-error': isSubmitted2 && checkPrixVente}">
+                            <label *ngIf="isSubmitted2 && checkPrixVente" class="label-has-error"><i
+                                    class="fas fa-exclamation-circle"></i> Veuillez remplir le prix de vente
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row" *ngIf="formControls.type.value=='recepetion fournisseur'">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+
+                            <label class="label"> Fournisseur :<span style="color: red">*</span></label>
+                            <nb-select fullWidth formControlName="fournissuer"
+                                (ngModelChange)="gestionfournisseur=false"
+                                [status]="isSubmitted2 && veriffr ? 'danger': ''">
+                                <nb-option *ngFor="let item of listfourni" [value]="item">
+                                    {{ item.nom }}
+                                </nb-option>
+                            </nb-select>
+                            <label *ngIf=" isSubmitted2 && veriffr " class="label-has-error"><i
+                                    class="fas fa-exclamation-circle"></i>Veuiller choisir un Fournisseur</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" (click)="gestionfournisseur=true" nbButton status="success"
+                            class="button-style" style=" float:right;border-color: white;  margin-top: 15px;"
+                            [shape]="'round'">Creer un nouveau fournisseur</button>
+
+                    </div>
+                </div>
+                <div class="row shadow" style="padding-top: 14px;padding-bottom: 14px;"
+                    *ngIf="formControls.type.value=='recepetion fournisseur' && gestionfournisseur">
+                    <br>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="label">Nom du contact fournisseur</label><br>
+                            <input type="text" maxlength="100" nbInput fullWidth placeholder="Nom"
+                                [(ngModel)]="fournisseurDto.nom" [ngModelOptions]="{standalone: true}"
+                                [ngClass]="{'has-error': isSubmitfournisseur && isnamevalid}">
+                            <!-- <input type="text" maxlength="100" nbInput fullWidth  placeholder="Nom du contact fournisseur" required [(ngModel)]="fournisseurDto.nom" [ngModelOptions]="{standalone: true}" [ngClass]="{'has-error': isSubmitfournisseur && isnamevalid}"  > -->
+                            <label *ngIf=" isSubmitfournisseur && isnamevalid" class="label-has-error"><i
+                                    class="fas fa-exclamation-circle"></i> Veuillez remplir le Nom du contact
+                                fournisseur </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="label">Société</label><br>
+                            <input type="text" maxlength="100" nbInput fullWidth placeholder="Société"
+                                [(ngModel)]="fournisseurDto.societe" [ngModelOptions]="{standalone: true}">
+                            <!-- <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label> -->
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="label">Email</label><br>
+                            <input type="text" required maxlength="100" nbInput fullWidth placeholder="Email"
+                                [(ngModel)]="fournisseurDto.email" [ngModelOptions]="{standalone: true}"
+                                [ngClass]="{'has-error': isSubmitfournisseur && isemailvalid}">
+                            <label *ngIf=" isSubmitfournisseur && isemailvalid" class="label-has-error"><i
+                                    class="fas fa-exclamation-circle"></i> Veuillez remplir un email correcte du
+                                fournisseur </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="label">N°tel</label><br>
+                            <input type="text" required maxlength="100" nbInput fullWidth placeholder="N°tel"
+                                [(ngModel)]="fournisseurDto.tel" [ngModelOptions]="{standalone: true}"
+                                [ngClass]="{'has-error': isSubmitfournisseur && istelvalid}">
+                            <label *ngIf=" isSubmitfournisseur && istelvalid" class="label-has-error"><i
+                                    class="fas fa-exclamation-circle"></i> Veuillez remplir le numéro du telephone
+                                du
+                                fournisseur </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <br>
+                            <nb-checkbox [(ngModel)]="fournisseurDto.falerter" [ngModelOptions]="{standalone: true}"
+                                status="success">Alerter le fournisseur</nb-checkbox>
+                            <!-- <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label> -->
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <br>
+                            <nb-checkbox [(ngModel)]="fournisseurDto.fdefault" [ngModelOptions]="{standalone: true}"
+                                status="success">fournisseur par default </nb-checkbox>
+                            <!-- <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label> -->
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <button type="button" (click)="addfourinsseur()" nbButton status="success" class="button-style"
+                            style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Ajouter
+                            fournisseur</button>
+                    </div>
+                    <br>
+
+                    <div>
+
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label class="label"> Prix d'achat :</label>
+                            <input type="number" onkeypress="return event.charCode >= 46" min="0"
+                                formControlName="montant" maxlength="100" nbInput fullWidth placeholder="Montant"
+                                [ngClass]="{'has-error':  isSubmitted2 && (formControls.montant.errors )}">
+                            <label *ngIf=" isSubmitted2 && (formControls.montant.errors )" class="label-has-error"><i
+                                    class="fas fa-exclamation-circle"></i>Veuiller choisir
+                                votre montant</label>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-10">
+                        <div class="form-group">
+                            <label class="label"> Note :<span
+                                    *ngIf="formControls.type.value=='autre' || formControls.type.value=='correction Stock' || formControls.type.value=='correction Stock' "
+                                    style="color: red">*</span></label>
+                            <input type="text"
+                                [required]="formControls.type.value=='autre' || formControls.type.value=='correction Stock'"
+                                formControlName="note" maxlength="255" nbInput fullWidth placeholder="Note"
+                                [ngClass]="{'has-error': isSubmitted2 && verifnote }">
+                            <label *ngIf=" isSubmitted2 && verifnote" class="label-has-error"><i
+                                    class="fas fa-exclamation-circle"></i>Veuiller choisir votre note</label>
+
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <fieldset>
+                    <legend>5 derniers mvts</legend>
+                    <p-table #dt [value]="mvts" *ngIf="mvts.length>0" [rows]="10" [paginator]="true" [responsive]="true"
+                        autoLayout="true">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>Opération</th>
+                                <th>Quantité</th>
+                                <th>Type</th>
+                                <th>Date Operation</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-mvt>
+                            <tr>
+                                <td><i *ngIf="mvt.sens=='+'" style="color: green" class="fas fa-plus"></i><i
+                                        *ngIf="mvt.sens=='-'" style="color: red" class="fas fa-minus"></i></td>
+
+                                <td>{{mvt.quantite}}</td>
+                                <td>{{mvt.type}}</td>
+                                <td>{{mvt.dateMvt |date:'dd-MM-yyyy'}}</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage" let-mvt>
+                            <tr>
+                                <td [attr.colspan]="mvt.length">
+                                    <div style="display: flex;
+                                                    justify-content: center;">
+                                        La liste est vide
+                                    </div>
+
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </fieldset>
+                <br>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <button nbButton type="button" (click)="annuler()" status="danger"
+                            style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; "
+                            [shape]="'round'">Annuler</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" nbButton status="success" class="button-style"
+                            style=" float:right;border-color: white;  margin-top: 15px;"
+                            [shape]="'round'">Enregistrer</button>
+                    </div>
+                </div>
+            </form>
+
+
+
+        </div>
+
+    </nb-card-body>
+</nb-card>
+<p-dialog header="Scan" [(visible)]="displayScan" [modal]="true" [responsive]="true"
+    [style]="{ width: '800px', minWidth: '200px' }" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+
+    <div>
+        Veuillez scanner votre code à barre !
+    </div>
+
+    <div style="text-align: center;">
+        <i class="fas fa-barcode fa-10x"></i>
+    </div>
+
+    <form>
+        <div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="label">Code à barre</label><br>
+                    <input type="text" maxlength="100" nbInput fullWidth placeholder="scanner/saisir"
+                        [(ngModel)]="codeBarre" [ngModelOptions]="{standalone: true}"
+                        [ngClass]="{'has-error': isSubmitfournisseur && isnamevalid}">
+
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-sm-6">
+            <button nbButton type="button" (click)="displayScan = false" status="danger" style="
+          background: #ff3d71;
+          border-color: white;
+          float: left;
+          margin-top: 15px;
+        " [shape]="'round'">
+                Annuler
+            </button>
+        </div>
+        <div class="col-sm-6">
+            <button type="button" nbButton status="success" class="button-style"
+                style="float: right; border-color: white; margin-top: 15px" [shape]="'round'"
+                (click)="checkCodeBar();displayScan = false">
+                Valider
+            </button>
+        </div>
+    </div>
+</p-dialog>

@@ -1,0 +1,71 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card  [nbSpinner]="loading" nbSpinnerStatus="primary" style="height: 400px;">
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Créer Ingredient</span></div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+        <form [formGroup]="tableForm" (ngSubmit)="addIngredient()">
+                <div class="row">
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <label  class="label">Désignation<span style="color: red">*</span></label>
+                      <input type="text" maxlength="100" formControlName="designation" nbInput fullWidth  placeholder="designation" [ngClass]="{'has-error': istableFormSubmitted && (formControls.designation.errors )}">
+                      <label *ngIf=" istableFormSubmitted && (formControls.designation.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre désignation</label>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                        <label  class="label">Couleur</label>
+                        <input [(colorPicker)]="color" cpPosition="bottom" nbInput fullWidth [style.background]="color" (cpSliderDragEnd)="onEventLog('cpSliderDragEnd', $event)"/>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <br><br>
+                        <nb-checkbox formControlName="isComps" status="success">Produit composé</nb-checkbox>
+                      </div>
+                </div>
+              </div>
+              <div class="row" *ngIf="formControls.isComps.value">
+                <div class="ng-autocomplete col-sm-4">
+                  <label  class="label">Produit<span style="color: red">*</span></label>
+                  <ng-autocomplete #ngAutoCompleteStatic
+                                   [data]="products"
+                                   [initialValue]="null"
+                                   [placeHolder]="placeholder"
+                                   searchKeyword="designation"
+                                   notFoundText="La liste est vide"
+                                   [itemTemplate]="itemTemplateStatic"
+                                   (selected)='selectEvent($event)'>
+                  </ng-autocomplete>
+
+                  <ng-template #itemTemplateStatic let-item>
+                    <a [innerHTML]="item.designation"></a>
+                  </ng-template>
+                  <label *ngIf=" istableFormSubmitted && formControls.isComps.value && formControls.idProduit.value == null" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir un produit</label>
+
+                </div>
+                <div class="col-sm-4" >
+                  <div class="form-group">
+                    <label  class="label">Quantite<span style="color: red">*</span></label>
+                    <input type="number" onkeypress="return event.charCode >= 46" min="0"  formControlName="qte" nbInput fullWidth required  placeholder="Quantite" [ngClass]="{'has-error': istableFormSubmitted && formControls.isComps.value && formControls.qte.value == null}">
+                    <label *ngIf="istableFormSubmitted && formControls.isComps.value && formControls.qte.value == null" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre quantite</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row" >
+                <div class="col-6" >
+                    <button (click)="returntolist()"  nbButton type="reset"  status="danger" style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'" >Annuler</button>
+      
+                </div>
+                <div class="col-6" >
+                    <button  type="submit"   nbButton status="success" class="button-style"  style="float: right;" [shape]="'round'">Enregistrer</button>
+      
+                </div>
+      </div>
+              </form>               
+  </nb-card-body>
+</nb-card>

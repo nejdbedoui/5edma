@@ -1,0 +1,152 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Régle d'utilisation</span></div>
+        </div>
+    </nb-card-header>
+  <nb-card-body >
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+            <br>
+            <nb-checkbox [(ngModel)]="activer" status="success">activer le programme du fidélité</nb-checkbox>
+            </div>
+        </div>
+    </div>
+    <div style="border: 1px solid black" *ngIf="activer" >
+        <br>
+            <div class="row">
+                    <div class="col-sm-1">
+                            <div class="form-group">
+                            </div>
+                        </div>
+                    <div class="col-sm-5">
+                        
+                            Nombre minimial de passage pour activer la carte
+                        
+                    </div>
+                    <div class="col-sm-2">
+                            <div class="form-group">
+                                <input type="number" onkeypress="return event.charCode >= 46" min="0" [(ngModel)]="nbr" maxlength="100"  nbInput fullWidth  >
+                            </div>
+                        </div>
+                </div>
+                <div class="row">
+                        <div class="col-sm-1">
+                                <div class="form-group">
+                                </div>
+                            </div>
+                        <div class="col-sm-5">
+                                Solde minimal pour réglement avec la carte
+                        </div>
+                        <div class="col-sm-2">
+                                <div class="form-group">
+                                    <input type="number" onkeypress="return event.charCode >= 46" min="0" [(ngModel)]="solde" maxlength="100"  nbInput fullWidth  >
+                                </div>
+                            </div>
+                    </div>
+    </div>
+<br>
+    
+    <div class="row" *ngIf="allweek && activer" >
+            <div class="col-sm-10">
+                <div class="form-group">
+                    <button (click)="displaytable=true" type="button"  class="btn btn-primary">horaire utilisation de la carte FID  </button>
+                </div>
+            </div>
+            
+        </div>
+    <div class="row" *ngIf="!allweek">
+            <button (click)="allweek=true" type="button"  class="btn btn-primary">cliquer ici pour activer la carte pendant toute la semaine</button>
+    </div>
+    <br>
+    <div class="row" *ngIf="!allweek">
+        <ul>
+            <li>
+                Veuillez selectionner les <span style="color: red">jours</span> d'utilisation de la carte FID.
+            </li>
+            <li>
+                Vous pouvez définir l'heure de début fin pour les jours sélectionnés.
+            </li>
+        </ul>
+    </div>
+<br>
+ <p-table [value]="listday" *ngIf="!allweek" >
+        <ng-template pTemplate="header">
+            <tr>
+                <th></th>
+                <th>Activer</th>                
+                <th>Heure Debut</th>
+                <th>Heure Fin</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData>
+            <tr>
+                <td>{{rowData.day}}</td>
+                <td >
+                        <nb-checkbox [(ngModel)]="rowData.Activer" status="success" pInputText></nb-checkbox>
+                    </td>
+                <td pEditableColumn >
+                        <p-cellEditor *ngIf="rowData.Activer">
+                                <ng-template pTemplate="input" >
+                                        <p-calendar [(ngModel)]="rowData.startday" [timeOnly]="true" pInputText></p-calendar>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                        {{rowData.startday |date :'HH:mm'}}
+                                    </ng-template>
+                            </p-cellEditor>
+                    </td>
+                    <td pEditableColumn>
+                            <p-cellEditor *ngIf="rowData.Activer">
+                                    <ng-template pTemplate="input">
+                                            <p-calendar [(ngModel)]="rowData.endday" [timeOnly]="true" pInputText></p-calendar>
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                            {{rowData.endday |date :'HH:mm'}}
+                                        </ng-template>
+                                </p-cellEditor>
+                        </td>
+                
+            </tr>
+        </ng-template>
+    </p-table>
+    <br>
+    <div class="row">
+            <div class="col-sm-5">
+        
+            </div>
+            <div  class="col-sm-2">
+        
+            </div>
+            <div class="col-sm-5">
+                    <button  nbButton status="success" class="button-style" style="float: right ;background: #ff3d71; margin-top: 15px; " (click)="saveregle()" type="button" [shape]="'round'" >Enregister  </button>
+        
+            </div>
+    </div>
+</nb-card-body>
+</nb-card>
+
+
+
+
+<p-dialog  header="Alerte" [(visible)]="displaytable" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+<div class="row" style="text-align: center;justify-content: center;">
+    Voulez vous autoriser l'utilisation de la carte Fid pendant toute la semaine ?
+</div>
+<div class="row">
+    <div class="col-sm-5">
+            <button (click)="allweek=false;displaytable=false"  nbButton type="button"  status="danger" style="float: right ;background: #ff3d71; margin-top: 15px; " [shape]="'round'">Non  </button>
+
+    </div>
+    <div  class="col-sm-2">
+
+    </div>
+    <div class="col-sm-5">
+            <button  nbButton status="success" class="button-style" style="float: left ;background: #ff3d71; margin-top: 15px; " (click)="displaytable=false" type="button" [shape]="'round'" >Oui  </button>
+
+    </div>
+
+</div>
+</p-dialog>

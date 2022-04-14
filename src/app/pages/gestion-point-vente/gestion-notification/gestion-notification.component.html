@@ -1,0 +1,264 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card >
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Gestion Des Notifications</span></div>
+    </div>
+  </nb-card-header>
+  <nb-card-body >
+    <div class="row" style="margin-top:2%;">
+      <div class="col-md-3">
+      </div>
+      <div class="col-md-5">
+
+      </div>
+
+      <div class="col-md-4">
+        <div class="" style="text-align: center; margin-top: 8px;">
+          <button (click)="redirect()" style="float: right;"  class="icon-btn add-btn">
+            <div class="add-icon"></div>
+            <div class="btn-txt">Créer une Nouvelle Notification</div>
+          </button>
+        </div>
+      </div>
+    </div>
+    <br>
+    <p-table [columns]="cols" [loading]="loading" #dt [value]="notifications" [rows]="10" [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['titre','body','description','typeNotification','dateCreation']">
+      <ng-template pTemplate="caption">
+        <div style="text-align: right">
+          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+          <input type="text" pInputText placeholder="chercher"  (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="titre">Titre <p-sortIcon field="titre"></p-sortIcon></th>
+          <th pSortableColumn="body">Body <p-sortIcon field="body"></p-sortIcon></th>
+          <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
+          <th pSortableColumn="typeNotification">Type de Notification <p-sortIcon field="typeNotification"></p-sortIcon></th>
+          <th pSortableColumn="dateCreation">Date de Creation <p-sortIcon field="dateCreation"></p-sortIcon></th>
+          <th pSortableColumn="isActif">Statut <p-sortIcon field="isActif"></p-sortIcon></th>
+          <th>Action</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-notification>
+        <tr>
+          <td>{{notification.titre}}</td>
+          <td>{{notification.body}}</td>
+          <td>{{notification.description}}</td>
+          <td>{{notification.typeNotification}}</td>
+          <td>{{notification.dateCreation |date:'dd-MM-yyyy'}}</td>
+          <td>{{notification.isActif == 1? 'Actif' : 'Non Actif'}}</td>
+
+          <td>
+            <div style="display: flex; justify-content: space-between;">
+              <a routerLink="/pages/Pointvente/gestionNotification/ModifierNotification/{{notification.idNotification}}"><i  class="far fa-edit cursor buttonround editbutton"></i></a>
+              &nbsp; &nbsp;
+              <a (click)="showClient=true;selectedNotif = notification;"><i class="far fa-paper-plane cursor buttonround sendbutton"></i></a>
+              &nbsp; &nbsp;
+              <a (click)="findListClientWhoseReceiveGivenNotification(notification.idNotification)"><i class="fas fa-user-check cursor buttonround sendedbutton"></i></a>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template  pTemplate="emptymessage" let-notification>
+        <tr>
+          <td [attr.colspan]="notification.length" >
+            <div style="display: flex;
+                          justify-content: center;">
+              La liste est vide
+            </div>
+
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </nb-card-body>
+</nb-card>
+ <p-dialog  header="Choisir un destinataire ou plusieurs destinataires" [(visible)]="showClient" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+        [maximizable]="true" [baseZIndex]="10" (onHide)="selectedClient = []">
+
+        <nb-tabset>
+          <nb-tab tabTitle="Liste des Clients">
+            <p-table #dts [columns]="cols2" [value]="clientPartenaires" [(selection)]="selectedClient"  [rows]="10"  [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['designation','code']"  >
+              <!-- <ng-template pTemplate="caption">
+               Liste des Clients
+              </ng-template> -->
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                  </th>
+                  <th>
+                    <input nbInput fullWidth type="text" (input)="dts.filter($event.target.value, 'nom', 'contains')" placeholder="Nom" class="ui-column-filter">
+                  </th>
+                  <th>
+                    <input nbInput fullWidth type="text" (input)="dts.filter($event.target.value, 'prenom', 'contains')" placeholder="Prenom" class="ui-column-filter">
+                  </th>
+                  <th>
+                    <input nbInput fullWidth type="text" (input)="dts.filter($event.target.value, 'email', 'contains')" placeholder="Address Mail" class="ui-column-filter">
+                  </th>
+                  <th> Action </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-client>
+                <tr>
+                  <td>
+                    <p-tableCheckbox [value]="client"></p-tableCheckbox>
+                  </td>
+                  <td>{{client.nom}}</td>
+                  <td>{{client.prenom}}</td>
+                  <td>{{client.email}}</td>
+                  <td>
+                    <a><i (click)="showNotifClient = true; findListNotificationSendedForGivenClient(client.idClientPartenaire)" class="far fa-bell cursor buttonround sendedbutton"></i></a>
+                  </td>
+                  <!--<td><nb-checkbox (checkedChange)="checkClient(client)" status="success" ></nb-checkbox></td>-->
+                </tr>
+              </ng-template>
+              <ng-template  pTemplate="emptymessage" let-client>
+                <tr>
+                  <td [attr.colspan]="client.length" >
+                    <div style="display: flex;
+                                     justify-content: center;">
+                      La liste est vide
+                    </div>
+         
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </nb-tab>
+          <nb-tab tabTitle="Liste des Groupes">
+            <p-table #dtg [columns]="cols3" [value]="groupes" [(selection)]="selectedgroupe"  [rows]="10"  [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['designation','dateCreation']"  >
+              <!-- <ng-template pTemplate="caption">
+              </ng-template> -->
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                  </th>
+                  <th>
+                    <input nbInput fullWidth type="text" (input)="dtg.filter($event.target.value, 'designation', 'contains')" placeholder="designation" class="ui-column-filter">
+                  </th>
+                  <th>
+                    <input nbInput fullWidth type="text" (input)="dtg.filter($event.target.value, 'dateCreation', 'contains')" placeholder="Date Création" class="ui-column-filter">
+                  </th>
+                  <!-- <th>
+                    <input nbInput fullWidth type="text" (input)="dts.filter($event.target.value, 'email', 'contains')" placeholder="Address Mail" class="ui-column-filter">
+                  </th>
+                  <th> Action </th> -->
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-client>
+                <tr>
+                  <td>
+                    <p-tableCheckbox [value]="client"></p-tableCheckbox>
+                  </td>
+                  <td>{{client.designation}}</td>
+                  <td>{{client.dateCreation |date:'dd-MM-yyyy'}}</td>
+                  <!-- <td>
+                    <a><i (click)="showNotifClient = true; findListNotificationSendedForGivenClient(client.idClientPartenaire)" class="far fa-bell cursor buttonround sendedbutton"></i></a>
+                  </td> -->
+                  <!--<td><nb-checkbox (checkedChange)="checkClient(client)" status="success" ></nb-checkbox></td>-->
+                </tr>
+              </ng-template>
+              <ng-template  pTemplate="emptymessage" let-client>
+                <tr>
+                  <td [attr.colspan]="client.length" >
+                    <div style="display: flex;
+                                     justify-content: center;">
+                      La liste est vide
+                    </div>
+         
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </nb-tab>
+         </nb-tabset>
+
+   <div class="row">
+     <div class="col-md-12" style="float: right;">
+       <button type="button" (click)="sendNotification()" nbButton status="success" class="button-style" style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Envoyer</button>
+     </div>
+   </div>
+        </p-dialog>
+
+<p-dialog  header="La liste des clients qui ont reçu cette notitification" [(visible)]="showClientNotif" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+           [maximizable]="true" [baseZIndex]="10">
+  <p-table #dtr [columns]="cols2" [value]="clientPartenairesNotif"  [rows]="10"  [paginator]="true" [responsive]="true" autoLayout ="true" >
+    <ng-template pTemplate="caption">
+      Liste des Clients
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+      <th pSortableColumn="nom">Nom <p-sortIcon field="nom"></p-sortIcon></th>
+      <th pSortableColumn="prenom">Prénom <p-sortIcon field="prenom"></p-sortIcon></th>
+      <th pSortableColumn="isActif">Status <p-sortIcon field="isActif"></p-sortIcon></th>
+      <!--<th>Action</th>-->
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-client>
+      <tr>
+        <td>{{client.nom}}</td>
+        <td>{{client.prenom}}</td>
+        <td>{{client.isActif == 1 ?'Actif':'Non Actif'}}</td>
+        <!--<td><nb-checkbox (checkedChange)="checkClient(client)" status="success" ></nb-checkbox></td>-->
+      </tr>
+    </ng-template>
+    <ng-template  pTemplate="emptymessage" let-client>
+      <tr>
+        <td [attr.colspan]="client.length" >
+          <div style="display: flex;
+                            justify-content: center;">
+            La liste est vide
+          </div>
+
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-dialog  header="La liste des notitifications reçu par ce client" [(visible)]="showNotifClient" [modal]="true" [responsive]="true" [style]="{width: '800px', minWidth: '200px'}" [minY]="70"
+           [maximizable]="true" [baseZIndex]="10">
+  <p-table [columns]="cols" [loading]="loading" #dtt [value]="clientNotifications" [rows]="10" [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['titre','body','description','typeNotification','dateCreation']">
+    <ng-template pTemplate="caption">
+      <div style="text-align: right">
+        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+        <input type="text" pInputText placeholder="chercher"  (input)="dtt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="titre">Titre <p-sortIcon field="titre"></p-sortIcon></th>
+        <th pSortableColumn="body">Body <p-sortIcon field="body"></p-sortIcon></th>
+        <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
+        <th pSortableColumn="typeNotification">Type de Notification <p-sortIcon field="typeNotification"></p-sortIcon></th>
+        <th pSortableColumn="dateCreation">Date de Creation <p-sortIcon field="dateCreation"></p-sortIcon></th>
+        <th pSortableColumn="isActif">Statut <p-sortIcon field="isActif"></p-sortIcon></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-notification>
+      <tr>
+        <td>{{notification.titre}}</td>
+        <td>{{notification.body}}</td>
+        <td>{{notification.description}}</td>
+        <td>{{notification.typeNotification}}</td>
+        <td>{{notification.dateCreation |date:'dd-MM-yyyy'}}</td>
+        <td>{{notification.isActif == 1? 'Actif' : 'Non Actif'}}</td>
+      </tr>
+    </ng-template>
+    <ng-template  pTemplate="emptymessage" let-notification>
+      <tr>
+        <td [attr.colspan]="notification.length" >
+          <div style="display: flex;
+                          justify-content: center;">
+            La liste est vide
+          </div>
+
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

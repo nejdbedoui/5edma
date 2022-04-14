@@ -1,0 +1,661 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card>
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6">
+        <span style="font-size: 20px">Gestion des Produits / Articles</span>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <nb-tabset>
+      <nb-tab tabTitle="Liste des Produits">
+        <div class="row">
+          <div class="col-md-12">
+            <button type="button" *ngIf="!affichefilter" style="float: right; background: #79008e !important" nbButton
+              [shape]="'round'" (click)="affichefilter = true">
+              Afficher plus de critéres de recherche</button>&nbsp;&nbsp;
+            <button type="button" *ngIf="affichefilter" style="float: right" nbButton status="warning" [shape]="'round'"
+              (click)="filtercriter(); affichefilter = false">
+              Cacher les critères de recherche</button>&nbsp;&nbsp;
+          </div>
+        </div>
+        <br />
+        <fieldset *ngIf="affichefilter">
+          <legend>Critéres de recherche</legend>
+
+          <div class="row" style="padding-bottom: 10px">
+            <div class="col-sm-2">
+              <label class="label">Catégorie</label>
+              <nb-select fullWidth multiple [(ngModel)]="listselectcateg">
+                <nb-option *ngFor="let item of categories" [value]="item">
+                  {{ item.designation }}
+                </nb-option>
+              </nb-select>
+              <!-- <label *ngIf=" isSubmitted && (formControls.typeProduit.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre Type Produit</label> -->
+            </div>
+            <!-- <div class="col-sm-1 ">
+                    
+                </div> -->
+            <div class="col-sm-4">
+              <label class="label">Prix:</label><br />
+              <span>de:&nbsp;&nbsp;</span>
+              <input type="number" onkeypress="return event.charCode >= 46" min="0" [(ngModel)]="deprix" maxlength="100"
+                nbInput />
+            </div>
+            <div class="col-sm-4" style="padding-top: 6px">
+              <label class="label"></label><br />
+              <span>à:&nbsp;&nbsp;</span>
+              <input type="number" onkeypress="return event.charCode >= 46" min="0" [(ngModel)]="aprix" maxlength="100"
+                nbInput />
+            </div>
+            <!-- <div class="col-sm-1 ">
+                        Date d'insertion:
+                </div> -->
+            <div class="col-sm-2 centreVerticalement">
+              <label class="label"> Date d'insertion:</label>
+              <p-calendar fullWidth [(ngModel)]="datecreation" placeholder="date" class="disgness pos"
+                dateFormat="dd-mm-yy" [locale]="calendar"></p-calendar>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-4">
+              <nb-checkbox [(ngModel)]="notaffectedtocateg" status="success">non affecté à une categorie</nb-checkbox>
+            </div>
+            <div class="col-sm-4">
+              <nb-checkbox [(ngModel)]="repturedestock" status="success">en repture de stock</nb-checkbox>
+            </div>
+            <div class="col-sm-4">
+              <nb-checkbox [(ngModel)]="presquerepturestock" status="success">presque en repture de stock</nb-checkbox>
+            </div>
+            <div class="col-sm-4">
+              <nb-checkbox [(ngModel)]="aveccodeinterne" status="success">avec code à bare interne</nb-checkbox>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <button nbButton type="button" *ngIf="fannule" status="danger" (click)="annuler(); fannule = false" style="
+                  background: #ff3d71;
+                  border-color: white;
+                  float: left;
+                  margin-top: 15px;
+                " [shape]="'round'">
+                Annuler
+              </button>
+            </div>
+            <div class="col-sm-6">
+              <button type="submit" nbButton status="success" (click)="search()" class="button-style"
+                style="float: right; border-color: white; margin-top: 15px" [shape]="'round'">
+                Chercher
+              </button>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="row" style="margin-top: 2%">
+          <div class="col-md-8">
+            <div class="upload-btn-wrapper">
+              <button class="btn cursor" style="margin-top: 15px">
+                Importer Produit
+              </button>
+              <input type="file" name="myfile" [(ngModel)]="filevalue" (change)="onFileChange($event)" />
+            </div>
+            &nbsp;&nbsp;
+            <div class="upload-btn-wrapper">
+              <a href="../../../../assets/images/bprice.xlsx" download class="btn cursor" dow
+                style="margin-top: 15px; background-color: rgb(0, 162, 255)">Télécharger modèle d'importation</a>
+            </div>
+            &nbsp;&nbsp;
+            <div class="upload-btn-wrapper">
+              <button class="btn cursor" style="margin-top: 15px; background-color: orange" (click)="exportExcel()">
+                Exporter Produit
+              </button>
+            </div>
+          </div>
+          <!-- <div class="col-md-3">
+                <div class="col-md-3">
+                    
+                  </div>
+              </div>
+       -->
+          <div class="col-md-4">
+            <div class="" style="text-align: center; margin-top: 8px">
+              <button (click)="redirect()" style="float: right" class="icon-btn add-btn">
+                <div class="add-icon"></div>
+                <div class="btn-txt">Ajouter un Nouveau Produit</div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-md-12">
+            <!-- <span style="float: right">({{citoyens.length}} résultats)&nbsp;&nbsp;</span> -->
+            <span style="float: right">{{ dt.totalRecords }} Produit(s)&nbsp;&nbsp;</span>
+          </div>
+        </div>
+        <br />
+        <p-table #dt [columns]="cols2" [value]="listproduit" [responsive]="true" [loading]="loading" [paginator]="true"
+          [rowsPerPageOptions]="[20, 30, 50]" [rows]="20" [globalFilterFields]="[
+            'produit.designation',
+            'produit.codeBarre',
+            'produit.prixTtc'
+          ]">
+          <ng-template pTemplate="caption">
+            <div style="text-align: right">
+              <i class="pi pi-search" style="margin: 4px 4px 0 0"></i>
+              <input type="text" pInputText size="50" placeholder="Chercher"
+                (input)="dt.filterGlobal($event.target.value, 'contains')" style="width: 40%; min-height: 34px" />
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th rowspan="2">Désignation</th>
+              <th rowspan="2">Code à Barre</th>
+              <th rowspan="2">Catégorie</th>
+              <th colspan="3" style="text-align: center">Stock</th>
+              <th rowspan="2">Prix</th>
+              <th rowspan="2">TVA</th>
+              <th rowspan="2">Action</th>
+            </tr>
+            <tr>
+              <th>Stock Reapp</th>
+              <th>Actuel</th>
+              <th>Stock Alert</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-produit>
+            <tr>
+              <td class="col-sm">
+                <div class="etc">
+                  <img *ngIf="produit?.produit?.urlImg != null" [src]="produit.produit.urlImg" width="40px" alt="" />
+                  {{
+                  produit.produit != null ? produit.produit.designation : ""
+                  }}
+                </div>
+              </td>
+              <td>
+                <div class="etc">
+                  {{ produit.produit != null ? produit.produit.codeBarre : "" }}
+                </div>
+              </td>
+              <td>
+                <ul style="padding-left: 1px">
+                  <li style="padding-left: 1px" *ngFor="let item of produit.categorieArticleProduits">
+                    <div class="etc">{{ getname(item.idCategArticle) }}</div>
+                  </li>
+                </ul>
+              </td>
+              <td>
+                {{
+                produit.produit != null
+                ? produit.produit.stockQteDepart != null
+                ? produit.produit.stockQteDepart
+                : "----"
+                : ""
+                }}
+              </td>
+              <td>
+                <span style="padding: 3px; border-radius: 8px;font-weight: 900;">{{
+                  produit.produit != null
+                  ? produit.produit.stockQteDepart != null
+                  ? (produit.stockactual | number)
+                  : "----"
+                  : ""
+                  }}</span>
+                <nb-icon *ngIf="
+                    produit.stockactual != null &&
+                    produit.stockactual < produit.produit.stockAlert
+                  " icon="alert-triangle-outline" status="danger"></nb-icon>
+                <nb-icon *ngIf="
+                    produit.stockactual != null &&
+                    produit.stockactual < produit.produit.stockQteDepart &&
+                      produit.stockactual > produit.produit.stockAlert
+                  " icon="alert-triangle-outline" status="warning"></nb-icon>
+              </td>
+              <td>
+                {{
+                produit.produit != null
+                ? produit.produit.stockQteDepart != null
+                ? produit.produit.stockAlert
+                : "----"
+                : ""
+                }}
+              </td>
+              <td>
+                {{ produit.produit != null ? produit.produit.prixTtc : "" }}
+              </td>
+              <td>{{ produit.produit != null ? produit.produit.tva : "" }}</td>
+              <td>
+                <i (click)="edits(produit.produit)" *ngIf="produit.produit.typeProduit != 'recharge'" style="
+                    background-color: #8dce4c;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                  " class="btn far fa-edit cursor buttonround"></i>&nbsp;&nbsp;
+                <i (click)="deletes(produit.produit)"
+                  style="background-color: #E82121;padding-top: 10px;padding-bottom: 10px;"
+                  class="btn far fa-trash-alt cursor  buttonround"></i>&nbsp;&nbsp;
+                <button type="button" *ngIf="
+                    produit.reglesFideliteProduits != null &&
+                    produit.reglesFideliteProduits.length > 0
+                  " style="background-color: #7366b2" class="btn buttonround" (click)="
+                    createfid(
+                      produit.reglesFideliteProduits,
+                      produit.produit.idProduit
+                    );
+                    addfid = false
+                  ">
+                  FID
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage" let-produit>
+            <tr>
+              <td [attr.colspan]="produit.length">
+                <div style="display: flex; justify-content: center">
+                  La liste est vide
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </nb-tab>
+      <nb-tab tabTitle="Ordonner les Produits">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label class="label">Veuillez sélectionner une catégorie</label><br />
+              <ng-autocomplete #ngAutoCompleteStatic [data]="categories" [initialValue]="null"
+                [placeHolder]="placeholder" [searchKeyword]="keyword" notFoundText="La liste est vide"
+                [itemTemplate]="itemTemplateStatic" (selected)="selectEvent($event)" (inputCleared)="cleardata()"
+                (inputChanged)="onChangeSearch($event)">
+              </ng-autocomplete>
+              <ng-template #itemTemplateStatic let-item>
+                <a [innerHTML]="item.designation"></a>
+              </ng-template>
+              <!-- <input type="text" maxlength="100" nbInput fullWidth  placeholder="Nom du contact fournisseur" required [(ngModel)]="fournisseurDto.nom" [ngModelOptions]="{standalone: true}" [ngClass]="{'has-error': isSubmitfournisseur && isnamevalid}"  > -->
+              <label *ngIf="isSubmit && choosecatagrie" class="label-has-error"><i
+                  class="fas fa-exclamation-circle"></i> Veuillez choisir une
+                categorie
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <button type="button" (click)="choosecata()" nbButton status="success" class="button-style"
+              style="float: right; border-color: white; margin-top: 15px" [shape]="'round'">
+              choisir une categorie
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <div [nbSpinner]="loading" nbSpinnerStatus="primary">
+            <div class="row">
+              <div class="col-md-12">
+                <h4>
+                  Veuillez classer les produits à gauche selon votre ordre de
+                  préférence puis cliquez sur vue de caisse pour visualiser
+                  l'affichage côté caisse.
+                </h4>
+              </div>
+            </div>
+            <br />
+            <div cdkDropListGroup class="row">
+              <div class="example-container col-md-5">
+                <!-- <h2>Liste Categories disponible :</h2> -->
+                <div *ngIf="listprod" cdkDropList [cdkDropListData]="produitdtosnotselected" class="example-list"
+                  (cdkDropListDropped)="drop($event)">
+                  <div class="example-box" *ngFor="let item of produitdtosnotselected" cdkDrag>
+                    {{ item.produit.designation }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="example-container col-md-5">
+                <!-- <h2>Liste Categories de la caisse :</h2> -->
+
+                <div style="height: 100%" cdkDropList [cdkDropListData]="done" class="example-list row"
+                  (cdkDropListDropped)="drop($event)">
+                  <div class="example-box" *ngFor="let item of done" cdkDrag>
+                    {{ item.produit.designation }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-1">
+                <br /><br />
+                <i (click)="diplay = true" nbTooltip="Liste Produits" nbTooltipPlacement="bottom" style="
+                    background-color: mediumorchid;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                  " class="btn cursor buttonround">vue caisse </i>&nbsp;&nbsp;
+              </div>
+            </div>
+            <br />
+            <div class="row">
+              <div class="col-sm-6">
+                <a routerLink="/pages/Pointvente/gestionCategorieArticle" nbButton type="button" status="danger" style="
+                    background: #ff3d71;
+                    border-color: white;
+                    float: left;
+                    margin-top: 15px;
+                  " [shape]="'round'">Annuler</a>
+              </div>
+              <div class="col-sm-6">
+                <button type="button" (click)="validerlist()" nbButton status="success" class="button-style"
+                  style="float: right; border-color: white; margin-top: 15px" [shape]="'round'">
+                  Enregistrer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nb-tab>
+    </nb-tabset>
+  </nb-card-body>
+</nb-card>
+
+<p-dialog header="Suppression Produit" [(visible)]="diplayregle" [modal]="true" [responsive]="true"
+  [style]="{ width: '700px', minWidth: '200px' }" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  êtes-vous sûr de vouloir supprimer le produit <span style="font-weight: bold;"> {{currentregle.designation}} </span>
+  ?<br>
+  <span style="color: red;"> Attention toutes les données relatives à ce produit seront supprimées !</span>
+  <p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplayregle = false; deleteproduit()">
+      Supprimer
+    </button>
+    <button type="button" nbButton (click)="diplayregle = false" class="ui-button-secondary">
+      Quitter
+    </button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Supprimer Produit" [(visible)]="diplay2" [modal]="true" [responsive]="true"
+  [style]="{ width: '700px', minWidth: '200px' }" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  Voulez-vous bien supprimer ce Produit ?
+  <p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplay2 = false; deleteimportedproduit()">
+      Supprimer
+    </button>
+    <button type="button" nbButton (click)="diplay2 = false" class="ui-button-secondary">
+      Quitter
+    </button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Supprimer Régle de fidélité" [(visible)]="diplay2reg" [modal]="true" [responsive]="true"
+  [style]="{ width: '700px', minWidth: '200px' }" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  Voulez-vous bien supprimer cette Régle de fidélité ?
+  <p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplay2reg = false; deletereglefid()">
+      Supprimer
+    </button>
+    <button type="button" nbButton (click)="diplay2reg = false" class="ui-button-secondary">
+      Quitter
+    </button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Produit Importer" [(visible)]="diplayproduit" [modal]="true" [responsive]="true"
+  [style]="{ width: '1000px', minWidth: '200px' }" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  <p-table [value]="importedproducts" *ngIf="diplayproduit" [paginator]="true" [rows]="10">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Désignation</th>
+        <th>Description</th>
+        <th>Prix Hors Taxe</th>
+        <th>Prix Toute Taxe Comprise</th>
+        <th>Type Produit</th>
+        <th>Date Création</th>
+        <th>Composition</th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-produit>
+      <tr>
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input pInputText type="text" [(ngModel)]="produit.designation" />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ produit.designation }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input pInputText type="text" [(ngModel)]="produit.description" />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ produit.description }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input pInputText type="text" [(ngModel)]="produit.prixHt" />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ produit.prixHt }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input pInputText type="text" [(ngModel)]="produit.prixTtc" />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ produit.prixTtc }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input pInputText type="text" [(ngModel)]="produit.typeProduit" />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ produit.typeProduit }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          {{ produit.dateCreation | date }}
+        </td>
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input pInputText type="text" [(ngModel)]="produit.composition" />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ produit.composition }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          <i (click)="deletesimport(produit)" style="
+              background-color: #e82121;
+              padding-top: 10px;
+              padding-bottom: 10px;
+            " class="btn far fa-trash-alt cursor buttonround"></i>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-produit>
+      <tr>
+        <td [attr.colspan]="produit.length">
+          <div style="display: flex; justify-content: center">
+            La liste est vide
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplayproduit = false; annulerproduit()">
+      Annuler
+    </button>
+    <button type="button" nbButton (click)="saveimported()" class="button-style">
+      Enregister
+    </button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Gestion des Régle de fidélité" [(visible)]="diplayfid" [modal]="true" [responsive]="true"
+  [style]="{ width: '700px', minWidth: '200px' }" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  <div *ngIf="!addfid">
+    <!-- <div style="text-align: center" *ngIf="listregfid!=null && listregfid.length==0" >
+            Aucun programme de FID pour le produit {{currentregle.designation}}
+            <br>
+    </div>
+    <div style="text-align: center" *ngIf="listregfid!=null && listregfid.length>0">
+           Vous avez un programme de FID pour le produit {{currentregle.designation}}
+           <br>
+    </div>
+    <br>
+    <div class="col-sm-12">
+        <div class="form-group" style="justify-content: center;display: flex">
+            <button (click)="addfid=true;resetform()" type="button"  class="btn btn-primary">Cliquer ici pour créer un programme de Fidélité  </button>
+        </div>
+    </div>
+    <br> -->
+    <div>
+      <div class="row">
+        <div class="col-md-12">
+          <!-- <span style="float: right">({{citoyens.length}} résultats)&nbsp;&nbsp;</span> -->
+          <span style="float: right">{{ fid.totalRecords }} fidélité(s)&nbsp;&nbsp;</span>
+        </div>
+      </div>
+      <p-table [columns]="cols3" #fid [value]="currentreglefid" [loading]="loading" [paginator]="true"
+        [responsive]="true" [rowsPerPageOptions]="[20, 30, 50]" [rows]="20">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Type Fidélité</th>
+            <th>Valeur</th>
+            <th>Quantité</th>
+            <!-- <th>Pourcentage</th> -->
+            <!-- <th>Action</th> -->
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-produit>
+          <tr>
+            <td>{{ produit.typeFid }}</td>
+            <td>
+              <span *ngIf="produit.idProduit != null">{{ qantitefid }} </span>
+              <span *ngIf="produit.idProduit != null">{{ produit.quantite }}
+              </span>
+            </td>
+            <td>
+              {{ produit.valeur }} {{ produit.fPourcentage == "1" ? "%" : "" }}
+            </td>
+            <!-- <td> {{produit.fPourcentage==1?'oui':'non'}}</td> -->
+            <!-- <td> <i (click)="editsreg(produit)"  style="background-color: #8DCE4C;padding-top: 10px;padding-bottom: 10px;" class=" btn far fa-edit cursor buttonround"></i>&nbsp;&nbsp;
+                              <i (click)="deletesreg(produit)"    style="background-color: #E82121;padding-top: 10px;padding-bottom: 10px;" class="btn far fa-trash-alt cursor  buttonround"></i>
+                          </td> -->
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-produit>
+          <tr>
+            <td [attr.colspan]="produit.length">
+              <div style="display: flex; justify-content: center">
+                La liste est vide
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+  <div *ngIf="addfid">
+    Ajouter une régle de fidélité pour le produit {{ currentregle.designation }}
+
+    <br />
+    <form [formGroup]="fidForm" (ngSubmit)="createnewfid()">
+      <br />
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="label">Quantité(unité) <span style="color: red">*</span></label><br />
+            <input type="text" maxlength="100" nbInput fullWidth placeholder="Désignation" formControlName="designation"
+              [ngClass]="{
+                'has-error': isSubmitted && formControls.designation.errors
+              }" />
+            <label *ngIf="isSubmitted && formControls.designation.errors" class="label-has-error"><i
+                class="fas fa-exclamation-circle"></i> Veuillez remplir le
+              champ Quantite
+            </label>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-group">
+            <label class="label">Valeur <span style="color: red">*</span></label><br />
+            <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100" nbInput fullWidth
+              placeholder="Valeur" formControlName="valeur" [ngClass]="{
+                'has-error': isSubmitted && formControls.valeur.errors
+              }" />
+            <label *ngIf="isSubmitted && formControls.valeur.errors" class="label-has-error"><i
+                class="fas fa-exclamation-circle"></i> Veuillez remplir le
+              champ Valeur
+            </label>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <label class="label"><span style="color: red">*</span></label>
+          <nb-select fullWidth formControlName="devise"
+            [status]="isSubmitted && formControls.devise.errors ? 'danger' : ''">
+            <nb-option *ngFor="let item of listdevise" [value]="item.designation">
+              {{ item.designation }}
+            </nb-option>
+          </nb-select>
+          <label *ngIf="isSubmitted && formControls.devise.errors" class="label-has-error"><i
+              class="fas fa-exclamation-circle"></i>Veuiller choisir votre
+            Devise</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <button nbButton type="button" (click)="addfid = false" status="danger" style="
+              background: #ff3d71;
+              border-color: white;
+              float: left;
+              margin-top: 15px;
+            " [shape]="'round'">
+            Annuler
+          </button>
+        </div>
+        <div class="col-sm-6">
+          <button type="submit" nbButton status="success" class="button-style"
+            style="float: right; border-color: white; margin-top: 15px" [shape]="'round'">
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</p-dialog>
+
+<p-dialog header="Listes produits" [(visible)]="diplay" [modal]="true" [responsive]="true"
+  [style]="{ width: '800px', minWidth: '200px' }" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  <div class="row">
+    <div *ngFor="let item of done" style="text-align: center; padding: 0px 3px 10px" class="col-md-3">
+      <div [ngStyle]="{
+          'background-color':
+            item.produit.couleur != null ? item.produit.couleur : '#f0d2f2'
+        }" class="shadow" style="
+          text-align: center;
+          padding: 20px 10px;
+          font-size: 17px;
+          font-weight: bold;
+        ">
+        {{ item.produit.designation }}
+      </div>
+    </div>
+  </div>
+</p-dialog>

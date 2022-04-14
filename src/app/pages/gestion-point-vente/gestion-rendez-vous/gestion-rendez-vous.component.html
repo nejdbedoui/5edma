@@ -1,0 +1,126 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card >
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Liste des Rendez-vous</span></div>
+            <div class="col-md-6">
+              <!-- <span style="float: right">({{citoyens.length}} résultats)&nbsp;&nbsp;</span> -->
+              <span style="float: right">{{listrdv}} Reservation(s)&nbsp;&nbsp;</span>
+      
+      </div>
+        </div>
+    </nb-card-header>
+  <nb-card-body >
+        <div class="row" style="margin-top:2%;">
+                <div class="col-md-3">
+              </div>
+              <div class="col-md-5">
+        
+                </div>
+        
+              <div class="col-md-4">
+                <div class="" style="text-align: center; margin-top: 8px;">
+                  <button (click)="redirect()" style="float: right;"  class="icon-btn add-btn">  
+                    <div class="add-icon"></div>
+                    <div class="btn-txt">Ajouter un Rendez-vous</div>
+                  </button>
+                </div>        
+              </div>
+              </div>
+              <br>
+              <div class="row">
+                
+                <div class="col-sm">
+                  <div class="upload-btn-wrapper">
+                    <button class="btn cursor" style="margin-top: 15px; background-color: orange;"  (click)="exportExcel()" >Exporter Rendez-vous</button>
+                  </div>
+                        <p-toggleButton style="float: left;margin-top: -53px;" [(ngModel)]="checked" onLabel="" offLabel="" onIcon="pi pi-calendar" offIcon="pi pi-list" [style]="{'width':'50px'}"></p-toggleButton>
+                </div>
+              </div>
+        <p-table *ngIf="checked"  [columns]="cols" [loading]="loading" #dts [value]="rdvs" [rowsPerPageOptions]="[20,30,50]"  [rows]="20" [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['designation','dateCreation']" (sortFunction)="customSort($event)" [customSort]="true">
+          <ng-template pTemplate="caption">
+            <div style="text-align: right">        
+                <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+                <input type="text" pInputText size="50" placeholder="Chercher" (input)="dts.filterGlobal($event.target.value, 'contains')" style="width:40%; min-height: 34px;">
+            </div>
+        </ng-template> 
+                <ng-template pTemplate="header">
+                  <tr>
+                    
+                    <th pSortableColumn="nomClient">Client <p-sortIcon field="nomClient"></p-sortIcon></th>
+                    <th pSortableColumn="telClient">Client Tel <p-sortIcon field="telClient"></p-sortIcon></th>
+                    <th pSortableColumn="date">Date <p-sortIcon field="date"></p-sortIcon></th>
+                    <th *ngIf="pv.fGestionTable==1" >Table</th>
+                    <th *ngIf="pv.fGestionTable!=1" >Produit</th>
+                    <th *ngIf="pv.fGestionTable!=1" >Employe</th>
+                    <th pSortableColumn="status">État <p-sortIcon field="status"></p-sortIcon></th>
+                    <th>Action</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rdv>
+                  <tr>
+                  <td [attr.rowspan]="rdv.listReservations.length+1">{{rdv.nomClient}} {{rdv.prenomClient}}</td>
+                    <td  [attr.rowspan]="rdv.listReservations.length+1">{{rdv.telClient}}</td>
+                  </tr>
+                  <tr *ngFor="let item of rdv.listReservations" >
+                    <td>{{item.dateReseravation |date:'dd-MM-yyyy'}}</td>
+                    <td *ngIf="pv.fGestionTable==1" >{{item?.tableCaisse?.numTable}}</td>
+                    <td *ngIf="pv.fGestionTable!=1" >{{getproduitname(item.produitsQtes)}}</td>
+                    <td *ngIf="pv.fGestionTable!=1" >{{item.employee!=null?item?.employee?.nom:'----'}}</td>
+                    <td><span class="btn" [ngClass]="{'btn-success':item.fTraite==1,'btn-warning':item.fTraite==0,'btn-danger':item.fTraite==-1}"  style="pointer-events: none;">{{item.fTraite==0?"En attente":item.fTraite==1?"Traite":"Annuler" }}</span></td>
+                    <td>  
+                      <i *ngIf="item.fTraite==0"  (click)="modifer(rdv)" class="far fa-edit cursor buttonround editbutton" nbTooltip="Modifier RDV" nbTooltipPlacement="bottom"></i>&nbsp;&nbsp;
+                      <i *ngIf="item.fTraite==0"   (click)="traite(rdv)" class="far fa-check-circle cursor buttonround affiche1button" nbTooltip="Traite RDV" nbTooltipPlacement="bottom"></i> <span *ngIf="item.fTraite==0"  >&nbsp;&nbsp;</span>
+                      <i  *ngIf="item.fTraite==0" (click)="deactive(rdv)" class="far fa-times-circle cursor buttonround deletebutton"  nbTooltip="Annuler RDV" nbTooltipPlacement="bottom"></i>&nbsp;&nbsp;
+                    </td>
+                  </tr>
+                  <!-- <td> <a routerLink="/pages/Pointvente/gestionCategorieArticle/ModiferCategorieArticle/{{rdv.idReservation}}"><i style="color: green" class="far fa-edit"></i></a></td> -->
+                  
+                </ng-template>
+                <ng-template  pTemplate="emptymessage" let-rdv>
+                        <tr>
+                            <td [attr.colspan]="rdv.length" >
+                                <div style="display: flex;
+                                justify-content: center;">
+                                    La liste est vide
+                                </div>
+                                
+                            </td>
+                        </tr>
+                    </ng-template>
+              </p-table>
+
+                    
+              <p-fullCalendar *ngIf="!checked" (clickButton)="clickButton($event)"   [events]="events" [options]="options" ></p-fullCalendar>
+              <br>
+              <div class="row" *ngIf="!checked">
+                  &nbsp;&nbsp;
+                  <div class=" square" style="background-color: #8DCE4C;">
+                  </div>
+                  <div class="col-sm-11">
+                  : Les reservation qui ont été traités
+                </div>
+              </div>
+              <br>
+              <div class="row" *ngIf="!checked">
+                &nbsp;&nbsp;
+                <div class=" square" style="background-color: rgb(245, 140, 42);">
+                </div>
+                <div class="col-sm-11">
+                : Les reservation qui sont En attente
+              </div>
+            </div>
+              
+
+</nb-card-body>
+</nb-card>
+
+<p-dialog  header="Deactive Reservation" [(visible)]="diplay" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+
+Voulez-vous bien Annuler cette Reservation ?
+<p-footer>
+        <button type="button" nbButton  (click)="diplay=false" status="danger"  style="background: #ff3d71; border-color: white;float:left;" [shape]="'round'">Quitter</button>
+    <button type="button"   nbButton status="success" class="button-style" style=" border-color: white;" [shape]="'round'"(click)="diplay=false;updaterdv()">Supprimer</button>
+  </p-footer>
+</p-dialog>

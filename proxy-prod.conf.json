@@ -1,0 +1,74 @@
+{
+  "/bp-api-pos/v1": {
+  "target": "http://127.0.0.1:8080",
+  "secure": false,
+  "changeOrigin": true,
+  "logLevel": "debug",
+  "pathRewrite": {"^/bp-api-pos": ""}
+},
+"/bp-api-admin/v1": {
+  "target": "https://be.adcaisse.online/zull-serveur",
+  "secure": false,
+  "changeOrigin": true,
+  "logLevel": "debug",
+  "pathRewrite": {"^/bp-api-admin": "/bp-api-admin"}
+},
+"/bp-api-product/v1": {
+  "target": "https://be.adcaisse.online/zull-serveur",
+  "secure": false,
+  "changeOrigin": true,
+  "logLevel": "debug",
+  "pathRewrite": {"^/bp-api-product": "bp-api-product"}
+},
+"/bp-api-transaction/v1": {
+  "target": "https://be.adcaisse.online/zull-serveur",
+  "secure": false,
+  "changeOrigin": true,
+  "logLevel": "debug",
+  "pathRewrite": {"^/bp-api-transaction": "bp-api-transaction"}
+},
+"/bp-api-analytics/v1": {
+  "target": "https://be.adcaisse.online/zull-serveur",
+  "secure": false,
+  "changeOrigin": true,
+  "logLevel": "debug",
+  "pathRewrite": {"^/bp-api-analytics": "bp-api-analytics"}
+},
+"/bp-api-loyality/v1": {
+  "target": "https://be.adcaisse.online/zull-serveur",
+  "secure": false,
+  "changeOrigin": true,
+  "logLevel": "debug",
+  "pathRewrite": {"^/bp-api-loyality": "bp-api-loyality"}
+},
+"/bp-api-customer/v1": {
+  "target": "https://be.adcaisse.online/zull-serveur",
+  "secure": false,
+  "changeOrigin": true,
+  "logLevel": "debug",
+  "pathRewrite": {"^/bp-api-customer": "bp-api-customer"}
+},
+"/bp-api-reservation/v1": {
+  "target": "https://be.adcaisse.online/zull-serveur",
+  "secure": false,
+  "changeOrigin": true,
+  "logLevel": "debug",
+  "pathRewrite": {"^/bp-api-reservation": "bp-api-reservation"}
+},
+"/bp-api-notification/v1": {
+  "target": "https://be.adcaisse.online/zull-serveur",
+  "secure": false,
+  "changeOrigin": true,
+  "logLevel": "debug",
+  "pathRewrite": {"^/bp-api-notification": "bp-api-notification"}
+},
+"/local/v1": {
+  "target": "http://127.0.0.1:8080",
+  "secure": false,
+  "changeOrigin": true,
+  "logLevel": "debug",
+  "pathRewrite": {"^/local/v1": "/v1"}
+}
+
+
+}

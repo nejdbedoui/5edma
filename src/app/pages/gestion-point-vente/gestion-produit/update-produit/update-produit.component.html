@@ -1,0 +1,652 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card>
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Modifier Produit</span></div>
+    </div>
+  </nb-card-header>
+  <nb-card-body [nbSpinner]="loading" nbSpinnerStatus="primary">
+    <form [formGroup]="productForm" (ngSubmit)="createProductbeforeverif()">
+      <div class="row">
+        <div class="col-md-6">
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" style="display: flex; justify-content: flex-end;">
+            <label class=newbtn>
+              <img nbTooltip="cliquez ici pour ajouter une image" nbTooltipPlacement="bottom"
+                src="{{image!=null?image:'../../../../../assets/images/add_photo.png'}}"
+                style="max-width: 120px; min-width: 120px;">
+              <input id="pic" type="file" accept="image/*" [(ngModel)]="file" [ngModelOptions]="{standalone: true}"
+                (change)="onFileChange($event)" hidden>
+            </label>
+          </div>
+        </div>
+      </div>
+      <p-fieldset legend="Informations Générales" [toggleable]="true">
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label class="label">Désignation <span style="color: red">*</span></label><br>
+              <input type="text" maxlength="100" nbInput fullWidth placeholder="Nom de l'article"
+                formControlName="designation"
+                [ngClass]="{'has-error': isSubmitted && (formControls.designation.errors )}">
+              <label *ngIf=" isSubmitted && (formControls.designation.errors )" class="label-has-error"><i
+                  class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Désignation </label>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <br>
+              <nb-checkbox [(ngModel)]="gestionstock" [ngModelOptions]="{standalone: true}" status="success">Gérer le
+                stock pour ce produit</nb-checkbox>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <br>
+              <nb-checkbox formControlName="fRacourci" status="success">Créer un raccourci au niveau de la caisse
+              </nb-checkbox>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <label class="label">Couleur</label>
+            <input [(colorPicker)]="color" cpPosition="bottom" nbInput fullWidth [style.background]="color"
+              (cpSliderDragEnd)="onEventLog('cpSliderDragEnd', $event)" />
+
+          </div>
+          <div class="col-sm-12">
+            <label class="label">Déscription</label>
+            <textarea name="description" formControlName="description" id="description" nbInput fullWidth></textarea>
+          </div>
+          <!-- <div class="col-sm-3">
+          <div class="form-group">
+              <label  class="label">Prix de vente <span style="color: red">*</span></label><br>
+              <input type="number" maxlength="100" nbInput fullWidth  placeholder="Prix de vente" formControlName="prixTtc" [ngClass]="{'has-error': isSubmitted && (formControls.prixTtc.errors )}">
+              <label *ngIf=" isSubmitted && (formControls.prixTtc.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label>
+            </div>
+      </div>
+      <div class="col-sm-3">
+          <label  class="label">Type Produit<span style="color: red">*</span></label>
+          <nb-select fullWidth formControlName="typeProduit" [status]="isSubmitted && (formControls.typeProduit.errors ) ? 'danger': ''">
+            <nb-option *ngFor="let item of articleTypes" [value]="item.value">
+              {{ item.label }}
+            </nb-option>
+          </nb-select>
+          <label *ngIf=" isSubmitted && (formControls.typeProduit.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre Type Produit</label>
+
+      </div>
+      <div class="col-sm-3" *ngIf="formControls.typeProduit.value=='stockable'" >
+          <div class="form-group">
+            <label  class="label" style="color: #fff">.</label>
+            <button fullWidth nbButton type="button" (click)="diplaystock=true"   status="danger"  class="button-style" style="border-color: white; " [shape]="'round'" >Alimentation Stock</button>
+          </div>
+      </div> -->
+        </div>
+      </p-fieldset>
+      <br>
+      <p-fieldset legend="Paramétrage Fiche Produit " [toggleable]="true">
+        <div class="row">
+          <div class="col-sm-3">
+            <label class="label">Mesure <span style="color: red">*</span></label><br>
+            <nb-select fullWidth formControlName="mesure"
+              [status]="isSubmitted && gestionstock &&(formControls.mesure.value==null || formControls.mesure.value=='') ? 'danger': ''">
+              <nb-option *ngFor="let item of coutTypes" [value]="item.value">
+                {{ item.label }}
+              </nb-option>
+            </nb-select>
+            <label
+              *ngIf=" isSubmitted && gestionstock &&(formControls.mesure.value==null || formControls.mesure.value=='')"
+              class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez Choisir une mesure</label>
+
+          </div>
+          <div class="col-sm-3" *ngIf="!gestionstock">
+            <div class="form-group">
+              <label class="label">Ingrédient(s) </label><br>
+              <nb-select fullWidth multiple [(ngModel)]="selectedIngred" [ngModelOptions]="{standalone: true}">
+                <nb-option *ngFor="let item of ingredients" [value]="item">
+                  {{ item.designation }}
+                </nb-option>
+              </nb-select>
+            </div>
+          </div>
+
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label class="label">Famille </label><br>
+              <nb-select fullWidth formControlName="famille">
+                <nb-option *ngFor="let item of familles" [value]="item.designation">
+                  {{ item.designation }}
+                </nb-option>
+              </nb-select>
+            </div>
+          </div>
+          <!-- <div class="col-sm-3" *ngIf="gestionstock">
+      <div class="form-group">
+          <label  class="label">Stock <span style="color: red">*</span></label><br>
+          <input type="number"  onkeypress="return event.charCode >= 46" min="0" maxlength="100" nbInput fullWidth  placeholder="Stock" formControlName="stockReel"  [ngClass]="{'has-error': isSubmitted && gestionstock && (formControls.stockReel.value==null )}">
+          <label *ngIf=" isSubmitted && gestionstock &&(formControls.stockReel.value==null)" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Stock </label>
+        
+        </div>
+    </div> -->
+          <div class="col-sm-3" *ngIf="gestionstock">
+            <div class="form-group">
+              <label class="label">Seuil d'alerte stock <span style="color: red">*</span></label><br>
+              <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100" nbInput fullWidth
+                placeholder="Seuil d'alerte stock" formControlName="alertestock"
+                [ngClass]="{'has-error': isSubmitted && gestionstock && (formControls.alertestock.value==null )}">
+              <label *ngIf=" isSubmitted && gestionstock && (formControls.alertestock.value==null )"
+                class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Seuil
+                d'alerte stock</label>
+
+            </div>
+          </div>
+          <div class="col-sm-3" *ngIf="gestionstock">
+            <div class="form-group">
+              <label class="label">Seuil réapprovisionnement <span style="color: red">*</span></label><br>
+              <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100" nbInput fullWidth
+                placeholder="Seuil réapprovisionnement" formControlName="qte"
+                [ngClass]="{'has-error': isSubmitted && gestionstock && (formControls.qte.value==null )}">
+              <label *ngIf=" isSubmitted && gestionstock && (formControls.qte.value==null )" class="label-has-error"><i
+                  class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Seuil réapprovisionnement </label>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label class="label">Code à barre</label><br>
+              <input type="text" maxlength="100" nbInput fullWidth placeholder="Code à barre"
+                formControlName="codeBarre">
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <br>
+              <nb-checkbox formControlName="fcodebare" status="success">Créer un code à barre interne</nb-checkbox>
+            </div>
+          </div>
+          <div class="col-sm-4" *ngIf="formControls.fcodebare.value">
+            <div class="form-group">
+              <label class="label">Code à barre interne</label><br>
+              <input type="text" maxlength="100" nbInput fullWidth placeholder="Code à barre interne"
+                formControlName="codeBarreinterne">
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <br>
+              <nb-checkbox formControlName="fMobile" status="success">Afficher dans l'application mobile</nb-checkbox>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <br>
+              <nb-checkbox formControlName="fPrimaire" status="success">Produit primaire</nb-checkbox>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <br>
+              <nb-checkbox formControlName="fSuppliment" status="success">Supplément</nb-checkbox>
+            </div>
+          </div>
+          <!-- <div class="col-sm-3">
+        <div class="form-group">
+            <label  class="label">hors taxe</label><br>
+            <input type="number" maxlength="100" nbInput fullWidth  placeholder="Prix de vente" formControlName="prixHt" [ngClass]="{'has-error': isSubmitted && (formControls.prixHt.errors )}">
+            <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label>
+          </div>
+    </div>
+      <div class="col-sm-3">
+        <label  class="label">Couleur</label>
+        <input [(colorPicker)]="color" cpPosition="bottom" nbInput fullWidth [style.background]="color" (cpSliderDragEnd)="onEventLog('cpSliderDragEnd', $event)"/>
+
+      </div> -->
+        </div>
+      </p-fieldset>
+      <br>
+      <p-fieldset legend="Compositon du Produit" [toggleable]="true">
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label class="label">Composition</label><br>
+            <nb-select fullWidth multiple (selectedChange)="selectPrimaryProdut($event)" multiple
+              [(ngModel)]="selectedProduct" [ngModelOptions]="{standalone: true}">
+              <nb-option *ngFor="let item of primaryProducts" [value]="item">
+                {{ item.designation }}
+              </nb-option>
+            </nb-select>
+          </div>
+        </div>
+        <p-table *ngIf="selectedProducts?.length>0" [columns]="cols2" [value]="selectedProducts" [loading]="loading" [paginator]="true" [rows]="10"  >
+          <ng-template pTemplate="header">
+              <tr>
+                  <th>Qte</th>
+                  <th>Nom Produit</th>
+                  <th>Description</th>
+                  <th>Action</th>
+              </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-produit>
+              <tr>
+                  <td pEditableColumn>
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                          <input pInputText type="number" [(ngModel)]="produit.quantity" [ngModelOptions]="{standalone: true}">
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{produit.quantity}}
+                      </ng-template>
+                  </p-cellEditor>
+                  </td>
+                  <td>{{produit.produit.designation}}</td>
+                  <td pEditableColumn>
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                          <input pInputText type="text" [(ngModel)]="produit.designation" [ngModelOptions]="{standalone: true}">
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{produit.designation}}
+                      </ng-template>
+                  </p-cellEditor>
+                  </td>
+                  <td> 
+                    <i (click)="addqte(produit)"  style="background-color: #8DCE4C;padding-top: 10px;padding-bottom: 10px;" class=" btn fas fa-plus cursor buttonround"></i>&nbsp;&nbsp;
+                    <i (click)="rmoveqte(produit)"  style="background-color: #ff7f00;padding-top: 10px;padding-bottom: 10px;" class=" btn fas fa-minus cursor buttonround"></i>&nbsp;&nbsp;
+                    <i (click)="diplay=true;currentproduit=produit" style="background-color: #E82121;padding-top: 10px;padding-bottom: 10px;" class="btn far fa-trash-alt cursor  buttonround"></i>&nbsp;&nbsp;
+                    <!-- <button type="button" style="background-color: #7366B2"  class="btn buttonround" (click)="createfid(produit);addfid=false" > FID</button> -->
+                </td>
+              </tr>
+          </ng-template>
+          <ng-template  pTemplate="emptymessage" let-produit>
+              <tr>
+                  <td [attr.colspan]="produit.length" >
+                      <div style="display: flex;
+                      justify-content: center;">
+                          La liste est vide
+                      </div>
+                      
+                  </td>
+              </tr>
+          </ng-template>
+      </p-table>
+        </p-fieldset>
+      <br>
+      <p-fieldset legend="Tarification & Catégorie & Founrisseur " [toggleable]="true">
+
+      <h6>Liste des Catégories :</h6><br>
+      <div class="row">
+        <div class="col-md-4">
+          <p-tree [value]="filesTree4" [filter]="true" selectionMode="checkbox" [(selection)]="selectedFiles2"
+            emptyMessage="la liste est vide"></p-tree>
+        </div>
+        <div class="col-md-8">
+
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label class="label">Prix de vente <span style="color: red">*</span></label><br>
+                <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100" nbInput fullWidth
+                  placeholder="Prix de vente" formControlName="prixTtc"
+                  [ngClass]="{'has-error': isSubmitted && (formControls.prixTtc.errors )}">
+                <label *ngIf=" isSubmitted && (formControls.prixTtc.errors )" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label class="label">Prix d'achat</label><br>
+                <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100" nbInput fullWidth
+                  placeholder="Prix d'achat" formControlName="prixHt">
+                <!-- <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label> -->
+              </div>
+            </div>
+            <!-- <div class="col-sm-2">
+
+        </div> -->
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label class="label">TVA</label><br>
+                <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100" nbInput fullWidth
+                  placeholder="TVA" formControlName="TVA">
+                <!-- <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label> -->
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12" style="display: flex; justify-content: center">
+              <nb-radio-group [(ngModel)]="pv" [ngModelOptions]="{standalone: true}">
+                <nb-radio style="display: inline !important;" *ngFor="let item of pvs" [value]="item.value">
+                  {{ item.label }}
+                </nb-radio>
+              </nb-radio-group>
+
+            </div>
+          </div>
+          <br>
+          <div class="row" *ngIf="pv=='1'">
+            <div class="col-md-1"></div>
+              <div class="col-md-10">
+              <div class="shadow" style="text-align: center ">
+                <div *ngFor="let item of listpointvente">
+                  <div class="row">
+                    <div class="col-md-3">
+                    {{item.designation}} :&nbsp;&nbsp;
+                    </div>
+                    <div class="col-md-9">
+                    <nb-radio-group [(ngModel)]="item.fVisible" [ngModelOptions]="{standalone: true}"
+                      [name]="item.idPointVente">
+                      <nb-radio style="display: inline !important;" *ngFor="let item of visible" [value]="item.value">
+                        {{ item.label }}
+                        <span *ngIf="item.value==1">{{formControls.prixTtc.value}}</span>
+                      </nb-radio>
+                    </nb-radio-group>
+                    <input type="number" onkeypress="return event.charCode >= 46" min="0" required
+                      [ngClass]="{'has-error': isSubmitted && (item.prixpv==null || item.prixpv=='') && item.fVisible==0 }"
+                      *ngIf="item.fVisible==0" maxlength="100" nbInput [(ngModel)]="item.prixpv" style="max-width: 100px !important;height: 25px !important;"
+                      [ngModelOptions]="{standalone: true}">
+                    <label *ngIf=" isSubmitted && (item.prixpv==null || item.prixpv=='') && item.fVisible==0"
+                      class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix
+                      de vente du point de vente </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <br>
+                <nb-checkbox formControlName="fmdifprix" status="success">Autoriser le gérant à modifier le prix
+                </nb-checkbox>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <br>
+                <nb-checkbox [(ngModel)]="gestionfournisseur" [ngModelOptions]="{standalone: true}" status="success">
+                  informations fournisseurs</nb-checkbox>
+              </div>
+            </div>
+          </div>
+          <div class="row shadow" style="padding-top: 14px;padding-bottom: 14px;width:100%" *ngIf="gestionfournisseur">
+            <br>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">Nom du contact fournisseur</label><br>
+                <ng-autocomplete #ngAutoCompleteStatic [data]="listfourni" [initialValue]="null"
+                  [placeHolder]="placeholder" [searchKeyword]="keyword" notFoundText="La liste est vide"
+                  [itemTemplate]="itemTemplateStatic" (selected)='selectEvent($event)' (inputCleared)='cleardata()'
+                  (inputChanged)='onChangeSearch($event)'>
+                </ng-autocomplete>
+                <ng-template #itemTemplateStatic let-item>
+                  <a [innerHTML]="item.nom"></a>
+                </ng-template>
+                <!-- <input type="text" maxlength="100" nbInput fullWidth  placeholder="Nom du contact fournisseur" required [(ngModel)]="fournisseurDto.nom" [ngModelOptions]="{standalone: true}" [ngClass]="{'has-error': isSubmitfournisseur && isnamevalid}"  > -->
+                <label *ngIf=" isSubmitfournisseur && isnamevalid" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i> Veuillez remplir le Nom du contact fournisseur </label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">Société</label><br>
+                <input type="text" maxlength="100" nbInput fullWidth [disabled]="autocomp" placeholder="Société"
+                  [(ngModel)]="fournisseurDto.societe" [ngModelOptions]="{standalone: true}">
+                <!-- <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label> -->
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">Email</label><br>
+                <input type="text" required maxlength="100" nbInput fullWidth [disabled]="autocomp" placeholder="Email"
+                  [(ngModel)]="fournisseurDto.email" [ngModelOptions]="{standalone: true}"
+                  [ngClass]="{'has-error': isSubmitfournisseur && isemailvalid}">
+                <label *ngIf=" isSubmitfournisseur && isemailvalid" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i> Veuillez remplir un email correcte du fournisseur </label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">N°tel</label><br>
+                <input type="text" required maxlength="100" nbInput fullWidth [disabled]="autocomp" placeholder="N°tel"
+                  [(ngModel)]="fournisseurDto.tel" [ngModelOptions]="{standalone: true}"
+                  [ngClass]="{'has-error': isSubmitfournisseur && istelvalid}">
+                <label *ngIf=" isSubmitfournisseur && istelvalid" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i> Veuillez remplir le numéro du telephone du fournisseur
+                </label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <br>
+                <nb-checkbox [(ngModel)]="fournisseurDto.falerter" [ngModelOptions]="{standalone: true}"
+                  status="success">Alerter le fournisseur</nb-checkbox>
+                <!-- <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label> -->
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <br>
+                <nb-checkbox [(ngModel)]="fournisseurDto.fdefault" [ngModelOptions]="{standalone: true}"
+                  status="success">fournisseur par default </nb-checkbox>
+                <!-- <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label> -->
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <button type="button" (click)="addfourinsseur()" nbButton status="success" class="button-style"
+                style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Ajouter
+                fournisseur</button>
+            </div>
+            <br>
+
+            <div>
+
+            </div>
+          </div>
+          <br><br>
+          <p-table [columns]="cols2" [value]="listfournisseur" [loading]="loading" [paginator]="true" [rows]="10"
+            *ngIf="gestionfournisseur">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Nom</th>
+                <th>Société</th>
+                <th>Principal</th>
+                <th>Action</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-produit>
+              <tr>
+                <td>{{produit.nom}}</td>
+                <td>{{produit.societe}}</td>
+                <td>{{produit.fdefault?'oui':'non'}}</td>
+                <td>
+                  <i (click)="editsfourni(produit)"
+                    style="background-color: #8DCE4C;padding-top: 10px;padding-bottom: 10px;"
+                    class=" btn far fa-edit cursor buttonround"></i>&nbsp;&nbsp;
+                  <i (click)="deltefourni(produit)"
+                    style="background-color: #E82121;padding-top: 10px;padding-bottom: 10px;"
+                    class="btn far fa-trash-alt cursor  buttonround"></i>&nbsp;&nbsp;
+                  <!-- <button type="button" style="background-color: #7366B2"  class="btn buttonround" (click)="createfid(produit);addfid=false" > FID</button> -->
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-produit>
+              <tr>
+                <td [attr.colspan]="produit.length">
+                  <div style="display: flex;
+                            justify-content: center;">
+                    La liste est vide
+                  </div>
+
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+        <!-- <div>Selected Nodes: <span *ngFor="let file of selectedFiles2">{file.label} </span></div> -->
+        <!-- <div class="col-sm-9">
+    <div formArrayName="items">
+      <div *ngFor="let phone of itemForms.controls; let i=index" 
+            [formGroupName]="i">
+
+            <div class="col-sm-3">
+              <label  class="label">Catégorie<span style="color: red">*</span></label>
+              <nb-select fullWidth (selectedChange)="onChange($event,i)" formControlName="cata" [status]="isSubmitted && (formControls.typeProduit.errors ) ? 'danger': ''">
+                <nb-option *ngFor="let item of articalCategories" [value]="item.idCategorie">
+                  {{ item.designation }}
+                </nb-option>
+              </nb-select>
+            </div>
+            <div formArrayName="subitems">
+              <div *ngFor="let phone of itemForms.value[i].subitems.value; let j=index" 
+                    [formGroupName]="j">
+                    <div class="col-sm-3">
+                    <label  class="label">Catégorie {{j}}<span style="color: red">*</span></label>
+                      <nb-select fullWidth (selectedChange)="onChange($event,j)" formControlName="cata" [status]="isSubmitted && (formControls.typeProduit.errors ) ? 'danger': ''">
+                        <nb-option *ngFor="let item of articalCategories" [value]="item.idCategorie">
+                          {{ item.designation }}
+                        </nb-option>
+                      </nb-select>
+                    </div>
+        
+            
+            </div>
+            </div>
+
+    
+    </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="form-group">
+      <label  class="label" style="color: #fff">.</label>
+      <button fullWidth nbButton type="button" (click)="diplay=false;addItem()"   status="danger"  style="background: #ff3d71; border-color: white;float:left; border-color: white; " [shape]="'round'" >Oui</button>            
+  </div>
+  </div> -->
+      </div>
+
+    </p-fieldset>
+
+
+
+      <div class="row">
+        <div class="col-sm-6">
+          <button nbButton type="button" status="danger" (click)="annuler()"
+            style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; "
+            [shape]="'round'">Annuler</button>
+        </div>
+        <div class="col-sm-6">
+          <button type="submit" nbButton status="success" class="button-style"
+            style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Enregistrer</button>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+</nb-card>
+
+<p-dialog header="Sous catégories" [(visible)]="diplayaddfourni" [modal]="true" [responsive]="true"
+  [style]="{width: '700px', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  <div class="row">
+    <br>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label class="label">Nom du contact fournisseur</label><br>
+        <input type="text" maxlength="100" nbInput fullWidth [disabled]="!currentfourni.isnew"
+          placeholder="Nom du contact fournisseur" required [(ngModel)]="currentfourni.nom"
+          [ngModelOptions]="{standalone: true}" [ngClass]="{'has-error': isSubmitfournisseur2 && isnamevalid2}">
+        <label *ngIf=" isSubmitfournisseur2 && isnamevalid2" class="label-has-error"><i
+            class="fas fa-exclamation-circle"></i> Veuillez remplir le Nom du contact fournisseur </label>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label class="label">Société</label><br>
+        <input type="text" maxlength="100" nbInput fullWidth [disabled]="!currentfourni.isnew" placeholder="Société"
+          [(ngModel)]="currentfourni.societe" [ngModelOptions]="{standalone: true}">
+        <!-- <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label> -->
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label class="label">Email</label><br>
+        <input type="text" required maxlength="100" nbInput fullWidth [disabled]="!currentfourni.isnew"
+          placeholder="Email" [(ngModel)]="currentfourni.email" [ngModelOptions]="{standalone: true}"
+          [ngClass]="{'has-error':isSubmitfournisseur2 && isemailvalid2 }">
+        <label *ngIf=" isSubmitfournisseur2 && isemailvalid2" class="label-has-error"><i
+            class="fas fa-exclamation-circle"></i> Veuillez remplir un email correcte du fournisseur </label>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label class="label">N°tel</label><br>
+        <input type="text" required maxlength="100" nbInput fullWidth [disabled]="!currentfourni.isnew"
+          placeholder="N°tel" [(ngModel)]="currentfourni.tel" [ngModelOptions]="{standalone: true}"
+          [ngClass]="{'has-error': isSubmitfournisseur2 && istelvalid2}">
+        <label *ngIf=" isSubmitfournisseur2 && istelvalid2" class="label-has-error"><i
+            class="fas fa-exclamation-circle"></i> Veuillez remplir le numéro du telephone du fournisseur </label>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <br>
+        <nb-checkbox [(ngModel)]="currentfourni.falerter" [ngModelOptions]="{standalone: true}" status="success">Alerter
+          le fournisseur</nb-checkbox>
+        <!-- <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label> -->
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <br>
+        <nb-checkbox [(ngModel)]="currentfourni.fdefault" [ngModelOptions]="{standalone: true}" status="success">
+          fournisseur par default </nb-checkbox>
+        <!-- <label *ngIf=" isSubmitted && (formControls.prixHt.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir le champ Prix de vente </label> -->
+      </div>
+    </div>
+    <div class="col-sm-12">
+      <button type="button" (click)="addfourinsseur2()" nbButton status="success" class="button-style"
+        style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Modifier fournisseur</button>
+    </div>
+    <br>
+
+    <div>
+
+    </div>
+  </div>
+
+
+</p-dialog>
+
+<p-dialog header="Supprimer Fourinsseur" [(visible)]="diplaydeletefourni" [modal]="true" [responsive]="true"
+  [style]="{width: '700px', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  Voulez-vous bien supprimer ce Fourinsseur ?
+  <p-footer>
+    <button type="button" nbButton [status]="'danger'"
+      (click)="diplaydeletefourni=false;deletefourn(currentfourni)">Supprimer</button>
+    <button type="button" nbButton (click)="diplaydeletefourni=false" class="ui-button-secondary">Quitter</button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="validé création" [(visible)]="diplayproduit" [modal]="true" [responsive]="true"
+  [style]="{width: '700px', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  Attention le prix est 0 êtes-vous sure de vouloir continuer ?
+  <p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplayproduit=false;createProduct()">Accepter</button>
+    <button type="button" nbButton (click)="diplayproduit=false" class="ui-button-secondary">Quitter</button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Supprimer Composition" [(visible)]="diplay" [modal]="true" [responsive]="true"
+  [style]="{width: '700px', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  Voulez-vous bien supprimer cette composition ?
+  <p-footer>
+    <button type="button" nbButton [status]="'danger'"
+      (click)="diplay=false;deleteComposition()">Supprimer</button>
+    <button type="button" nbButton (click)="diplay=false" class="ui-button-secondary">Quitter</button>
+  </p-footer>
+</p-dialog>

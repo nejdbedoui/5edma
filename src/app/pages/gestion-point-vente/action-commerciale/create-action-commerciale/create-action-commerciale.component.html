@@ -1,0 +1,246 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Ajouter une Action Commerciale</span></div>
+        </div>
+    </nb-card-header>
+  <nb-card-body >
+  
+        <form [formGroup]="RegleForm" (ngSubmit)="verifproduit()">
+
+            <div  class="shadow" style="padding: 10px;">
+                <div class="row">
+                    <div class="col-sm-1">
+                        <br><br>
+                            - si j'achète 
+                    </div>
+                    <div class="col-sm-6">
+                            <div formArrayName="items">
+                        <div *ngFor="let phone of itemForms.controls; let i=index" [formGroupName]="i">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                  <div class="form-group">
+                                    <label  class="label">QTe<span style="color: red">*</span></label><br>
+                                  <input type="number" min="1" onkeypress="return event.charCode >= 46" maxlength="100" nbInput fullWidth  placeholder="Quantité d'achat"  [ngClass]="{'has-error': isSubmitted && (phone.controls.qte.errors )}" formControlName="qte" >
+                                  <label *ngIf=" isSubmitted && (phone.controls.qte.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir la Quantité supérieur à 0 </label>
+                                </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <label  class="label">sélectionner un produit<span style="color: red">*</span></label>
+                                    <nb-select fullWidth  formControlName="prodcuts" [status]="isSubmitted && (phone.controls.prodcuts.errors ) ? 'danger': ''"  >
+                                        <nb-option *ngFor="let item of prodcuts" [value]="item">
+                                        {{ item.designation }}
+                                        </nb-option>
+                                    </nb-select>
+                                    <label *ngIf=" isSubmitted && (phone.controls.prodcuts.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller choisir le(s) Produit(s) </label>
+                            </div>
+                                <div class="col-sm-2">
+                                    <br><br>
+                                    <i style="color: red;cursor: pointer;" (click)="deleteitem(i)" class="far fa-trash-alt"></i>
+                                </div>
+                              </div>
+                        </div>
+                        </div>
+                    </div>
+                        <div class="col-sm-5">
+                            <div class="row">
+                            <div class="col-sm-6">
+                                <button type="button" (click)="diplayproduit=true"  nbButton status="warning" style=" float:right;border-color: white;  margin-top: 15px;background: #FFCC00" [shape]="'round'">Recherche produit</button>
+        
+                            </div>
+                            <div class="col-sm-6">
+                                <button type="button" (click)="addItem()"   nbButton status="success" class="button-style" style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Ajouter</button>
+        
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <br><br>
+                <div class="row">
+                    <div class="col-sm-2" style="text-align: center;padding-top: 12px;">
+                        
+                        => j'aurai un(e) 
+                    </div>
+                    <div class="col-sm-5">
+                        <!-- <label  class="label">sélectionner un produit<span style="color: red">*</span></label> -->
+                        <nb-select fullWidth  formControlName="remise"  >
+                            <nb-option *ngFor="let item of remisetype" [value]="item" >
+                            {{ item.label }}
+                            </nb-option>
+                        </nb-select>
+                    </div>
+                    <div class="col-sm-5">
+                        <!-- <label  class="label">sélectionner un produit<span style="color: red">*</span></label> -->
+                        <!-- <nb-select fullWidth  formControlName="value" [status]="isSubmitted  ? 'danger': ''"  >
+                            <nb-option *ngFor="let item of prodcuts" [value]="item">
+                            {{ item.designation }}
+                            </nb-option>
+                        </nb-select> -->
+                        <div class="input-group">
+                            <input type="number" min="0" onkeypress="return event.charCode >= 46" nbInput fullWidth [ngClass]="{'has-error': isSubmitted && (formControls.inputvalue.errors )}" formControlName="inputvalue"  class="col-sm-8">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text" style="padding: 0px;">
+                                    <nb-select fullWidth formControlName="value"  >
+                                        <nb-option *ngFor="let item of coutTypes" [value]="item">
+                                        {{ item.label }}
+                                        </nb-option>
+                                    </nb-select>
+                                </div>
+                              </div>
+                          </div>
+                          <label *ngIf=" isSubmitted && (formControls.inputvalue.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir une valuer supérieur à 0 </label>
+
+                    </div>
+
+                </div>
+    </div>
+    <br><br>
+        <div class="row">
+                <div class="col-sm-4 ">
+                        <div class="form-group">
+                            <nb-checkbox [(ngModel)]="dateVisible" [ngModelOptions]="{standalone: true}"  status="success">valable</nb-checkbox> 
+                        </div>
+                </div>
+                <div class="col-sm-1" style="padding-top: 7px" *ngIf="dateVisible" >
+                        de:
+                </div>
+                <div class="col-sm-3 centreVerticalement"  *ngIf="dateVisible">
+                        <p-calendar  formControlName="datedebut" placeholder="date" class="disgness pos"  dateFormat="dd-mm-yy" [locale]="calendar"  ></p-calendar>
+                        <label *ngIf=" isSubmitted && verifdatedebut" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir la Date début </label>
+                    </div>
+                    <div class="col-sm-1" style="padding-top: 7px"  *ngIf="dateVisible">
+                            à:
+                        </div>
+                    <div class="col-sm-3 centreVerticalement" *ngIf="dateVisible">
+                        <p-calendar  formControlName="datefin"  placeholder="date" class="disgness pos"  dateFormat="dd-mm-yy" [locale]="calendar"  ></p-calendar>
+                        <label *ngIf=" isSubmitted && verifdatefin" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir une date fin supérieur au Date début</label>
+
+                    </div>
+                    
+        </div>
+        <div class="row">
+                <div class="col-sm-6 ">
+                    <div class="form-group">
+                        <nb-checkbox [(ngModel)]="tableVisible" [ngModelOptions]="{standalone: true}" status="success">Sélectionner des horaires spécifiques</nb-checkbox> 
+                    </div>
+                </div>
+        </div>    
+        <div class="row" *ngIf="tableVisible" >
+                <p-table [value]="listday" >
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th></th>
+                                <th>Activer</th>                
+                                <th>Heure Debut</th>
+                                <th>Heure Fin</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData>
+                            <tr>
+                                <td>{{rowData.day}}</td>
+                                <td >
+                                        <nb-checkbox [(ngModel)]="rowData.Activer" [ngModelOptions]="{standalone: true}" status="success" pInputText></nb-checkbox>
+                                    </td>
+                                <td pEditableColumn >
+                                        <p-cellEditor *ngIf="rowData.Activer">
+                                                <ng-template pTemplate="input" >
+                                                        <p-calendar [(ngModel)]="rowData.startday" [ngModelOptions]="{standalone: true}" [timeOnly]="true" pInputText></p-calendar>
+                                                </ng-template>
+                                                <ng-template pTemplate="output">
+                                                        {{rowData.startday |date :'HH:mm'}}
+                                                    </ng-template>
+                                            </p-cellEditor>
+                                    </td>
+                                    <td pEditableColumn>
+                                            <p-cellEditor *ngIf="rowData.Activer">
+                                                    <ng-template pTemplate="input">
+                                                            <p-calendar [(ngModel)]="rowData.endday" [ngModelOptions]="{standalone: true}" [timeOnly]="true" pInputText></p-calendar>
+                                                    </ng-template>
+                                                    <ng-template pTemplate="output">
+                                                            {{rowData.endday |date :'HH:mm'}}
+                                                        </ng-template>
+                                                </p-cellEditor>
+                                        </td>
+                                
+                            </tr>
+                        </ng-template>
+                    </p-table>
+        </div>    
+            <br>
+                <div class="row ">
+                    <div class="col-md-12" style="display: flex; justify-content: center">
+                            <nb-radio-group [(ngModel)]="pv" [ngModelOptions]="{standalone: true}">
+                                    <nb-radio  style="display: inline !important;"
+                                      *ngFor="let item of pvs"
+                                      [value]="item.value">
+                                      {{ item.label }}
+                                    </nb-radio>
+                            </nb-radio-group>
+                            
+                    </div>
+                </div>
+                <br>
+                    <div class="row" *ngIf="pv=='1'"  >
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6" >  
+                            <div class="shadow" style="text-align: center ">
+                                <div  *ngFor="let item of listpointvente" >
+                                    <div>
+                                        {{item.designation}}
+                                        <nb-radio-group [(ngModel)]="item.fVisible" [ngModelOptions]="{standalone: true}" [name]="item.idPointVente" >
+                                            <nb-radio  style="display: inline !important;"
+                                            *ngFor="let item of visible"
+                                            [value]="item.value">
+                                            {{ item.label }}
+                                            </nb-radio>
+                                        </nb-radio-group>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                  
+                <br>
+                
+                
+
+                <div class="row" >
+                        <div class="col-sm-6">
+                    <a routerLink='/pages/Pointvente/actionCommerciale'    nbButton type="button"  status="danger"  style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; " [shape]="'round'" >Annuler</a>
+                    </div>
+                    <div class="col-sm-6">
+                    <button type="submit"  nbButton status="success" class="button-style" style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Enregistrer</button>
+                    </div>
+                    </div>
+    </form> 
+
+    
+
+
+</nb-card-body>
+</nb-card>
+
+<p-dialog  header="Supprimer Produit" [(visible)]="diplay" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+Voulez-vous bien supprimer ce produit ?
+<p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplay=false;delteproduit()">Supprimer</button>
+    <button type="button" nbButton  (click)="diplay=false"  class="ui-button-secondary">Quitter</button>
+  </p-footer>
+        
+</p-dialog>
+
+<p-dialog  header="Rechercher Produit" [(visible)]="diplayproduit" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+    <ngx-produitfilter (changePage)="onChangeproduit($event)" ></ngx-produitfilter>
+<!-- <p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplayproduit=false;delteproduit()">Supprimer</button>
+    <button type="button" nbButton  (click)="diplayproduit=false"  class="ui-button-secondary">Quitter</button>
+  </p-footer> -->
+        
+</p-dialog>

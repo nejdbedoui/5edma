@@ -1,0 +1,147 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card>
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Facturation</span></div>
+            <div class="col-md-6">
+                <span style="float: right">{{dt.totalRecords}} Facture(s)&nbsp;&nbsp;</span>
+
+            </div>
+        </div>
+    </nb-card-header>
+    <nb-card-body>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" *ngIf="!affichefilter" style="float: right;background: #79008e !important;"
+                    nbButton [shape]="'round'" (click)="affichefilter=true"> Afficher plus de critére de
+                    recherche</button>&nbsp;&nbsp;
+                <button type="button" *ngIf="affichefilter" style="float: right" nbButton status="warning"
+                    [shape]="'round'" (click)="affichefilter=false"> Cacher les critères de
+                    recherche</button>&nbsp;&nbsp;
+            </div>
+        </div>
+        <br>
+        <fieldset *ngIf="affichefilter">
+            <legend>Critéres de recherche</legend>
+
+            <div class="row" style="padding-bottom: 10px;">
+                <div class="col-sm-4">
+                    <label class="label">N°Fature:</label>
+                    <input type="text" maxlength="100" nbInput fullWidth [(ngModel)]="numFacture">
+                </div>
+                <div class="col-sm-4">
+                    <label class="label">Point de Vente</label>
+                    <nb-select fullWidth  [(ngModel)]="pvt">
+                        <nb-option *ngFor="let item of pvts" [value]="item">
+                            {{ item.designation }}
+                        </nb-option>
+                    </nb-select>
+                </div>
+
+                <div class="col-sm-2 centreVerticalement">
+                    <label class="label"> Date début:</label>
+                    <p-calendar fullWidth placeholder="date" [(ngModel)]="startDate" class="disgness pos" dateFormat="dd-mm-yy"
+                        [locale]="calendar"></p-calendar>
+                </div>
+
+                <div class="col-sm-2 centreVerticalement">
+                    <label class="label"> Date fin:</label>
+                    <p-calendar fullWidth placeholder="date" [(ngModel)]="endDate" class="disgness pos" dateFormat="dd-mm-yy"
+                        [locale]="calendar"></p-calendar>
+                </div>
+
+                <div class="col-sm-2 centreVerticalement">
+                    <label class="label"> status</label>
+                    <nb-select fullWidth [(ngModel)]="state">
+                        <nb-option *ngFor="let item of status" [value]="item.value">
+                            {{ item.label }}
+                        </nb-option>
+                    </nb-select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <button nbButton type="button" *ngIf="fannule" status="danger" (click)="annuler();resetFilter()"
+                        style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; "
+                        [shape]="'round'">Annuler</button>
+                </div>
+                <div class="col-sm-6">
+                    <button type="submit" nbButton status="success" (click)="search()" class="button-style"
+                        style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Chercher</button>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="row">
+            <div class="col-md-6">
+            </div>
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-4">
+                <div class="" style="text-align: center; margin-top: 8px;">
+                    <button type="button" (click)="addFacture()" style="float: right;" class="icon-btn add-btn">
+                        <div class="add-icon"></div>
+                        <div class="btn-txt">Ajouter une Facture</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <br>
+        <p-table #dt [value]="listFacture" [loading]="loading" [paginator]="true" [rowsPerPageOptions]="[20,30,50]"
+            [rows]="20" [responsive]="true" [globalFilterFields]="['numFacture','montantTtc']">
+            <ng-template pTemplate="caption">
+                <div style="text-align: right">
+                    <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText size="50" placeholder="Chercher"
+                        (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:40%; min-height: 34px;">
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+
+                <tr>
+                    <th>N°Facture</th>
+                    <th>Date Géneration</th>
+                    <th>Point de vente</th>
+                    <th>Montant (DT)</th>
+                    <th>Statut</th>
+                    <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-produit>
+                <tr>
+                    <td class="col-sm">{{produit.numFacture}}</td>
+                    <td class="col-sm">{{produit.dateGeneration  | date:' dd-MM-yyyy'}}</td>
+                    <td class="col-sm">{{findPvt(produit.idPointvente)?.designation}}</td>
+                    <td class="col-sm">{{produit.montantTtc}}</td>
+                    <td class="col-sm">{{getStatusLabel(produit.statut)}}</td>
+                    <td class="col-sm">
+                        <i class="fas fa-download cursor buttonround editbutton" (click)="downloadFacture(produit)"></i>&nbsp;&nbsp;
+                        <i class="far fa-trash-alt cursor buttonround deletebutton" (click)="deleteFacture(produit)"></i>&nbsp;&nbsp;
+                        <i *ngIf="produit.statut == 0" class="fas fa-check cursor buttonround editbutton" (click)="patchFacture(produit)"></i>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-produit>
+                <tr>
+                    <td [attr.colspan]="produit?.length">
+                        <div style="display: flex;
+                                justify-content: center;">
+                            La liste est vide
+                        </div>
+
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+    </nb-card-body>
+</nb-card>
+
+<p-dialog  header="Supprimer Facture" [(visible)]="diplay" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+Voulez-vous bien supprimer cette Facture ?
+<p-footer>
+    <button type="button" nbButton status="danger" (click)="confirmeDeleteFacture()">Supprimer</button>
+    <button type="button" nbButton  (click)="diplay=false"  class="ui-button-secondary">Quitter</button>
+  </p-footer>
+</p-dialog>

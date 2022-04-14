@@ -1,0 +1,169 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Création Facture</span></div>
+        </div>
+    </nb-card-header>
+    <nb-card-body>
+        <form [formGroup]="factureForm" (ngSubmit)="addFacture()">
+
+            <div class="row">
+                <div class="col-sm-4 centreVerticalement">
+                    <label class="label">Date géneration : <span style="color: red;">*</span></label>
+                    <p-calendar placeholder="date" class="disgness pos" formControlName="date" dateFormat="dd-mm-yy" [locale]="calendar">
+                    </p-calendar>
+                    <label *ngIf=" isSubmitted && (formControls.date.errors )" class="label-has-error"><i
+                        class="fas fa-exclamation-circle"></i>Veuiller choisir une date</label>
+                </div>
+
+                <div class="col-sm-4">
+                    <label class="label">Point de Vente <span style="color: red;">*</span></label>
+                    <nb-select fullWidth (selectedChange)="selectPointVente($event)" formControlName="pvt">
+                        <nb-option *ngFor="let item of pvts" [value]="item.idPointVente">
+                            {{ item.designation }}
+                        </nb-option>
+                    </nb-select>
+                    <label *ngIf=" isSubmitted && (formControls.pvt.errors )" class="label-has-error"><i
+                        class="fas fa-exclamation-circle"></i>Veuiller choisir un Point de Vente</label>
+                </div>
+
+                <div class="col-sm-4 centreVerticalement">
+                    <label class="label"> Status <span style="color: red;">*</span></label>
+                    <nb-select fullWidth formControlName="status">
+                        <nb-option *ngFor="let item of status" [value]="item.value">
+                            {{ item.label }}
+                        </nb-option>
+                    </nb-select>
+                    <label *ngIf=" isSubmitted && (formControls.status.errors )" class="label-has-error"><i
+                        class="fas fa-exclamation-circle"></i>Veuiller choisir une statut</label>
+                </div>
+            </div>
+
+            <br>
+            <div *ngIf="bonCommandes.length > 0">
+                Veuillez Séléctionnez les bons de livraison associés à cette facture <span style="color: red;">*</span>
+                :
+                <br><br>
+                <p-table #dt [value]="bonCommandes" [rows]="20" [paginator]="true" [responsive]="true" autoLayout="true"
+                    [(selection)]="selectedBonCommande">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 3rem">
+                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                            </th>
+                            <th pSortableColumn="referance">
+                                Ref BL
+                                <p-sortIcon field="referance"></p-sortIcon>
+                            </th>
+                            <th>
+                                Date Géneration
+                            </th>
+                            <th>
+                                Montant (DT)
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-bl>
+                        <tr>
+                            <td>
+                                <p-tableCheckbox [value]="bl"></p-tableCheckbox>
+                            </td>
+                            <td>
+                                {{bl.referance}}
+                            </td>
+                            <td>
+                                {{bl.generatedDate| date}}
+                            </td>
+                            <td>
+                                {{bl.total | number}}
+                            </td>
+                        </tr>
+
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-bl>
+                        <tr>
+                            <td [attr.colspan]="bl.length">
+                                <div style="display: flex;
+                                justify-content: center;">
+                                    La liste est vide
+                                </div>
+
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                <label *ngIf=" isSubmitted && selectedBonCommande.length == 0" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i>Veuiller choisir les Bon Commande </label>
+            </div>
+
+
+            <div class="row">
+                <div class="col-6">
+                    <button (click)="returnToList()" nbButton type="reset" status="danger"
+                        style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'">Annuler</button>
+                </div>
+                <div class="col-6">
+                    <button type="submit" nbButton status="success" class="button-style"
+                        style="float: right;margin-top: 15px;" [shape]="'round'">Enregistrer</button>
+
+                </div>
+            </div>
+        </form>
+    </nb-card-body>
+</nb-card>
+
+
+<p-dialog header="Confirmation Facture" [(visible)]="display" [modal]="true" [responsive]="true"
+    [style]="{ width: '800px', minWidth: '200px' }" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+
+    <div class="row">
+        <div class="col-6">
+            <div>
+                Bon livraison:
+                <ul>
+                    <li *ngFor="let item of selectedBonCommande">{{item.referance}}</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="row">
+                <div class="col-12">
+                    <div><strong>HT:</strong>  {{currentFacture.montantHt}} DT</div>
+                    <div><strong>TVA:</strong>  {{currentFacture.montantTtc - currentFacture.montantHt}}</div>
+                    <div><strong>Total TTC:</strong>  {{currentFacture.montantTtc}} DT</div>
+                </div>
+                
+                <div class="col-12" style="padding-top: 15px;">
+                    <strong>Date géneration:</strong> {{currentFacture.dateGeneration | date:' dd-MM-yyyy'}}
+                </div>
+                <br>
+                <div class="col-12" style="padding-top: 15px;">
+                    <strong>status:</strong> {{getStatusLabel(currentFacture.statut)}}
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <button nbButton type="button" (click)="display = false" status="danger" style="
+          background: #ff3d71;
+          border-color: white;
+          float: left;
+          margin-top: 15px;
+        " [shape]="'round'">
+                Non
+            </button>
+        </div>
+        <div class="col-sm-6">
+            <button type="button" nbButton status="success" class="button-style"
+                style="float: right; border-color: white; margin-top: 15px" [shape]="'round'"
+                (click)="valider()">
+                Oui 
+            </button>
+        </div>
+    </div>
+</p-dialog>

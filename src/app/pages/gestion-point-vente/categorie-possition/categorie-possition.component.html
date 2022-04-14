@@ -1,0 +1,70 @@
+<!-- <ngx-bread-crumb></ngx-bread-crumb> -->
+<!-- <nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Ordre Categorie</span></div>
+        </div>
+    </nb-card-header> -->
+  <div [nbSpinner]="loading" nbSpinnerStatus="primary" >
+    <div class="row">
+      <div class="col-md-12">
+        <h4>Veuillez classer les catégories à gauche  selon votre ordre de préférence puis cliquez sur vue de caisse pour visualiser l'affichage côté caisse.</h4>
+      </div>
+    </div>
+    <br>
+    <div cdkDropListGroup class="row">
+        <div class="example-container col-md-5" >
+          <!-- <h2>Liste Categories disponible :</h2> -->
+      
+          <div
+            cdkDropList
+            [cdkDropListData]="categorieddtosnotselected"
+            class="example-list"
+            (cdkDropListDropped)="drop($event)">
+            <div class="example-box" *ngFor="let item of categorieddtosnotselected" [ngStyle]="{'background-color': item.couleur}" cdkDrag>{{item.designation}}</div>
+          </div>
+        </div>
+      
+        <div class="example-container  col-md-5" >
+          <!-- <h2>Liste Categories de la caisse :</h2> -->
+      
+          <div style="height: 100%;"
+            cdkDropList
+            [cdkDropListData]="done"
+            class="example-list row"
+            (cdkDropListDropped)="drop($event)">
+            <div class="  example-box" *ngFor="let item of done" [ngStyle]="{'background-color': item.couleur}" cdkDrag>{{item.designation}}</div>
+          </div>
+        </div>
+        <div class="col-md-1">
+            <br><br>
+            <i (click)="diplay=true"  nbTooltip="Liste Categoires" nbTooltipPlacement="bottom"  style="background-color: mediumorchid;padding-top: 10px;padding-bottom: 10px;" class="btn cursor  buttonround">vue caisse </i>&nbsp;&nbsp;
+
+
+        </div>
+      </div>
+      <br>
+      <div class="row" >
+        <div class="col-sm-6">
+    <a routerLink='/pages/Pointvente/gestionCategorieArticle'    nbButton type="button"  status="danger"  style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; " [shape]="'round'" >Annuler</a>
+    </div>
+    <div class="col-sm-6">
+    <button type="button" (click)="validerlist()"   nbButton status="success" class="button-style" style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Enregistrer</button>
+    </div>
+    </div>
+</div>
+<!-- </nb-card> -->
+
+<p-dialog  header="Listes Categoires" [(visible)]="diplay" [modal]="true" [responsive]="true" [style]="{width: '800px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+<div class="row">
+    <div *ngFor="let item of done" style=" text-align: center;padding: 0px 3px 10px"   class="col-md-3">
+        <div [ngStyle]="{'background-color':item.couleur!=null? item.couleur:'#f0d2f2'}" class="  shadow" style="text-align: center; padding: 20px 10px;    font-size: 17px;
+        font-weight: bold;" >{{item.designation}}</div>
+    </div>
+</div>
+<!-- <p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplay=false;">Supprimer</button>
+    <button type="button" nbButton  (click)="diplay=false"  class="ui-button-secondary">Quitter</button>
+  </p-footer>
+</p-dialog> -->

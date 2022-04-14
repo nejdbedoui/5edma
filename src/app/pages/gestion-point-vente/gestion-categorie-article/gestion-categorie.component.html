@@ -1,0 +1,141 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card >
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Gestion Catégorie Article</span></div>
+            <div class="col-md-6"><span style="float: right">{{dta.totalRecords}} Catégorie(s)&nbsp;&nbsp;</span></div>
+        </div>
+    </nb-card-header>
+  <nb-card-body >
+
+    <nb-tabset>
+      <nb-tab tabTitle="Liste Categories">
+        <div class="row" style="margin-top:2%;">
+          <div class="col-md-3">
+        </div>
+        <div class="col-md-5">
+  
+          </div>
+  
+        <div class="col-md-4" *ngIf="idpointVente==null">
+          <div class="" style="text-align: center; margin-top: 8px;">
+            <button (click)="redirect()" style="float: right;"  class="icon-btn add-btn">  
+              <div class="add-icon"></div>
+              <div class="btn-txt">Ajouter une Nouvelle Categorie Article</div>
+            </button>
+          </div>        
+        </div>
+        </div>
+        <br *ngIf="idpointVente==null">
+        <!-- <div class="row">
+            <div class="col-md-12">
+                    <span style="float: right">{{dt.totalRecords}} Catégorie(s)&nbsp;&nbsp;</span>
+            </div>
+        </div> -->
+        <br>
+        <div class="row">
+          <div class="col-md">
+            <div class="upload-btn-wrapper">
+              <button class="btn cursor" style="margin-top: 15px; background-color: orange;"  (click)="exportExcel()" >Exporter Catégorie Article</button>
+            </div>
+          </div>
+        </div>
+  <p-table  [columns]="cols" [loading]="loading"  [rowsPerPageOptions]="[20,30,50]"  #dta [value]="categoriedtos" [rows]="20" [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['designation','dateCreation']">
+        <ng-template pTemplate="caption">
+          
+            <div style="text-align: right">        
+                <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+                <input type="text" pInputText size="50" placeholder="Chercher" (input)="dta.filterGlobal($event.target.value, 'contains')" style="width:40%; min-height: 34px;">
+            </div>
+        </ng-template>  
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Désignation</th>
+              <th>Contient des sous catégories</th>
+              <th>Date Création</th>
+              <th  >Action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-categorie>
+            <tr >
+              <td>{{categorie.designation}} <button style="float: right;" class="btn" [ngStyle]="{'background-color': categorie.couleur!=null ? categorie.couleur : null}"></button></td>
+              <td *ngIf="categorie.fils.length>0" >
+                <span *ngFor="let item of categorie.fils;let i=index" >
+                 <span *ngIf="item.fActif==1" > {{item.designation}}  <span *ngIf="categorie.fils.length!=(i+1)" >/</span></span>
+              </span>
+              </td>
+              <td *ngIf="categorie.fils.length==0">
+                ------
+              </td>
+              <td>{{categorie.dateCreation |date:'dd-MM-yyyy'}}</td>
+            <td  > <i  (click)="getlistproduit(categorie.idCategorie)"  nbTooltip="Liste Produit" nbTooltipPlacement="bottom"  class="far fa-eye cursor buttonround affiche1button"></i>&nbsp;&nbsp;
+              <a *ngIf="idpointVente==null"  nbTooltip="Modifier categorie" nbTooltipPlacement="bottom" routerLink="/pages/Pointvente/gestionCategorieArticle/ModiferCategorieArticle/{{categorie.idCategorie}}"><i  class="far fa-edit cursor buttonround editbutton"></i></a>
+            </td>
+          </tr>
+          </ng-template>
+          <ng-template  pTemplate="emptymessage" let-categorie>
+            <tr>
+                <td [attr.colspan]="categorie.length" >
+                    <div style="display: flex;
+                    justify-content: center;">
+                        La liste est vide
+                    </div>
+                    
+                </td>
+            </tr>
+        </ng-template>
+        </p-table>
+      </nb-tab>
+      <nb-tab tabTitle="Ordonner  Categorie" *ngIf="idpointVente==null">
+        <ngx-categorie-possition></ngx-categorie-possition>
+      </nb-tab>
+     </nb-tabset>
+
+</nb-card-body>
+</nb-card>
+
+<p-dialog  header="Liste Produits" [(visible)]="diplay" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+<div class="row">
+  <div class="col-md-6"><span style="font-size: 20px;"></span></div>
+  <div class="col-md-6"><span style="float: right">{{np.totalRecords}} Produit(s)&nbsp;&nbsp;</span></div>
+</div>
+<br>
+<p-table #np [columns]="cols" [loading]="loading2"  [value]="products" [rows]="10" [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['produit.designation','produit.dateCreation','produit.code','produit.typeProduit']">
+  <ng-template pTemplate="caption">
+      <div style="text-align: right">        
+          <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+          <input type="text" pInputText size="50" placeholder="Chercher" (input)="np.filterGlobal($event.target.value, 'contains')" style="width:40%; min-height: 34px;">
+      </div>
+  </ng-template>  
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Désignation</th>
+        <th>Code</th>
+        <th>Type</th>
+        <!-- <th>Date Création</th> -->
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product>
+      <tr >
+        <td>{{product!=null?product.produit.designation:''}}</td>
+        <td>{{product!=null?product.produit.code:''}}</td>
+        <td>{{product!=null?product.produit.typeProduit:''}}</td>
+        <!-- <td>{{product!=null?product.produit.dateCreation :'' | date:'yyy-MM-dd' }}</td> -->
+    </tr>
+    </ng-template>
+    <ng-template  pTemplate="emptymessage" let-product>
+      <tr>
+          <td [attr.colspan]="product.length" >
+              <div style="display: flex;
+              justify-content: center;">
+                  La liste est vide
+              </div>
+              
+          </td>
+      </tr>
+  </ng-template>
+  </p-table>
+    
+        
+</p-dialog>

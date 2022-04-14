@@ -1,0 +1,55 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card  [nbSpinner]="loading" nbSpinnerStatus="primary" >
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Créer une Bon Commande </span></div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+        <form [formGroup]="BonCommandePvForm" (ngSubmit)="createBonCommandePv()">
+            <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label  class="label">Type Bon Commande</label>
+                    <nb-select fullWidth formControlName="type" placeholder="Type" >
+                      <nb-option value="Centrale">
+                        Centrale
+                      </nb-option>
+                      <nb-option value="Fournisseur">
+                        Fournisseur
+                      </nb-option>
+                    </nb-select>
+                  </div>
+                </div>
+                <div class="col-sm-6" *ngIf="BonCommandePvForm.value.type=='Fournisseur'">
+                    <div class="form-group">
+                      <label  class="label">Nom du Fournisseur</label>
+                      <input type="text" maxlength="100" formControlName="nomFournisseur" nbInput fullWidth  placeholder="Fournisseur">
+                    </div>
+                  </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                      <label  class="label">Categorie Produits</label>
+                      <nb-select fullWidth formControlName="idCategorie" placeholder="Categorie" >
+                        <nb-option *ngFor="let cat of Categories" [value]="cat.idCategorie">
+                          {{ cat.designation }}
+                        </nb-option>
+                      </nb-select>
+                    </div>
+                  </div>
+              </div>
+              <div class="row" >
+                <div class="col-6" >
+                    <button (click)="returntolist()"  nbButton type="reset"  status="danger" style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'" >Annuler</button>
+      
+                </div>
+                <div class="col-6" >
+                    <button  type="submit"   nbButton status="success" class="button-style"  style="float: right;" [shape]="'round'">Enregistrer</button>
+      
+                </div>
+      </div>
+              </form>               
+  </nb-card-body>
+</nb-card>

@@ -1,0 +1,957 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card >
+  <nb-card-body  class="stepper"  [nbSpinner]="loading" nbSpinnerStatus="primary">
+
+    <nb-stepper orientation="horizontal" #stepper disableStepNavigation>
+      <nb-step [label]="labelOne">
+        <ng-template #labelOne>Details Partenaire</ng-template>
+        <h4 style="text-align: center;    padding-bottom: 3%;
+        padding-top: 1%;">Details Partenaire</h4>
+        <form [formGroup]="firststepForm" (ngSubmit)="createPartenaire(stepper)">
+          
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label  class="label">Raison social <span style="color: red">*</span></label><br>
+                <input type="text" maxlength="100" formControlName="rcs" nbInput fullWidth  placeholder="Raison social" [ngClass]="{'has-error': isfirststepFormSubmitted && (formControls.rcs.errors )}">
+                <label *ngIf=" isfirststepFormSubmitted && (formControls.rcs.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller  remplir votre Raison social </label>
+
+              </div>
+            </div>
+            <div class="col-sm-4 ">
+                <div class="form-group">
+                  <label  class="label">Abbreviation<span style="color: red">*</span></label>
+                  <input type="text" maxlength="100" formControlName="Abbreviation" nbInput fullWidth  placeholder="Abbreviation" [ngClass]="{'has-error': isfirststepFormSubmitted && (formControls.Abbreviation.errors )}">
+                  <label *ngIf=" isfirststepFormSubmitted && (formControls.Abbreviation.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre Abbreviation</label>
+                </div>
+              </div>
+            <div class="col-sm-4 ">
+                <div class="form-group">
+                  <label  class="label">Matricule Fiscale<span style="color: red">*</span></label>
+                  <input type="text" maxlength="100" formControlName="Matricule" nbInput fullWidth  placeholder="Matricule" [ngClass]="{'has-error': isfirststepFormSubmitted && (formControls.Matricule.errors )}">
+                  <label *ngIf=" isfirststepFormSubmitted && (formControls.Matricule.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre Matricule</label>
+                </div>
+              </div>
+          </div>
+          
+          <div class="row">
+              <div class="col-sm-4">
+                <div class="form-group">
+                  <label  class="label">Secteur <span style="color: red">*</span></label><br>
+                  <nb-select fullWidth placeholder="Secteur" formControlName="Secteur" [status]="isfirststepFormSubmitted && (formControls.Secteur.errors ) ? 'danger': ''">
+                  <nb-option *ngFor="let item of sectors" [value]="item">
+                    {{item.designation}}
+                  </nb-option>
+                </nb-select>
+                <label *ngIf=" isfirststepFormSubmitted && (formControls.Secteur.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller  Choisir votre Secteur</label>
+
+                </div>
+              </div>
+              <div class="col-sm-4 ">
+                  <div class="form-group">
+                    <label  class="label">Adresse<span style="color: red">*</span></label>
+                    <input type="text" maxlength="100" formControlName="Adresse" nbInput fullWidth  placeholder="Adresse" [ngClass]="{'has-error': isfirststepFormSubmitted && (formControls.Adresse.errors )}">
+                    <label *ngIf=" isfirststepFormSubmitted && (formControls.Adresse.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre Adresse</label>
+                  </div>
+                </div>
+              <div class="col-sm-4 ">
+                  <div class="form-group">
+                    <label  class="label">Tel<span style="color: red">*</span></label>
+                    <input type="text" maxlength="100" formControlName="Tel" nbInput fullWidth  placeholder="Tel" [ngClass]="{'has-error': isfirststepFormSubmitted && (formControls.Tel.errors )}">
+                    <label *ngIf=" isfirststepFormSubmitted && (formControls.Tel.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre numéro de Télephone</label>
+                  </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                  <div class="form-group">
+                    <label  class="label">Site Web </label><br>
+                    <input type="text" maxlength="100" formControlName="Site" nbInput fullWidth  placeholder="Site Web" [ngClass]="{'has-error': isfirststepFormSubmitted && (formControls.Site.errors )}">
+                    <label *ngIf=" isfirststepFormSubmitted && (formControls.Site.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller  remplir votre Site</label>
+    
+                  </div>
+                </div>
+                <div class="col-sm-8 ">
+                    <div class="form-group">
+                      <label  class="label">Logo</label>
+                      <div class="row">
+                          <div class="col-sm-6">
+                              <div class="custom-file" id="customFile" lang="es">
+                                  <input  maxlength="255" #customfiles type="file" accept="image/*" [(ngModel)]="file"  [ngModelOptions]="{standalone: true}"  nbInput fullWidth (change)="onFileChange($event)" class="custom-file-input" id="exampleInputFile" aria-describedby="fileHelp" required="true">
+                                  <label  class="label1 custom-file-label" for="exampleInputFile" >
+                                      {{files!=null?files.name:''}}
+                                  </label>
+                                </div>
+                          </div>
+                          <div class="col-sm-6" *ngIf="image!=null" style="text-align: center;">
+                              <img [src]="image" style="width: 38%;
+                              border-radius: 50%;
+                              margin-top: -23px;" >
+                          </div>
+                        </div>  
+                    </div>
+                  </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-8 ">
+                    <div class="form-group">
+                      <label  class="label">Photopanoramique</label>
+                      <div class="row">
+                          <div class="col-sm-6">
+                              <div class="custom-file" id="customFile" lang="es">
+                                  <input  maxlength="255" #customfiles type="file" accept="image/*" [(ngModel)]="file2"  [ngModelOptions]="{standalone: true}"  nbInput fullWidth (change)="onFileChange2($event)" class="custom-file-input" id="exampleInputFile" aria-describedby="fileHelp" required="true">
+                                  <label  class="label1 custom-file-label" for="exampleInputFile" >
+                                      {{files2!=null?files2.name:''}}
+                                  </label>
+                                </div>
+                          </div>
+                          <div class="col-sm-6" *ngIf="image2!=null" style="text-align: center;">
+                              <img [src]="image2" style="width: 38%;
+                              border-radius: 50%;
+                              margin-top: -23px;" >
+                          </div>
+                        </div>  
+                    </div>
+                  </div>
+                
+              </div>
+              <div class="row" >
+                  <div class="col-sm-6">
+                    <label  class="label">Couleur1</label>
+                    <input [(colorPicker)]="color1" cpPosition="bottom" nbInput fullWidth [style.background]="color1" (cpSliderDragEnd)="onEventLog('cpSliderDragEnd', $event)"/>
+            
+                </div>
+                <div class="col-sm-6">
+                  <label  class="label">Couleur2</label>
+                  <input [(colorPicker)]="color2" cpPosition="bottom" nbInput fullWidth [style.background]="color2" (cpSliderDragEnd)="onEventLog2('cpSliderDragEnd', $event)"/>
+          
+                </div>
+              </div>
+                  <div class="row" >
+                    <div class="col-6" >
+                        <button   nbButton type="reset"  status="danger" style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'" >Annuler</button>
+
+                    </div>
+                    <div class="col-6" >
+                        <!-- <div  style="float: right" class="wrapper">
+                            <a class="cta cuseur" style="zoom: 68% !important;" (click)="createPartenaire(stepper)">
+                              <span style="    padding-top: 13px !important;
+                              color: #fff !important;
+                              font-size: 28px !important;
+                              font-weight: bold !important;">SUIVANT</span>
+                              <span>
+                                <svg width="66px" height="43px" viewBox="0 0 66 43" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                  <g id="arrow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                    <path class="one" d="M40.1543933,3.89485454 L43.9763149,0.139296592 C44.1708311,-0.0518420739 44.4826329,-0.0518571125 44.6771675,0.139262789 L65.6916134,20.7848311 C66.0855801,21.1718824 66.0911863,21.8050225 65.704135,22.1989893 C65.7000188,22.2031791 65.6958657,22.2073326 65.6916762,22.2114492 L44.677098,42.8607841 C44.4825957,43.0519059 44.1708242,43.0519358 43.9762853,42.8608513 L40.1545186,39.1069479 C39.9575152,38.9134427 39.9546793,38.5968729 40.1481845,38.3998695 C40.1502893,38.3977268 40.1524132,38.395603 40.1545562,38.3934985 L56.9937789,21.8567812 C57.1908028,21.6632968 57.193672,21.3467273 57.0001876,21.1497035 C56.9980647,21.1475418 56.9959223,21.1453995 56.9937605,21.1432767 L40.1545208,4.60825197 C39.9574869,4.41477773 39.9546013,4.09820839 40.1480756,3.90117456 C40.1501626,3.89904911 40.1522686,3.89694235 40.1543933,3.89485454 Z" fill="#FFFFFF"></path>
+                                    <path class="two" d="M20.1543933,3.89485454 L23.9763149,0.139296592 C24.1708311,-0.0518420739 24.4826329,-0.0518571125 24.6771675,0.139262789 L45.6916134,20.7848311 C46.0855801,21.1718824 46.0911863,21.8050225 45.704135,22.1989893 C45.7000188,22.2031791 45.6958657,22.2073326 45.6916762,22.2114492 L24.677098,42.8607841 C24.4825957,43.0519059 24.1708242,43.0519358 23.9762853,42.8608513 L20.1545186,39.1069479 C19.9575152,38.9134427 19.9546793,38.5968729 20.1481845,38.3998695 C20.1502893,38.3977268 20.1524132,38.395603 20.1545562,38.3934985 L36.9937789,21.8567812 C37.1908028,21.6632968 37.193672,21.3467273 37.0001876,21.1497035 C36.9980647,21.1475418 36.9959223,21.1453995 36.9937605,21.1432767 L20.1545208,4.60825197 C19.9574869,4.41477773 19.9546013,4.09820839 20.1480756,3.90117456 C20.1501626,3.89904911 20.1522686,3.89694235 20.1543933,3.89485454 Z" fill="#FFFFFF"></path>
+                                    <path class="three" d="M0.154393339,3.89485454 L3.97631488,0.139296592 C4.17083111,-0.0518420739 4.48263286,-0.0518571125 4.67716753,0.139262789 L25.6916134,20.7848311 C26.0855801,21.1718824 26.0911863,21.8050225 25.704135,22.1989893 C25.7000188,22.2031791 25.6958657,22.2073326 25.6916762,22.2114492 L4.67709797,42.8607841 C4.48259567,43.0519059 4.17082418,43.0519358 3.97628526,42.8608513 L0.154518591,39.1069479 C-0.0424848215,38.9134427 -0.0453206733,38.5968729 0.148184538,38.3998695 C0.150289256,38.3977268 0.152413239,38.395603 0.154556228,38.3934985 L16.9937789,21.8567812 C17.1908028,21.6632968 17.193672,21.3467273 17.0001876,21.1497035 C16.9980647,21.1475418 16.9959223,21.1453995 16.9937605,21.1432767 L0.15452076,4.60825197 C-0.0425130651,4.41477773 -0.0453986756,4.09820839 0.148075568,3.90117456 C0.150162624,3.89904911 0.152268631,3.89694235 0.154393339,3.89485454 Z" fill="#FFFFFF"></path>
+                                  </g>
+                                </svg>
+                              </span> 
+                            </a>
+                          </div> -->
+                        <button  type="submit" nbButton status="success"  style="float: right;background: #79008e; margin-left: 15px;margin-top: 15px; border-color: white;" [shape]="'round'">Suivant</button>
+
+                    </div>
+          </div>
+                 
+
+            </form>
+
+      </nb-step>
+      <nb-step [label]="labelTwo">
+          <ng-template #labelTwo>Point de Vente</ng-template>
+          <h4 style="text-align: center;    padding-bottom: 3%;
+          padding-top: 1%;">Point de Vente</h4>
+          <div *ngIf="fiche">
+            <div class="row">
+              <div class="col-md-6">
+              </div>
+              <div class="col-md-2">
+              </div>
+              <div class="col-md-4">
+                  <div class="" style="text-align: center; margin-top: 8px;">
+                      <button  type="button" (click)="fiche=false;resetefichepointvente()" style="float: right;"  class="icon-btn add-btn">  
+                        <div class="add-icon"></div>
+                        <div class="btn-txt">Ajouter Point de vente</div>
+                      </button>
+                    </div>
+                <!-- <button type="button" class="btn btn-primary buttonstyle"  style="color: #fff;float:right" (click)="fiche=false;resetefichepointvente()" ><i class="fa fa-plus-circle"></i> Ajouter Point de vente</button> -->
+              </div>
+            </div>
+            <br>
+          <table datatable [dtOptions]="dtOptions" id="example" class="row-border hover">
+              <thead>
+                <tr>
+                  <th>Désignation</th>
+                  <th>gestion table</th>
+                  <th>partage addition</th>
+                  <th>entet pied</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of pointVentefiches" >
+                <td>{{item.designation}}</td>
+                  <td>{{item.gestiontable}}</td>
+                  <td>{{item.autoriserpartage}}</td>
+                  <td>{{item.entetepiedticket}}</td>
+                  <td>
+                      <a class="cuseur" (click)="modiferpointventefiche(item)"  style="color:green"> <i class="fa fa-edit"> </i> </a>
+                        
+                      <a class="cuseur" (click)="deletepointventefiche(item.idFichepointvente)"  style="color:red"> <i class="fa fa-trash"></i> </a>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+            <div class="row" >
+              <div class="col-6" >
+                  <button  nbStepperPrevious nbButton type="reset"  status="basic" style="float:left; background-image: linear-gradient(to right, #F1F1F1 , #F1F1F1); margin-top: 15px; " [shape]="'round'" >Précédent</button>
+
+              </div>
+              <div class="col-6" >
+                  <button  type="button" (click)="configcaisse(stepper)"   nbButton status="success"  style="float: right; background: #79008e;  margin-left: 15px;margin-top: 15px; border-color: white;" [shape]="'round'">Suivant</button>
+
+              </div>
+    </div>
+          </div>
+          <div *ngIf="!fiche">
+            <nb-card>
+              <nb-card-header>Fiche Point de vente</nb-card-header>
+              <nb-card-body>
+                  <form [formGroup]="ficheForm" (ngSubmit)="addfichepointvente()">
+                      <p-accordion>
+                          <p-accordionTab header="information génerale" [selected]="true">
+                              <h6>information génerale</h6>
+                              <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label  class="label">Désignation<span style="color: red">*</span></label>
+                                        <input type="text" maxlength="100"  nbInput fullWidth formControlName="designation" placeholder="Désignation" [ngClass]="{'has-error': isficheFormSubmitted && (formControlsfiche.designation.errors )}">
+                                        <label *ngIf=" isficheFormSubmitted && (formControlsfiche.designation.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre désignation</label>
+                                      </div>
+                                </div>
+                                <div class="col-sm-6">
+                                  <div class="form-group">
+                                      <label  class="label">adresse</label>
+                                      <input type="text" maxlength="100"  nbInput fullWidth formControlName="adresse"  placeholder="adresse">
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-sm-5">
+                                    <div class="form-group">
+                                        <label  class="label">localisation(latitude)<span style="color: red">*</span></label>
+                                        <input type="number" maxlength="100"  nbInput fullWidth formControlName="cordx"  placeholder="latitude" [ngClass]="{'has-error': isficheFormSubmitted && (formControlsfiche.cordx.errors )}">
+                                        <label *ngIf=" isficheFormSubmitted && (formControlsfiche.cordx.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre coordonnée x</label>
+                                      </div>
+                                  </div>
+                                  <div class="col-sm-5">
+                                      <div class="form-group">
+                                          <label  class="label">localisation(longitude)<span style="color: red">*</span></label>
+                                          <input type="number" maxlength="100"  nbInput fullWidth formControlName="cordy" placeholder="longitude" [ngClass]="{'has-error': isficheFormSubmitted && (formControlsfiche.cordy.errors )}">
+                                          <label *ngIf=" isficheFormSubmitted && (formControlsfiche.cordy.errors)" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre coordonnée y</label>
+                                        </div>
+                                  </div>
+                                  <div class="col-sm-2">
+                                    <br>
+                                      <button nbButton (click)="openamp()"  type="button"  class="button-style" [shape]="'round'">Map</button>
+                                  </div>
+                                  <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label  class="label">Type</label>
+                                      <nb-select fullWidth formControlName="typePv" [status]="isficheFormSubmitted && (formControlsfiche.typePv.errors ) ? 'danger': ''">
+                                        <nb-option *ngFor="let item of typePvs" [value]="item.value">
+                                          {{item.label}}
+                                        </nb-option>
+                                      </nb-select>
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-6" *ngIf="formControlsfiche.typePv.value=='vehicule'" >
+                                    <div class="form-group">
+                                      <label  class="label">la date de circulation</label>
+                                      <input fullWidth nbInput placeholder="Date " name="startdate" [nbDatepicker]="startDate"  formControlName="dateMiseCirc" >
+                                      <nb-datepicker #startDate></nb-datepicker>
+                                    </div>
+                                  </div>
+                                  
+                              
+                              </div>
+                          </p-accordionTab>
+                          <p-accordionTab header="Parametres">
+                               
+                <h6>Parametres</h6>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="gestiontable"  status="success">gestion des tables</nb-checkbox>
+                          </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="autoriserphoto" status="success">autoriser photo categorie</nb-checkbox>
+                          </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="clavier" status="success">clavier virtuel</nb-checkbox>
+                          </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="Imprimante" status="success">Imprimante cuisine</nb-checkbox>
+                          </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="autoriserpartage"  status="success">autoriser partage addition</nb-checkbox>
+                          </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="reimprimer" status="success">re-imprimer ticket</nb-checkbox>
+                          </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                      <div class="form-group">
+                          <nb-checkbox formControlName="autoriserimpression" status="success">autoriser l'impression du ticket avant le payement</nb-checkbox>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <nb-checkbox formControlName="entetepiedticket" status="success">entete & pied ticket</nb-checkbox>
+                          </div>
+                    </div>
+                    <div class="col-sm-4">
+                      <div class="form-group">
+                          <nb-checkbox formControlName="fdetectPack" status="success">Detecter pack</nb-checkbox>
+                        </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                        <nb-checkbox formControlName="fEcranCuisine" status="success">Utilisation d'un ecran de cuisine</nb-checkbox>
+                      </div>
+                </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                        <nb-checkbox formControlName="faffectEmployetoservice" status="success">Affecter les Employés au Service</nb-checkbox>
+                      </div>
+                  </div>
+                  <div class="col-sm-4">
+                      <div class="form-group">
+                          <nb-checkbox formControlName="FautoriserRecharge" status="success">Autoriser Recharge</nb-checkbox>
+                        </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                        <nb-checkbox formControlName="fdetailMontant" status="success">Detail Montant</nb-checkbox>
+                      </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="form-group">
+                      <nb-checkbox formControlName="fReservation" status="success">Réservation</nb-checkbox>
+                    </div>
+              </div>
+                  
+              </div>
+                <div class="row" *ngIf="ficheForm.value.entetepiedticket">
+                    <fieldset>
+                        <legend>Personnalisation entéte & pied:</legend>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label  class="label">entete</label>
+                                    <input type="text" maxlength="100"  nbInput fullWidth formControlName="entete" placeholder="entete" [ngClass]="{'has-error': isficheFormSubmitted && (formControlsfiche.entete.errors )}">
+                                    <label *ngIf=" isficheFormSubmitted && (formControlsfiche.entete.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre entete</label>
+                                  </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label  class="label">pied</label>
+                                    <input type="text" maxlength="100"  nbInput fullWidth formControlName="pied"  placeholder="pied" [ngClass]="{'has-error': isficheFormSubmitted && (formControlsfiche.pied.errors )}">
+                                    <label *ngIf=" isficheFormSubmitted && (formControlsfiche.pied.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre pied</label>
+                                  </div>
+                              </div>
+                          
+                          </div>
+                      </fieldset>
+                  </div>
+                          </p-accordionTab>
+                          <p-accordionTab header="devise">
+                              <h6>devise</h6>
+                              <div class="row">
+                                
+                                  <div class="col-sm-10">
+                                      <table datatable [dtOptions]="dtOptions"  class="row-border hover">
+                                          <thead>
+                                            <tr>
+                                              <th>Devise</th>
+                                              <th>code</th>
+                                              <th>default</th>
+                                              <th>taux</th>
+                                              <th>Action</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            <tr *ngFor="let item of devises" >
+                                              <td>{{item.designation}}</td>
+                                              <td>{{item.code}}</td>
+                                            <td>{{item.fDefaut}}</td>
+                                            <td>{{item.taux}}</td>
+                                              <td>
+                                                  <a class="cuseur" (click)="editdevise(item)"  style="color:green"> <i class="fa fa-edit"> </i> </a>
+                                                    
+                                                  <a class="cuseur" (click)="deletedevise(item.idDevise)" style="color:red"> <i class="fa fa-trash"></i> </a>
+                                              </td>
+                                            </tr>
+                                        </tbody>
+                                     </table> 
+                                    </div>
+                                    <div class="col-sm-2">
+                                      <br>
+                                      <div class="" style="text-align: center; margin-top: 8px;">
+                                          <button  type="button" (click)="resetdeviceform();displayfiche=true" style="float: right;"  class="icon-btn add-btn">  
+                                            <div class="add-icon"></div>
+                                            <div class="btn-txt">Ajouter devise</div>
+                                          </button>
+                                        </div>
+                                        <!-- <i style="font-size: 40px;color: green;justify-content: center;
+                                        display: flex;" (click)="resetdeviceform();displayfiche=true" class="fas fa-plus-circle"></i> -->
+                                    </div>
+                              </div> 
+                          </p-accordionTab>
+                          <p-accordionTab header="Taxe">
+                              <h6>Taxe</h6>
+                              <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label  class="label">Taxe à la vente par default <span style="color: red">*</span></label><br>
+                                        <nb-select fullWidth formControlName="taxeselected" [status]="isficheFormSubmitted && (formControlsfiche.taxeselected.errors ) ? 'danger': ''">
+                                          <nb-option *ngFor="let item of taxes" [value]="item">
+                                            
+                                              <div class="col-sm-8">
+                                                  {{ item.valeur }}
+                                              </div>
+                                              <div class="col-sm-4">
+                                                  <a class="cuseur" (click)="modifertaxe(item)"  style="color:green"> <i class="fa fa-edit"> </i> </a>
+                                  
+                                                  <a class="cuseur" (click)="deletetaxe(item.idTaxe)"  style="color:red"> <i class="fa fa-trash"></i> </a>
+                                              
+                                              </div>
+                                            
+                                             
+                                               
+                                            
+                                          </nb-option>
+                                        </nb-select>
+                                </div>
+                              </div>
+                                <div class="col-sm-3">
+                                    <br>
+                                    <div class="" style="text-align: center; margin-top: 8px;">
+                                        <button  type="button" (click)="resetetaxe();displaytaxe=true" style="float: right;"  class="icon-btn add-btn">  
+                                          <div class="add-icon"></div>
+                                          <div class="btn-txt">Ajouter Taxe</div>
+                                        </button>
+                                      </div>
+                                    <!-- <i style="font-size: 40px;color: green;justify-content: center;
+                                    display: flex;" (click)="resetetaxe();displaytaxe=true" class="fas fa-plus-circle"></i> -->
+                                </div>
+                                
+                                  
+                              </div>
+                          </p-accordionTab>
+                          <p-accordionTab header="Tarif">
+                              <h6>Tarif</h6>
+                              <div class="row">
+                                <div class="col-sm-3">
+                                  Prix des produis sur les recus
+                                </div>
+                                <div class="col-sm-6">
+                                    <nb-radio-group formControlName="prixproduitrecu" >
+                                        <nb-radio
+                                          *ngFor="let option of options"
+                                          [checked]="option.checked"
+                                          [value]="option.value">
+                                          {{ option.label }}
+                                        </nb-radio>
+                                      </nb-radio-group>
+                                </div>
+                              </div>   
+                          </p-accordionTab>
+                          <p-accordionTab header="Paiements">
+                              <h6>Paiements</h6>
+                  <div class="row">
+                    <div class="col-sm-6" style="border-right: 1px solid;">
+                        <nb-select multiple placeholder="Multiple Select" formControlName="paiment" [status]="isficheFormSubmitted && (formControlsfiche.paiment.errors ) ? 'danger': ''">
+                            <nb-option *ngFor="let item of modeReglements" [value]="item">
+                              {{item.designation}}
+                            </nb-option>
+                          </nb-select>
+                    </div>
+                      <div class="col-sm-6">
+                          <div class="form-group" >
+                              <nb-checkbox formControlName="Controlercaisse"  status="success">Controler la caisse à l'ouverture et à la fermeture</nb-checkbox>
+                            </div>
+                            <div class="form-group">
+                              <label  class="label">Chiffre après la virgule</label>
+                              <input type="number" maxlength="100" formControlName="chiffrevirgule" nbInput fullWidth  placeholder="Chiffre après la virgule" [ngClass]="{'has-error': isficheFormSubmitted && (formControlsfiche.defaultouverture.errors )}">
+                              <!-- <label *ngIf="  isficheFormSubmitted && (formControlsfiche.chiffrevirgule.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir le montant d'Ouverture par défault</label> -->
+                            </div>
+
+                            <div *ngIf="ficheForm.value.Controlercaisse"  class="form-group">
+                                <label  class="label">Ouverture par défault</label>
+                                <input type="number" maxlength="100" formControlName="defaultouverture" nbInput fullWidth  placeholder="entete" [ngClass]="{'has-error': isficheFormSubmitted && (formControlsfiche.defaultouverture.errors )}">
+                                <label *ngIf="  isficheFormSubmitted && (formControlsfiche.defaultouverture.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir le montant d'Ouverture par défault</label>
+                              </div>
+                              <div *ngIf="ficheForm.value.Controlercaisse" class="form-group">
+                                  <label  class="label">Différence autorisée</label>
+                                  <input type="number" maxlength="100" formControlName="differenceautorise" nbInput fullWidth  placeholder="entete" [ngClass]="{'has-error': isficheFormSubmitted && (formControlsfiche.differenceautorise.errors )}">
+                                  <label *ngIf="  isficheFormSubmitted && (formControlsfiche.differenceautorise.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir la Différence autorisée</label>
+                                </div>
+                        </div>
+                  </div>   
+                          </p-accordionTab>
+
+                      </p-accordion>
+
+
+
+
+                  
+                  <div class="row" >
+                      <div class="col-6" >
+                          <button (click)="fiche=true;resetefichepointvente()"  nbButton type="reset"  status="danger" style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'" >Annuler</button>
+  
+                      </div>
+                      <div class="col-6" >
+                          <button  type="submit" (click)="addfichepointvente()"  nbButton status="success"  style="float: right; background: #79008e;  margin-left: 15px;margin-top: 15px; border-color: white;" [shape]="'round'">Suivant</button>
+  
+                      </div>
+            </div>
+            </form>
+              </nb-card-body>
+            </nb-card>
+          </div>
+      </nb-step>
+      <nb-step [label]="labelThrie">
+          <ng-template #labelThrie>Configuration caisse et employées</ng-template>
+          <h4 style="text-align: center;    padding-bottom: 3%;
+          padding-top: 1%;">Configuration caisse et employées</h4>
+
+<nb-tabset >
+  {{pointVentefiches|json}}
+  <nb-tab *ngFor="let pointVentefiche of pointVentefiches" [active]="pointVentefiche.idFichepointvente==pointVentefiches[0].idFichepointvente" tabIcon="settings-2-outline" tabTitle="{{pointVentefiche.designation}}" >
+
+      <div class="row">
+        <div class="col-md-6">
+            <h6 class="sousligne"> Gestion Caisse</h6>
+        </div>
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-4">
+            <div class="" style="text-align: center; margin-top: 8px;">
+                <button type="button" (click)="resetcaisseform();displaycaisse=true;currenetidpointvente=pointVentefiche.idFichepointvente" style="float: right;"  class="icon-btn add-btn">  
+                  <div class="add-icon"></div>
+                  <div class="btn-txt">Ajouter une Nouvelle Categorie Article</div>
+                </button>
+              </div>
+          <!-- <button type="button" class="btn btn-primary buttonstyle"  style="color: #fff;float:right" (click)="resetcaisseform();displaycaisse=true;currenetidpointvente=pointVentefiche.idFichepointvente" ><i class="fa fa-plus-circle"></i> Ajouter Caisse</button> -->
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-10">
+            <table datatable [dtOptions]="dtOptions" id="example" class="row-border hover">
+                <thead>
+                  <tr>
+                    <th>Numéro caisse</th>
+                    <th>Reliée à</th>
+                    <th>référence</th>
+                    <th>type</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of splitlist(pointVentefiche.idFichepointvente)" >
+                    <td>{{item.caisse.numCaisse}}</td>
+                    <td></td>
+                  <td>{{item.caisse.reference}}</td>
+                  <td>{{item.caisse.idTypeCaisse}}</td>
+                    <td>
+                        <a class="cuseur" (click)="editcaisse(item,pointVentefiche.idFichepointvente)"  style="color:green"> <i class="fa fa-edit"> </i> </a>
+                          
+                        <a class="cuseur" (click)="deletecaisse(item.caisse.idCaisse)" style="color:red"> <i class="fa fa-trash"></i> </a>
+                    </td>
+                  </tr>
+              </tbody>
+           </table> 
+          </div>
+        </div>
+
+      <div class="row">
+        <div class="col-md-6">
+            <h6 class="sousligne">Utilisateur</h6>
+        </div>
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-4">
+            <div class="" style="text-align: center; margin-top: 8px;">
+                <button  type="button" (click)="displayuser=true;reseteuser();currenetidpointvente=pointVentefiche.idFichepointvente" style="float: right;"  class="icon-btn add-btn">  
+                  <div class="add-icon"></div>
+                  <div class="btn-txt">Ajouter Utilisateur</div>
+                </button>
+              </div>
+          <!-- <button type="button" class="btn btn-primary buttonstyle"  style="color: #fff;float:right" (click)="displayuser=true;reseteuser();currenetidpointvente=pointVentefiche.idFichepointvente" ><i class="fa fa-plus-circle"></i> Ajouter Utilisateur</button> -->
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-10">
+            <table datatable [dtOptions]="dtOptions" id="example" class="row-border hover">
+                <thead>
+                  <tr>
+                    <th>nom prenom</th>
+                    <th>login</th>
+                    <th>profil</th>
+                    <th>type</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of splituserlist(pointVentefiche.idFichepointvente)" >
+                  <td>{{item.nom}} {{item.prenom}}</td>
+                    <td>{{item.login}}</td>
+                  <td>{{item.idProfil}}</td>
+                  <td>{{item.idTypeUtilisateur}}</td>
+                  
+                    <td>
+                        <a class="cuseur" (click)="edituser(item,pointVentefiche.idFichepointvente)"  style="color:green"> <i class="fa fa-edit"> </i> </a>
+                          
+                        <a class="cuseur" (click)="deleteuser(item.idUtilisateur)" style="color:red"> <i class="fa fa-trash"></i> </a>
+                    </td>
+                  </tr>
+              </tbody>
+           </table> 
+          </div>
+        </div>
+
+        <div class="row" >
+          <div class="col-6" >
+              <button  nbStepperPrevious nbButton type="reset"  status="basic" style="float:left; background-image: linear-gradient(to right, #F1F1F1 , #F1F1F1); margin-top: 15px; " [shape]="'round'" >Précédent</button>
+
+          </div>
+          <div class="col-6" >
+              <button  type="submit" (click)="endstepper()"   nbButton status="success"  style="float: right;" class="button-style" [shape]="'round'">Terminer</button>
+
+          </div>
+</div>
+      </nb-tab>
+
+    </nb-tabset>
+      </nb-step>
+    </nb-stepper>
+  </nb-card-body>
+</nb-card >
+
+<p-dialog header="Ajouter devise" [(visible)]="displayfiche" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+        [maximizable]="true" [baseZIndex]="10">
+        <form [formGroup]="deviseForm" (ngSubmit)="adddevise()">
+          <div class="row">
+
+                  <div class="ng-autocomplete col-sm-6" id="rcs">
+                      <label  class="label">Désignation<span style="color: red">*</span></label>
+                      <ng-autocomplete #ngAutoCompleteStatic
+                                       [data]="listdevise"
+                                       [initialValue]="null"
+                                       [placeHolder]="placeholder"
+                                       [searchKeyword]="keyword"
+                                       notFoundText="La liste est vide"
+                                       [itemTemplate]="itemTemplateStatic"
+                                       (selected)='selectEvent($event)'
+                                       (inputChanged)='onChangeSearch($event)'>
+                      </ng-autocomplete>
+    
+                      <ng-template #itemTemplateStatic let-item>
+                        <a [innerHTML]="item.designation"></a>
+                      </ng-template>
+                      <label *ngIf=" isdeviseFormSubmitted && (formControlsdevise.designation.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre  designation</label>
+
+                    </div>
+                  
+                <!-- <label  class="label">Désignation<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="designation" nbInput fullWidth  placeholder="designation" [ngClass]="{'has-error': isdeviseFormSubmitted && (formControlsdevise.designation.errors )}"> -->
+  
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label  class="label">code<span style="color: red">*</span></label>
+                <input type="text" [disabled]="autocomp" maxlength="100" formControlName="code" nbInput fullWidth  placeholder="code" [ngClass]="{'has-error': isdeviseFormSubmitted && (formControlsdevise.code.errors )}">
+                <label  *ngIf=" isdeviseFormSubmitted && (formControlsdevise.code.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre  code</label>
+              </div>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label  class="label">taux<span style="color: red">*</span></label>
+              <input type="number" maxlength="100" formControlName="taux" nbInput fullWidth  placeholder="taux" [ngClass]="{'has-error': isdeviseFormSubmitted && (formControlsdevise.taux.errors )}">
+              <label *ngIf=" isdeviseFormSubmitted && (formControlsdevise.taux.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre  taux</label>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <br>
+              <nb-checkbox formControlName="fdefault" status="success">par défaut</nb-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="row" >
+          <div class="col-6" >
+              <button (click)="resetdeviceform();displayfiche=false"  nbButton type="reset"  status="danger" style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'" >Annuler</button>
+
+          </div>
+          <div class="col-6" >
+              <button  type="submit"   nbButton status="success" class="button-style"  style="float: right;" [shape]="'round'">Enregistrer</button>
+
+          </div>
+</div>
+        </form>
+</p-dialog>
+
+
+<p-dialog header="Ajouter caisse" [(visible)]="displaycaisse" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+        [maximizable]="true" [baseZIndex]="10">
+        <form [formGroup]="caisseForm" (ngSubmit)="addcaisse()">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label  class="label">numCaisse<span style="color: red">*</span></label>
+                <input type="number" maxlength="100" formControlName="numCaisse" nbInput fullWidth  placeholder="numCaisse" [ngClass]="{'has-error': iscaisseFormSubmitted && (formControlscaisse.numCaisse.errors )}">
+                <label *ngIf=" iscaisseFormSubmitted && (formControlscaisse.numCaisse.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre numéro de la caisse</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label  class="label">reference<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="reference" nbInput fullWidth  placeholder="reference" [ngClass]="{'has-error': iscaisseFormSubmitted && (formControlscaisse.reference.errors )}">
+                <label *ngIf=" iscaisseFormSubmitted && (formControlscaisse.reference.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre réference</label>
+              </div>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label  class="label">Type Caisse<span style="color: red">*</span></label>
+              <nb-select fullWidth formControlName="typeCaisse" [status]="iscaisseFormSubmitted && (formControlscaisse.typeCaisse.errors ) ? 'danger': ''">
+                <nb-option *ngFor="let item of typecaisses" [value]="item">
+                  {{ item.designation }}
+                </nb-option>
+              </nb-select>
+              <label *ngIf=" iscaisseFormSubmitted && (formControlscaisse.typeCaisse.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre Type caisse</label>
+
+            </div>
+          </div>
+          
+        </div>
+        <div class="row" >
+          <div class="col-6" >
+              <button (click)="resetcaisseform();displaycaisse=false"  nbButton type="reset"  status="danger" style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'" >Annuler</button>
+
+          </div>
+          <div class="col-6" >
+              <button  type="submit"   nbButton status="success" class="button-style"  style="float: right;" [shape]="'round'">Enregistrer</button>
+
+          </div>
+</div>
+        </form>
+</p-dialog>
+
+
+<p-dialog header="Ajouter Utilisateur" [(visible)]="displayuser" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+        [maximizable]="true" [baseZIndex]="10">
+        <form [formGroup]="userForm" (ngSubmit)="adduser()">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label  class="label">nom<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="nom" nbInput fullWidth  placeholder="nom" [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.nom.errors )}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.nom.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre nom</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label  class="label">Prénom<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="prenom" nbInput fullWidth  placeholder="prenom" [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.prenom.errors )}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.prenom.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre prenom</label>
+              </div>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label  class="label">login<span style="color: red">*</span></label>
+              <input type="text" maxlength="100" formControlName="login" nbInput fullWidth  placeholder="login" [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.login.errors )}">
+              <label *ngIf=" isuserFormSubmitted && (formControlsuser.login.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre login</label>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label  class="label">matricule<span style="color: red">*</span></label>
+              <input type="text" maxlength="100" formControlName="matricule" nbInput fullWidth  placeholder="matricule" [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.matricule.errors )}">
+              <label *ngIf=" isuserFormSubmitted && (formControlsuser.matricule.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre matricule</label>
+            </div>
+          </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label  class="label">identifiant<span style="color: red">*</span></label>
+            <input type="text" maxlength="100" formControlName="identifiant" nbInput fullWidth  placeholder="identifiant" [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.identifiant.errors )}">
+            <label *ngIf=" isuserFormSubmitted && (formControlsuser.identifiant.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre identifiant</label>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label  class="label">email<span style="color: red">*</span></label>
+            <input type="text" maxlength="100" formControlName="email" nbInput fullWidth  placeholder="email" [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.email.errors )}">
+            <label *ngIf=" isuserFormSubmitted && (formControlsuser.email.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre email</label>
+          </div>
+        </div>
+    </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label  class="label">Type Utilisateur<span style="color: red">*</span></label>
+              <nb-select fullWidth formControlName="idTypeUtilisateur" [status]="isuserFormSubmitted && (formControlsuser.idTypeUtilisateur.errors ) ? 'danger': ''">
+                <nb-option *ngFor="let item of typeutlisateurs" [value]="item">
+                  {{ item.designation }}
+                </nb-option>
+              </nb-select>
+              <label *ngIf=" isuserFormSubmitted && (formControlsuser.idTypeUtilisateur.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre Type Utilisateur</label>
+
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label  class="label">Sexe<span style="color: red">*</span></label><br>
+              <!-- <input type="password" maxlength="100" formControlName="sexe" nbInput fullWidth  placeholder="Sexe" [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.sexe.errors )}"> -->
+              <nb-radio-group formControlName="sexe">
+                <nb-radio style="display: inline !important;"
+                  *ngFor="let option of sexe"
+                  [value]="option.value">
+                  {{ option.label }}
+                </nb-radio>
+              </nb-radio-group>
+            </div>
+          </div>
+          <!-- <div class="col-sm-6">
+            <div class="form-group">
+              <label  class="label">Type Profil<span style="color: red">*</span></label>
+              <nb-select fullWidth formControlName="idProfil" [status]="isuserFormSubmitted && (formControlsuser.idProfil.errors ) ? 'danger': ''">
+                <nb-option *ngFor="let item of profils" [value]="item">
+                  {{ item.designation }}
+                </nb-option>
+              </nb-select>
+              <label *ngIf=" isuserFormSubmitted && (formControlsuser.idProfil.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre Type Profil</label>
+
+            </div>
+          </div> -->
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label  class="label">mot de passe<span style="color: red">*</span></label>
+                <input type="password" maxlength="100" formControlName="password" nbInput fullWidth  placeholder="mot de passe" [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.password.errors )}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.password.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre mot de passe</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <br>
+              <button (click)="affectrandompassword()" type="button"  class="btn btn-primary">Generer mot de passe  </button>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label  class="label">Téléphone<span style="color: red">*</span></label>
+              <input type="text" maxlength="100" formControlName="tel" nbInput fullWidth  placeholder="Téléphone" [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.tel.errors )}">
+              <label *ngIf=" isuserFormSubmitted && (formControlsuser.tel.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre Téléphone</label>
+            </div>
+          </div>
+          <div class="col-sm-6">
+              <div class="form-group">
+                <label  class="label">Adresse<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="adresse" nbInput fullWidth  placeholder="adresse" [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.adresse.errors )}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.adresse.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre adresse</label>
+              </div>
+            <!-- <br>
+            <button (click)="affectrandompassword()" type="button"  class="btn btn-primary">Generer mot de passe  </button> -->
+          </div>
+      </div>
+        <div class="row" >
+          <div class="col-6" >
+              <button (click)="resetcaisseform();displaycaisse=false"  nbButton type="reset"  status="danger" style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'" >Annuler</button>
+
+          </div>
+          <div class="col-6" >
+              <button  type="submit"   nbButton status="success" class="button-style"  style="float: right;" [shape]="'round'">Enregistrer</button>
+
+          </div>
+</div>
+        </form>
+</p-dialog>
+
+<p-dialog header="Ajouter Taxe" [(visible)]="displaytaxe" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+        [maximizable]="true" [baseZIndex]="10">
+        <form [formGroup]="taxeForm" (ngSubmit)="addtaxe()">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label  class="label">Portee Taxe<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="porteeTaxe" nbInput fullWidth  placeholder="porteeTaxe" [ngClass]="{'has-error': istaxeFormSubmitted && (formControlstaxe.porteeTaxe.errors )}">
+                <label *ngIf=" istaxeFormSubmitted && (formControlstaxe.porteeTaxe.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre portee Taxe</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label  class="label">Type Taxe<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="typeTaxe" nbInput fullWidth  placeholder="typeTaxe" [ngClass]="{'has-error': istaxeFormSubmitted && (formControlstaxe.typeTaxe.errors )}">
+                <label *ngIf=" istaxeFormSubmitted && (formControlstaxe.typeTaxe.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre Type Taxe</label>
+              </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label  class="label">Valeur<span style="color: red">*</span></label>
+                <input type="number" maxlength="100" formControlName="valeur" nbInput fullWidth  placeholder="valeur" [ngClass]="{'has-error': istaxeFormSubmitted && (formControlstaxe.valeur.errors )}">
+                <label *ngIf=" istaxeFormSubmitted && (formControlstaxe.valeur.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre valeur</label>
+              </div>
+            </div>
+        </div>
+        <div class="row" >
+          <div class="col-6" >
+              <button (click)="resetetaxe();displaytaxe=false"  nbButton type="reset"  status="danger" style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'" >Annuler</button>
+
+          </div>
+          <div class="col-6" >
+              <button  type="submit"   nbButton status="success" class="button-style"  style="float: right;" [shape]="'round'">Enregistrer</button>
+
+          </div>
+</div>
+        </form>
+</p-dialog>
+
+<p-dialog  header="Map" [(visible)]="displaymap" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+    <div class="map2" *ngIf="displaymap" #map2 id="map2" style="width: 100%; height: 532.2px;"></div>
+
+</p-dialog>
+
+

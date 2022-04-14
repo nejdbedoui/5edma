@@ -1,0 +1,28 @@
+export enum Access {
+    "Tableau de Board" = "Tableau de Board",
+    "Commandes" = "Ventes",
+    "Gestion Catégorie Article" = "Gestion Catégorie Article",
+    "Gestion Des produits/Articles" = "Gestion Des produits/Articles",
+    "Mvts stock" = "Gestion des Mouvements Stock",
+    "gestion client" = "Gestion des clients",
+    "Gestion des Rendez-vous" = "Gestion des Rendez-vous",
+    "gestion employé" = "Gestion des employés",
+    "push notification" = "Push Notification",
+    "réglement" = "Mode Règlement",
+    "Régle d Utilisation" = "Régle d Utilisation",
+    "gestion opération" = "Gestion des Dépenses",
+    "Gestion des Tables" = "Gestion des Tables",
+    "Gestion des Zones" = "Gestion des Zones",
+    "Gestion Des Categories" = "Gestion Des Categories",
+    "Gestion Des Produits" = "Gestion Des Produits",
+    "Gestion Des Packs" = "Gestion Des Packs",
+    "Action Commerciale" = "Action Commerciale",
+    "Gestion Groupe Client" = "Gestion Groupe Client",
+    "Gestion Remise Rec" = "Gestion Remise Rec",
+    "Gestion Cadeau" = "Gestion Cadeau",
+    "Gestion Ingredient" = "Gestion Ingredient",
+    "Gestion Famille" = "Gestion Famille",
+    "Bon livraision" = "Bons de Livraison",
+    "Etat stock" = "Etat de stock"
+
+}

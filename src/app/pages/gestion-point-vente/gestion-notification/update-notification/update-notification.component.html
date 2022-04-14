@@ -1,0 +1,152 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Modifier Notification </span></div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <form [formGroup]="createNotificationForm" (ngSubmit)="createNotification()">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label  class="label">Titre <span style="color: red">*</span></label><br>
+            <input type="text" maxlength="100" formControlName="titre" nbInput fullWidth placeholder="Titre" [ngClass]="{'has-error': isSubmitted && (formControls.titre.errors )}">
+            <label *ngIf=" isSubmitted && (formControls.titre.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller remplir le champ titre </label>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label  class="label">Type de Notification <span style="color: red">*</span></label><br>
+            <nb-select fullWidth  formControlName="typeNotification" [ngClass]="{'disgnesserrue': isSubmitted && (formControls.typeNotification.errors )}">
+              <nb-option *ngFor="let item of typeNotification" [value]="item">
+                {{ item }}
+              </nb-option>
+            </nb-select>
+            <label *ngIf=" isSubmitted && (formControls.typeNotification.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller choisir un type de notification </label>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="dateDebut" >Date début <span style="color: red">*</span></label>
+            <p-calendar class="disgness"  dateFormat="dd/mm/yy" fullWidth formControlName="dateDebut" id="dateDebut"
+                        [ngClass]="{'disgnesserrue': (isSubmitted && (formControls.dateDebut.errors )) || ( isSubmitted && isDateChecked)}"></p-calendar>
+            <label *ngIf="(isSubmitted && (formControls.dateDebut.errors ))" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez Choisir une date</label>
+            <label *ngIf="(isSubmitted && (!formControls.dateDebut.errors )) && isDateChecked" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez choisir une date valide </label>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="dateFin" >Date Fin <span style="color: red">*</span></label>
+            <p-calendar class="disgness" dateFormat="dd/mm/yy" fullWidth formControlName="dateFin" id="dateFin"
+                        [ngClass]="{'disgnesserrue': (isSubmitted && (formControls.dateFin.errors )) || ( isSubmitted && isDateChecked)}"></p-calendar>
+            <label *ngIf="(isSubmitted && (formControls.dateFin.errors ))" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez Choisir une date</label>
+            <label *ngIf="(isSubmitted && (!formControls.dateFin.errors )) && isDateChecked" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez choisir une date valide </label>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group">
+            <label  class="label">Description <span style="color: red">*</span></label><br>
+            <textarea formControlName="description" nbInput fullWidth placeholder="Description" [ngClass]="{'has-error': isSubmitted && (formControls.description.errors )}"></textarea>
+            <label *ngIf=" isSubmitted && (formControls.description.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller remplir le champ description </label>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group">
+            <label  class="label">Body <span style="color: red">*</span></label><br>
+            <textarea formControlName="body" nbInput fullWidth placeholder="Body" [ngClass]="{'has-error': isSubmitted && (formControls.body.errors )}"></textarea>
+            <label *ngIf=" isSubmitted && (formControls.body.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller remplir le champ body </label>
+          </div>
+        </div>
+        <div class="col-md-12 ">
+          <div class="form-group">
+            <label  class="label">Image</label>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="custom-file" id="customFile" lang="es">
+                  <input  maxlength="255" #customfiles type="file" accept="image/*" [(ngModel)]="file"  [ngModelOptions]="{standalone: true}"  nbInput fullWidth (change)="onFileChange($event)" class="custom-file-input" id="exampleInputFile" aria-describedby="fileHelp" required="true">
+                  <label  class="label1 custom-file-label" for="exampleInputFile" >
+                    {{notification.imageNotif != null && image ==null?notification.imageNotif.url:files!=null?files.name:''}}
+                  </label>
+                </div>
+              </div>
+              <div class="col-sm-6" *ngIf="image!=null && !isSlider" style="text-align: center;">
+                <img [src]="image" style="width: 38%; margin-top: -23px;" >
+              </div>
+              <div class="col-sm-6" *ngIf="notification.imageNotif != null && image ==null && !isSlider" style="text-align: center;">
+                <img src="{{notification.imageNotif.url}}" style="width: 38%; margin-top: -23px;" >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6" *ngIf="image!=null || notification.imageNotif != null">
+          <div class="form-group">
+            <nb-checkbox [(ngModel)]="isSlider" [ngModelOptions]="{standalone: true}" status="success">Afficher l’image dans le Slider </nb-checkbox>
+          </div>
+        </div>
+        <div class="col-md-1" *ngIf="isSlider"></div>
+        <div class="col-md-4" *ngIf="isSlider" (click)="showpopup=true" style="cursor: pointer;" >
+          <div style="text-align: center;">Vue mobile</div>
+          <br>
+          <div class="form-group">
+            <div class="shadow" style="border-radius: 11px;background-color: #9e9e9e1a;">
+                <div style="text-align: center;">
+                  <img  *ngIf="image!=null" [src]="image" alt="" style="width: 100%;border-radius: 11px 11px 0px 0px;height: 195px; " >
+                  <img *ngIf="notification.imageNotif != null && image ==null" src="{{notification.imageNotif.url}}" style="width: 100%;border-radius: 11px 11px 0px 0px;height: 195px; " >
+                </div>
+                <hr size="10" width="97%" color="blue" style="border: 5px solid #75ce80;">
+                <div class="row">
+                  <div class="col-md-10" style="padding-right: 21px;
+                padding-left: 23px;">
+                  &nbsp;&nbsp;<span style="font-weight: bold;text-transform: uppercase;text-overflow: ellipsis;
+                  word-wrap: break-word;">{{formControls.titre.value}} </span>
+                </div>
+                <div class="col-md-2" style="padding-right: 45px;">
+                  <span style="float: right; border: 1px solid red;
+                  text-align: center;
+                  background-color: red;
+                  color: #fff;">&nbsp;&nbsp;{{formControls.typeNotification.value}}&nbsp;&nbsp; </span>&nbsp;&nbsp;
+                </div>
+                </div>
+                
+                
+                <div style="text-overflow: ellipsis;
+                word-wrap: break-word;color: #9E9E9E;
+                font-size: 14px;
+                padding-left: 11px;
+                padding-right: 21px;">
+                  &nbsp;&nbsp;<span style="font-weight: bold;"></span>{{formControls.description.value}}
+                </div>
+                <br>
+            </div>
+          </div>
+        </div>
+    <div class="col-md-1" *ngIf="isSlider"></div>
+      </div>
+      <div class="row" >
+        <div class="col-sm-6">
+          <a routerLink='/pages/Pointvente/gestionNotification'     nbButton type="button"  status="danger"  style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; " [shape]="'round'" >Annuler</a>
+        </div>
+        <div class="col-sm-6">
+          <button type="submit"  nbButton status="success" class="button-style" style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Enregistrer</button>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+</nb-card>
+
+<p-dialog  [(visible)]="showpopup" [modal]="true" [responsive]="true" [style]="{width: '800px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10" [showHeader]="false">
+  <div>
+    &nbsp;&nbsp;<span style="font-weight: bold;text-transform: uppercase;">{{formControls.titre.value}} </span>
+  </div>
+  
+  <div style="text-overflow: ellipsis;
+  word-wrap: break-word;padding-top: 10px;">
+    &nbsp;&nbsp;{{formControls.body.value}}
+  </div>
+    <div style="float: right;">
+      <span style="padding: 10px;font-weight: bold;cursor: pointer;" (click)="showpopup=false">FERMER</span>
+      <span style="padding: 10px;font-weight: bold;cursor: pointer;" (click)="showpopup=false">OK</span>
+    </div>
+  </p-dialog>

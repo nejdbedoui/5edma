@@ -1,0 +1,387 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card>
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6">
+        <span style="font-size: 20px">Gestion des Ventes</span>
+      </div>
+      <div class="col-md-6">
+        <!-- <span style="float: right">({{citoyens.length}} résultats)&nbsp;&nbsp;</span> -->
+        <span *ngIf="!details" style="float: right">{{ dt.totalRecords }} Vente(s)&nbsp;&nbsp;</span>
+        <span *ngIf="details && !details1" style="float: right">{{ dts.totalRecords }} Vente(s)&nbsp;&nbsp;</span>
+        <span *ngIf="details && details1" style="float: right">{{ dtn.totalRecords }} Vente(s)&nbsp;&nbsp;</span>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <br />
+    <nb-tabset (changeTab)="changetab($event)">
+      <nb-tab tabTitle="liste des Ventes ">
+        <p-table [columns]="cols2" [value]="listtransaction" #dt [responsive]="true" [paginator]="true"
+          [rowsPerPageOptions]="[20, 30, 50]" [rows]="20" [loading]="loadingAllTrasaction"
+          (sortFunction)="customSort($event)" [customSort]="true" [globalFilterFields]="['montant', 'numCommande']">
+          <ng-template pTemplate="caption">
+            <div style="text-align: right">
+              <i class="pi pi-search" style="margin: 4px 4px 0 0"></i>
+              <input type="text" pInputText size="50" placeholder="Chercher"
+                (input)="dt.filterGlobal($event.target.value, 'contains')" style="width: 40%; min-height: 34px" />
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Numéro Ticket</th>
+              <th>Table</th>
+              <th>Montant</th>
+              <th pSortableColumn="DateCreation">
+                Date Commande
+                <p-sortIcon field="DateCreation" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+
+              <th pSortableColumn="fPaye">
+                Status
+                <p-sortIcon field="fPaye" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th pSortableColumn="paymentDate">
+                Date Paiement
+                <p-sortIcon field="paymentDate" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th>Action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-transaction>
+            <tr>
+              <td>{{ transaction.numCommande }} <i *ngIf="transaction?.isRemise == 1" nbTooltip="Remise"
+                  nbTooltipPlacement="bottom" class="fas fa-tags"></i></td>
+              <td> {{ transaction?.numTable}}</td>
+              <td>{{ transaction.montant }}</td>
+              <td>{{ transaction.dateCreation | date: "dd-MM-yyyy HH:mm" }}</td>
+              <td>
+                <div class="ui-g-3"></div>
+                <div class="btn btn-danger ui-g-6" [ngClass]="{
+                    'btn-danger': transaction.fPaye == 0,
+                    'btn-success': transaction.fPaye == 1
+                  }">
+                  {{ transaction.fPaye == 1 ? "payée" : "non payée" }}
+                </div>
+                <div class="ui-g-3"></div>
+              </td>
+              <td>{{ transaction?.paymentDate | date: "dd-MM-yyyy HH:mm" }}</td>
+              <td>
+                <i (click)="
+                    displaymap = true;
+                    choosecommande(transaction, transaction.idCommande)
+                  " nbTooltip="details commandes" nbTooltipPlacement="bottom" style="
+                    background-color: #79008e;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                  " class="btn fas fa-eye cursor buttonround"></i>&nbsp;&nbsp;
+                <i (click)="
+                    displayreg = true; seeRegelemnt(transaction.idCommande)
+                  " nbTooltip="réglement" nbTooltipPlacement="bottom" style="
+                    background-color: #8dce4c;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                  " class="btn fas fa-money-bill-wave cursor buttonround"></i>&nbsp;&nbsp;
+                <i (click)="
+                    displaycommande = true; idcommande = transaction.idCommande
+                  " nbTooltip="Annulation" nbTooltipPlacement="bottom" style="
+                    background-color: red;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                  " class="btn fas fa-ban cursor buttonround"></i>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage" let-transaction>
+            <tr>
+              <td [attr.colspan]="transaction.length">
+                <div style="display: flex; justify-content: center">
+                  La liste est vide
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </nb-tab>
+      <nb-tab tabTitle="liste Ventes Annulées">
+        <p-table [columns]="cols2" [value]="listtransactionAnnule" #dtn [responsive]="true" [paginator]="true"
+          [rowsPerPageOptions]="[20, 30, 50]" [rows]="20" [loading]="loading" (sortFunction)="customSort($event)"
+          [customSort]="true" [globalFilterFields]="['montant', 'numCommande']">
+          <ng-template pTemplate="caption">
+            <div style="text-align: right">
+              <i class="pi pi-search" style="margin: 4px 4px 0 0"></i>
+              <input type="text" pInputText size="50" placeholder="Chercher"
+                (input)="dt.filterGlobal($event.target.value, 'contains')" style="width: 40%; min-height: 34px" />
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Numéro Ticket</th>
+              <th>Montant</th>
+              <th pSortableColumn="DateCreation">
+                Date Commande
+                <p-sortIcon field="DateCreation" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+
+              <th pSortableColumn="fPaye">
+                Status
+                <p-sortIcon field="fPaye" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th>Action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-transaction>
+            <tr>
+              <td>{{ transaction.numCommande }}</td>
+              <td>{{ transaction.montant }}</td>
+              <td>{{ transaction.dateCreation | date: "dd-MM-yyyy HH:mm" }}</td>
+              <td>
+                <div class="ui-g-3"></div>
+                <div class="btn btn-danger ui-g-6" [ngClass]="{
+                    'btn-danger': transaction.fPaye == 0,
+                    'btn-success': transaction.fPaye == 1
+                  }">
+                  {{ transaction.fPaye == 1 ? "payée" : "non payée" }}
+                </div>
+                <div class="ui-g-3"></div>
+              </td>
+              <td>
+                <i (click)="
+                    displaymap = true;
+                    choosecommandeannuler(transaction.idCommande)
+                  " nbTooltip="details commandes" nbTooltipPlacement="bottom" style="
+                    background-color: #79008e;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                  " class="btn fas fa-eye cursor buttonround"></i>&nbsp;&nbsp;
+                <i (click)="
+                    displayreg = true; seeRegelemnt(transaction.idCommande)
+                  " nbTooltip="réglement" nbTooltipPlacement="bottom" style="
+                    background-color: #8dce4c;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                  " class="btn fas fa-money-bill-wave cursor buttonround"></i>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage" let-transaction>
+            <tr>
+              <td [attr.colspan]="transaction.length">
+                <div style="display: flex; justify-content: center">
+                  La liste est vide
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </nb-tab>
+      <nb-tab tabTitle="liste détails Ventes Annulées">
+        <p-table [columns]="colsAnnuledTranstions" [value]="listtransactiondetaulsannule" #dts [responsive]="true"
+          [paginator]="true" [rowsPerPageOptions]="[20, 30, 50]" [rows]="20"
+          [loading]="loadingListTransactiondetaulsAnnule" (sortFunction)="customSort($event)" [customSort]="true"
+          [globalFilterFields]="['montant', 'numCommande']">
+          <ng-template pTemplate="caption">
+            <div style="text-align: right">
+              <i class="pi pi-search" style="margin: 4px 4px 0 0"></i>
+              <input type="text" pInputText size="50" placeholder="Chercher"
+                (input)="dts.filterGlobal($event.target.value, 'contains')" style="width: 40%; min-height: 34px" />
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Numéro Ticket</th>
+              <th>Nom du produit</th>
+              <th>Montant</th>
+              <th>Quantié</th>
+              <th pSortableColumn="DateCreation">
+                Date Commande
+                <p-sortIcon field="DateCreation" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+
+              <th pSortableColumn="fPaye">
+                Status
+                <p-sortIcon field="fPaye" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-transaction>
+            <tr>
+              <td>{{ transaction?.commande?.numCommande }}</td>
+              <td>{{ transaction?.produit?.designation}}</td>
+              <td>{{ transaction.prix }}</td>
+              <td>{{ transaction?.quantite}}</td>
+              <td>{{ transaction?.commande?.dateCreation | date: "dd-MM-yyyy HH:mm" }}</td>
+              <td>
+                <div class="ui-g-3"></div>
+                <div class="btn btn-danger ui-g-6" [ngClass]="{
+                    'btn-danger': transaction.fPaye != 1,
+                    'btn-success': transaction.fPaye == 1
+                  }">
+                  {{ transaction.fPaye == 1 ? "payée" : "non payée" }}
+                </div>
+                <div class="ui-g-3"></div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage" let-transaction>
+            <tr>
+              <td [attr.colspan]="transaction.length">
+                <div style="display: flex; justify-content: center">
+                  La liste est vide
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </nb-tab>
+    </nb-tabset>
+  </nb-card-body>
+</nb-card>
+
+<p-dialog header="Commande {{ chosenCommande?.numCommande }} 
+{{
+    chosenCommande?.clients?.length > 0
+      ? 'pour le client: ' + chosenCommande?.clients[0]?.nom +' '+ chosenCommande?.clients[0]?.prenom
+      : ''
+  }} 
+{{
+    chosenCommande?.numTable ? 'dans la table :' + chosenCommande?.numTable : ''
+  }} " [(visible)]="displaymap" [modal]="true" [responsive]="true" [style]="{ width: '700px', minWidth: '200px' }"
+  [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  <p-table [columns]="cols" [value]="listtransactiondetails" [loading]="loading1" [responsive]="true" [paginator]="true"
+    [rows]="10">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Nom du produit</th>
+        <th>prix de base</th>
+        <th>Quantié</th>
+        <th>Remise</th>
+        <th>prix à payer</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-transactiondetails>
+      <tr>
+        <td>
+          {{
+          transactiondetails.produit != null
+          ? transactiondetails.produit.designation
+          : transactiondetails.pack != null
+          ? transactiondetails.pack.designation
+          : ""
+          }}
+        </td>
+
+        <td>
+          {{
+          transactiondetails.remise != null || transactiondetails.remise == 0
+          ? transactiondetails.prixSansRemise
+          : transactiondetails.prix
+          }}
+        </td>
+        <td *ngIf="transactiondetails.pack == null">
+          {{
+          transactiondetails.produit != null
+          ? transactiondetails.quantite
+          : ""
+          }}
+        </td>
+        <td *ngIf="transactiondetails.pack != null">
+          <span *ngFor="let item of transactiondetails.pack.produits; let i = index">
+            {{ item.quantite }} {{ getproduitname(item.idProduit) }}
+            <span *ngIf="transactiondetails.pack.produits.length != i + 1">/</span>
+          </span>
+        </td>
+        <td *ngIf="transactiondetails.pack == null">
+          {{
+          transactiondetails.produit != null
+          ? transactiondetails.remise != null
+          ? transactiondetails.remise + "%"
+          : "0%"
+          : "0%"
+          }}
+        </td>
+        <td *ngIf="transactiondetails.pack == null">
+          {{
+          transactiondetails.prix
+          }}
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="p-d-flex p-jc-end" style="float: right">
+        <div>
+          le total du montant payé :
+          {{ chosenCommande ? chosenCommande.montant : 0 }}
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-transactiondetails>
+      <tr>
+        <td [attr.colspan]="transactiondetails.length">
+          <div style="display: flex; justify-content: center">
+            La liste est vide
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-dialog header="Réglement" [(visible)]="displayreg" [modal]="true" [responsive]="true"
+  [style]="{ width: '700px', minWidth: '200px' }" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  <p-table [columns]="cols" [value]="listreglements" [loading]="loading2" [responsive]="true" [paginator]="true"
+    [rows]="10">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Montant</th>
+        <th>Date</th>
+        <th>Mode Régelement</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-reglement>
+      <tr>
+        <td>{{ reglement.montant }}</td>
+        <td>{{ reglement.dateReg | date: "dd-MM-yyyy" }}</td>
+        <td>
+          {{ reglement.modeReglement.designation }}
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-reglement>
+      <tr>
+        <td [attr.colspan]="reglement.length">
+          <div style="display: flex; justify-content: center">
+            La liste est vide
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-dialog header="Annulation" [(visible)]="displaycommande" [modal]="true" [responsive]="true"
+  [style]="{ width: '700px', minWidth: '200px' }" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  Voulez-vous bien Annuler cette commande ?
+  <p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="displaycommande = false; deleteCommande()">
+      Annuler
+    </button>
+    <button type="button" nbButton (click)="displaycommande = false" class="ui-button-secondary">
+      Quitter
+    </button>
+  </p-footer>
+</p-dialog>

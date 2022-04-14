@@ -1,0 +1,37 @@
+import { ModeReglement } from './ModeReglement';
+export class PointVente{
+    adresse: string;
+  chiffrevirgule: string;
+  coordX: number;
+  coordY: number;
+  dateCreation: Date;
+  designation: string;
+  enteteTicket: string;
+  fActif: number;
+  fClavierVirtuel: number;
+  fEntetePied: number;
+  fGestionTable: number;
+  fImprimCuisine: number;
+  fPartageAdition: number;
+  fPhotoCateg: number;
+  fReImprim: number;
+  fdetailMontant: number;
+  idPartenaire: string;
+  idPointVente: string;
+  piedTicket: string;
+  fdetectPack:number;
+  fImprimeAvP:number;
+  fControlCaisse:number;
+  modeReglements:ModeReglement[];
+  defaultouverture:string;
+  differenceautorise:string;
+  fAutoriserRecharge:number;
+  fAffectEmployetoservice:number;
+  fprixttc:number;
+  fVisible?:number;
+  prixpv?:number;
+  fReservation:string;
+  typePv:string;
+  dateMiseCirc:Date;
+  fEcranCuisine:number;
+}

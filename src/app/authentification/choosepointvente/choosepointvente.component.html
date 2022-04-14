@@ -1,0 +1,118 @@
+<div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-10">
+                <nb-card accent="info" style="margin-top: 70px;">
+                        <nb-card-header>
+
+                                <div class="row">
+                                        <div class="col-4" style="text-align: center;">
+                                                <!-- <img  style="width: 50px;text-align: center;" src="../../../assets/images/Logo_BP_Caisse.png"> -->
+                                                <img *ngIf="logo!=null" style="width: 50px;text-align: center;"
+                                                        [src]="logo">
+                                        </div>
+                                        <div class="col-8">
+                                                <h3>Veuillez Choisir un Point de Vente</h3>
+                                        </div>
+                                </div>
+                        </nb-card-header>
+                        <nb-card-body>
+                                <div class="container">
+                                        <div class="row ">
+                                                <div class="col-sm-12">
+                                                        <legend>Liste des points de vente</legend>
+                                                </div>
+                                        </div>
+                                        <br>
+                                        <div class="row " style="height: 350px;
+                        overflow-y: auto;">
+                                                <div *ngFor="let pointvente of pointventesOnly; let i = index"
+                                                        class="col-sm-4" style="margin-bottom: 10px;">
+                                                        <div style="padding:.5em;margin-bottom: 10px;"
+                                                                class="ui-g-12 ui-md-12 cursor"
+                                                                [ngStyle]="{'background-color':pointvente.typePv=='centraleStock'?'#d4bb0e':getcolor(i)}"
+                                                                style="color: #FFFFFF;border-radius: 10px;"
+                                                                (click)="choosepointvente(pointvente)">
+
+                                                                <div class="col-sm-12"
+                                                                        *ngIf="pointvente.typePv!='centraleStock'">
+                                                                        <i><img
+                                                                                        src="../../../assets/images/supermarket.svg"></i>
+                                                                        &nbsp;&nbsp;Point de vente
+                                                                </div>
+                                                                <div class="col-sm-12"
+                                                                        *ngIf="pointvente.typePv=='centraleStock'">
+                                                                        <i class="fas fa-cubes"></i> &nbsp;&nbsp;Stock
+                                                                        Centrale
+                                                                </div>
+                                                                <br>
+                                                                <div class="col-sm-12"
+                                                                        style="color:#fff;font-size: 23px;">
+                                                                        {{pointvente.designation}}</div>
+                                                                <br><br>
+                                                                <hr style="background-color: #fff;">
+                                                                <div style="color:#fff">{{pointvente.adresse}} </div>
+                                                        </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                        <hr>
+                                                </div>
+                                                <div *ngFor="let pointvente of stockCentrales; let i = index"
+                                                        class="col-sm-4" style="margin-bottom: 10px;">
+                                                        <div style="padding:.5em;margin-bottom: 10px;"
+                                                                class="ui-g-12 ui-md-12 cursor"
+                                                                [ngStyle]="{'background-color':pointvente.typePv=='centraleStock'?'#d4bb0e':getcolor(i)}"
+                                                                style="color: #FFFFFF;border-radius: 10px;"
+                                                                (click)="choosepointvente(pointvente)">
+
+                                                                <div class="col-sm-12"
+                                                                        *ngIf="pointvente.typePv!='centraleStock'">
+                                                                        <i><img
+                                                                                        src="../../../assets/images/supermarket.svg"></i>
+                                                                        &nbsp;&nbsp;Point de vente
+                                                                </div>
+                                                                <div class="col-sm-12"
+                                                                        *ngIf="pointvente.typePv=='centraleStock'">
+                                                                        <i class="fas fa-cubes"></i> &nbsp;&nbsp;Stock
+                                                                        Centrale
+                                                                </div>
+                                                                <br>
+                                                                <div class="col-sm-12"
+                                                                        style="color:#fff;font-size: 23px;">
+                                                                        {{pointvente.designation}}</div>
+                                                                <br><br>
+                                                                <hr style="background-color: #fff;">
+                                                                <div style="color:#fff">{{pointvente.adresse}} </div>
+                                                        </div>
+                                                </div>
+
+                                        </div>
+                                        <br>
+                                        <br>
+                                        <div class="row">
+                                                <div class="col-sm-6">
+                                                        <button class="btn col-sm-12 cursor" *ngIf="showParam"
+                                                                (click)="tableauboard()" style="zoom: 130%;justify-content: center;display: flex;background-color: #7366B2 ;color: #FFFFFF;    padding: 16px;
+                                                border-radius: 10px;">
+                                                                <i style="zoom: 50%;"><img
+                                                                                src="../../../assets/images/view.svg"></i>
+                                                                &nbsp;&nbsp; Tableau de bord générale</button>
+
+                                                </div>
+                                                <div class="col-sm-6">
+                                                        <button class="btn col-sm-12 cursor" *ngIf="showParam"
+                                                                (click)="param()" style="zoom: 130%;justify-content: center;display: flex;background-color: #7366B2 ;color: #FFFFFF;    padding: 16px;
+                                        border-radius: 10px;">
+                                                                <i style="zoom: 50%;"><img
+                                                                                src="../../../assets/images/settings.svg">
+                                                                </i>&nbsp;&nbsp; Paramètres</button>
+                                                </div>
+                                        </div>
+                                </div>
+
+
+                        </nb-card-body>
+                </nb-card>
+        </div>
+        <div class="col-sm-1"></div>
+
+</div>

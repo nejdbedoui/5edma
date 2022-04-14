@@ -1,0 +1,23 @@
+.sousligne{
+    text-decoration: underline;
+}
+@import '../../../../@theme/styles/themes';
+
+@include nb-install-component() {
+
+  
+
+  ::ng-deep .leaflet-top, ::ng-deep .leaflet-bottom {
+    z-index: 997;
+  }
+
+  ::ng-deep .leaflet-container {
+    width: 100%;
+    height: nb-theme(card-height-large);
+  }
+  
+}
+.maps2 {
+  height: 100%;
+  padding: 0;
+}

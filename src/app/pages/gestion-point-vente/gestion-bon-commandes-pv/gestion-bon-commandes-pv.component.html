@@ -1,0 +1,337 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card>
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Gestion Bon Commandes</span></div>
+      <div class="col-md-6"><span style="float: right"> {{dta.totalRecords}} Bon(s) Commande(s)&nbsp;&nbsp;</span></div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <div class="row">
+      <div class="col-md-12">
+        <button type="button" *ngIf="!affichefilter" style="float: right;background: #79008e !important;" nbButton
+          [shape]="'round'" (click)="affichefilter=true"> Afficher plus de critéres de
+          recherche</button>&nbsp;&nbsp;
+        <button type="button" *ngIf="affichefilter" style="float: right" nbButton status="warning" [shape]="'round'"
+          (click)="affichefilter=false"> Cacher les critères de
+          recherche</button>&nbsp;&nbsp;
+      </div>
+    </div>
+    <br>
+
+    <fieldset *ngIf="affichefilter">
+      <legend>Critéres de recherche</legend>
+
+      <div class="row" style="padding-bottom: 10px;">
+
+
+        <div class="col-sm-3 ">
+          <label class="label">Categorie:</label><br>
+          <nb-select [(selected)]="nomcatbon" fullWidth placeholder="Default" (ngModelChange)="select1($event)"
+            name="nomCategorie" #nomCategorie="ngModel" [(ngModel)]="typeSel1">
+            <nb-option value="default">Default </nb-option>
+            <nb-option *ngFor="let cat of cat" value="{{cat}}">{{cat}}
+            </nb-option>
+          </nb-select>
+
+        </div>
+        <div class="col-sm-3 ">
+          <label class="label">Status:</label><br>
+          <nb-select [(selected)]="statusbon" fullWidth placeholder="Default" (ngModelChange)="select2($event)"
+            name="status" #status="ngModel" [(ngModel)]="typeSel2">
+            <nb-option value="default">Default </nb-option>
+            <nb-option value="0">crée </nb-option>
+            <nb-option value="1">en cour </nb-option>
+            <nb-option value="2">livrée </nb-option>
+          </nb-select>
+
+        </div>
+
+        <div class="col-sm-3 ">
+          <label class="label">Type:</label><br>
+          <nb-select [(selected)]="typebon" fullWidth placeholder="Default" (ngModelChange)="select3($event)"
+            name="type" #type="ngModel" [(ngModel)]="typeSel3">
+            <nb-option value="default">Default </nb-option>
+            <nb-option value="Fournisseur">Fournisseur </nb-option>
+            <nb-option value="Centrale">Centrale </nb-option>
+          </nb-select>
+        </div>
+
+        
+      </div>
+
+
+      <div class="row">
+        <div class="col-sm-3 ">
+          <label class="label">Date:</label><br>
+          <input nbInput fullWidth placeholder="Default" [nbDatepicker]="picker" [(ngModel)]="datedeb">
+          <nb-datepicker (dateChange)="filterDateDeb($event)" #picker></nb-datepicker>
+        </div>
+        <div class="col-sm-3 ">
+          <label class="label">Date:</label><br>
+          <input nbInput fullWidth placeholder="Default" [nbDatepicker]="picker1" [(ngModel)]="datefin">
+          <nb-datepicker (dateChange)="filterDateFin($event)" #picker1></nb-datepicker>
+        </div>
+        <div class="col-sm-3">
+          <nb-checkbox (checkedChange)="ShowAllBons()"[ngModel]="AllBonCommande" status="success">Afficher toute les Bon de Commandes</nb-checkbox>
+      </div>
+
+
+        <div class="col-sm-3">
+          <button nbButton type="button" status="danger" (click)="clean()"
+            style="background: #ff3d71; border-color: white;float:right;  margin-top: 13px; " [shape]="'round'">
+            <nb-icon icon="close-outline"></nb-icon>
+          </button>
+        </div>
+      </div>
+    </fieldset>
+
+
+    <div class="row">
+      <div class="col-md-6"></div>
+      <div class="col-md-2"></div>
+      <div class="col-md-4">
+        <div class="" style="text-align: center; margin-top: 8px">
+          <button type="button" (click)="addBonCommande()" style="float: right" class="icon-btn add-btn">
+            <div class="add-icon"></div>
+            <div class="btn-txt">Ajouter une Nouvelle Bon Commandes</div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <nb-tabset>
+      <nb-tab tabTitle="Liste Bon Commandes">
+        <div class="row" style="margin-top:2%;">
+          <div class="col-md-3">
+          </div>
+          <div class="col-md-5">
+
+          </div>
+
+          <div class="col-md-4" *ngIf="idpointVente==null">
+            <div class="" style="text-align: center; margin-top: 8px;">
+              <button (click)="redirect()" style="float: right;" class="icon-btn add-btn">
+                <div class="add-icon"></div>
+                <div class="btn-txt">Ajouter une Nouvelle Bon Commande</div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <br *ngIf="idpointVente==null">
+
+        <br>
+        <div class="row">
+          <div class="col-md">
+            <div class="upload-btn-wrapper">
+              <!--<button class="btn cursor" style="margin-top: 15px; background-color: orange;"  (click)="exportExcel()" >Exporter Catégorie Article</button>-->
+            </div>
+          </div>
+        </div>
+        <p-table  [value]="bon$" dataKey="idBonCommande" [loading]="loading" [rowsPerPageOptions]="[20,30,50]" #dta
+          [rows]="20" [paginator]="true" [responsive]="true" autoLayout="true"
+          [globalFilterFields]="['numBonCommande','date']">
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem"></th>
+              <th pSortableColumn="numBonCommande">Numero Bon Commande <p-sortIcon field="numBonCommande"></p-sortIcon>
+              </th>
+              <th pSortableColumn="nomCategorie">Categorie <p-sortIcon field="nomCategorie"></p-sortIcon>
+              </th>
+              <th pSortableColumn="nomFournisseur">Type <p-sortIcon field="nomFournisseur"></p-sortIcon>
+              </th>
+              <th pSortableColumn="statut">Status <p-sortIcon field="statut"></p-sortIcon>
+              </th>
+              <th pSortableColumn="date">Date <p-sortIcon field="date"></p-sortIcon>
+              </th>
+              <th>Action</th>
+            </tr>
+          </ng-template>
+          <ng-template  pTemplate="body" let-bon let-expanded="expanded" let-i="rowIndex">
+            <tr >
+              <td>
+                <button  type="button" (click)="getListeCommande(bon.idBonCommande,i)" pButton pRipple
+                  [pRowToggler]="bon" class="p-button-text p-button-rounded p-button-plain"
+                  [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+              </td>
+              <td>{{bon.numBonCommande}}</td>
+              <td>{{bon.nomCategorie}}</td>
+              <td><span *ngIf="bon.type=='Fournisseur'">{{bon.type}} : {{bon.nomFournisseur}}</span><span
+                  *ngIf="bon.type=='Centrale'">{{bon.type}}</span></td>
+              <td>{{getStatus(bon.statut)}}</td>
+              <td>{{bon.date|date}}</td>
+              <td *ngIf="bon.statut=='0'">
+                <i (click)="deleteBonCommande(bon.idBonCommande)" style="cursor: pointer;"
+                  nbTooltip="Supprimer Bon Commande" class=" far fa-trash-alt cuseur buttonround deletebutton"></i>
+                  <i (click)="update(bon)" class="fas fa-check cursor buttonround editbutton" nbTooltip="Envoyer Bon Commande" nbTooltipPlacement="bottom"></i>    
+    
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="rowexpansion" let-bon let-rb="rowIndex">
+            <tr>
+              <td colspan="6">
+                <div class="p-3">
+                  <!--Starts HERE-->
+
+                  <p-table [value]="bon.ListeCommandes" dataKey="idCommandePv" [loading]="loading2" autoLayout="true">
+                    <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem"></th>
+              <th pSortableColumn="numCommande">Numero Commande <p-sortIcon field="numCommande"></p-sortIcon>
+              </th>
+              <th pSortableColumn="dateCreation">Date de Creation<p-sortIcon field="dateCreation"></p-sortIcon>
+              </th>
+              <th pSortableColumn="dateEnvoi">Date d'envoie <p-sortIcon field="dateEnvoi"></p-sortIcon>
+              </th>
+              <th pSortableColumn="dateLivraision">Date de Livraison <p-sortIcon field="dateLivraision"></p-sortIcon>
+              </th>
+              <th pSortableColumn="dateReelLivraision">Date Réel de Livraison <p-sortIcon field="dateReelLivraision">
+                </p-sortIcon>
+              </th>
+              <th>Action</th>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-commande let-expanded="expanded" let-j="rowIndex">
+            <tr>
+              <td>
+                <button type="button" (click)="getListeDetailCommande(commande.idCommandePv,commande.idBonCommandePV,j)"
+                  pButton pRipple [pRowToggler]="commande" class="p-button-text p-button-rounded p-button-plain"
+                  [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+              </td>
+              <td>{{commande.numCommande}}</td>
+              <td>{{commande.dateCreation | date}}</td>
+              <td>{{commande.dateEnvoi | date}}</td>
+              <td>{{commande.dateLivraision | date}}</td>
+              <td>{{commande.dateReelLivraision | date}}</td>
+              <td *ngIf="bon.statut=='0'"> <i (click)="deleteCommande(commande.idCommandePv,rb,j)"
+                  style="cursor: pointer;" nbTooltip="Supprimer une Commande"
+                  class=" far fa-trash-alt cuseur buttonround deletebutton"></i>
+              </td>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="rowexpansion" let-commande let-rc="rowIndex">
+            <tr>
+              <td colspan="6">
+                <div class="p-3">
+                  <p-table [value]="commande.ListeDetailCommande" #ddetails dataKey="idDetailPV" [loading]="loading3"
+                    editMode="row" autoLayout="true">
+                    <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="nomProduit">Produit <p-sortIcon field="nomProduit"></p-sortIcon>
+              </th>
+              <th pSortableColumn="quantiteDemande">Quantite Demander<p-sortIcon field="quantiteDemande"></p-sortIcon>
+              </th>
+              <th pSortableColumn="quantiteLivree">Quantite Livrée <p-sortIcon field="quantiteLivree"></p-sortIcon>
+              </th>
+              <th pSortableColumn="quantiteRestante">Quantite Restante <p-sortIcon field="quantiteRestante">
+                </p-sortIcon>
+              </th>
+              <th style="width:8rem"></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-detail let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="detail">
+              <td>
+                <span *ngIf="detail.idDetailPV">{{detail.nomProduit}}</span>
+
+                <p-cellEditor *ngIf="!detail.idDetailPV">
+                  <ng-template pTemplate="input">
+                    <div class="ng-autocomplete" style="width: 100%;">
+
+                      <ng-autocomplete [data]="ListeProduit" [searchKeyword]="keyword" placeholder="Select country"
+                        (selected)='selectEvent($event)' (inputChanged)='onChangeSearch($event)'
+                        (inputFocused)='onFocused($event)' [itemTemplate]="itemTemplate"
+                        [notFoundTemplate]="notFoundTemplate">
+                      </ng-autocomplete>
+
+                      <ng-template #itemTemplate let-item>
+                        <a [innerHTML]="item.designation"></a>
+                      </ng-template>
+
+                      <ng-template #notFoundTemplate let-notFound>
+                        <div [innerHTML]="notFound"></div>
+                      </ng-template>
+                    </div>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{detail.nomProduit}}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input type="number" maxlength="100" nbInput placeholder="Quantite Demander"
+                      [(ngModel)]="detail.quantiteDemande" required>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{detail.quantiteDemande}}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td><span *ngIf="detail.quantiteLivree">{{detail.quantiteLivree}}</span></td>
+              <td>{{detail.quantiteRestante}}</td>
+              <td style="text-align:center" *ngIf="bon.statut=='0'">
+                <button *ngIf="!editing" style="float: right" pButton pRipple type="button" pInitEditableRow
+                  icon="pi pi-pencil" (click)="onRowEditInit(detail,rb,rc,ri,bon.idCategorie)"
+                  class="p-button-rounded p-button-text"></button>
+                <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
+                  class="ui-button-success"
+                  (click)="onRowEditSave(detail, ri, rb,rc,commande.idCommandePv);Adding=false"></button>
+                <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
+                  class="ui-button-danger" (click)="onRowEditCancel(detail, ri, rb,rc);Adding=false"></button>
+                <button *ngIf="!editing" pButton type="button" icon="pi pi-trash" class="ui-button-danger"
+                  (click)="deleteDetailCommande(detail,ri,rb,rc)"></button>
+
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="footer">
+            <tr>
+              <td colspan="6">
+                <!--<button pButton type="button" icon="pi pi-plus"(click)="addRowDetailCommande(bon.idCategorie)"></button>-->
+                <span *ngIf="!Adding && bon.statut=='0'"> <button style="float: right" pButton type="button"
+                    icon="pi pi-plus" (click)="addRowDetailCommande(bon.idCategorie);Adding=true"
+                    class="p-button-rounded p-button-text"></button>
+                </span>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        </div>
+        </td>
+        </tr>
+        </ng-template>
+        <ng-template pTemplate="footer" >
+          <tr>
+            <td colspan="7">
+
+              <a nbTooltipPlacement="bottom" *ngIf="bon.statut=='0'"
+                routerLink="/pages/Pointvente/gestionBonCommandePv/NouvelleCommande/{{bon.idBonCommande}}/{{bon.idCategorie}}">
+                <div class="" style="text-align: center; margin-top: 8px">
+                  <button type="button" style="float: right" class="icon-btn add-btn">
+                    <div class="add-icon"></div>
+                    <div class="btn-txt">Ajouter une Nouvelle Commande</div>
+                  </button>
+                </div>
+              </a>
+            </td>
+          </tr>
+        </ng-template>
+        </p-table>
+
+        </div>
+        </td>
+        </tr>
+        </ng-template>
+        </p-table>
+      </nb-tab>
+      <nb-tab tabTitle="Ordonner Bon Commandes" *ngIf="idpointVente==null">
+      </nb-tab>
+    </nb-tabset>
+
+  </nb-card-body>
+</nb-card>

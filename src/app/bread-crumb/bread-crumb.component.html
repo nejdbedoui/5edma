@@ -1,0 +1,49 @@
+<!--<div id="cssmenu" *ngIf="isParentHome">-->
+<!--  <ul>-->
+<!--    <li class="active"><a routerLink="{{currenturl}}">{{ current }}</a></li>-->
+<!--    <li><a routerLink="{{previousurl}}">{{previous}}</a></li>-->
+<!--    <li><a routerLink="{{homeurl}}"><i class="fa fa-home"></i>&nbsp; Home</a></li>-->
+<!--  </ul>-->
+<!--</div>-->
+<!--<div id="cssmenu" *ngIf="!isParentHome">-->
+<!--  <ul>-->
+<!--    <li class="active"><a routerLink="{{currenturl}}">{{ current }}</a></li>-->
+<!--    <li><a routerLink="{{previousurl}}">{{previous}}</a></li>-->
+<!--    <li><a routerLink="{{previousurl}}">{{parent}}</a></li>-->
+<!--    <li><a routerLink="{{homeurl}}"><i class="fa fa-home"></i>&nbsp; Accueil</a></li>-->
+<!--  </ul>-->
+<!--</div>-->
+<div *ngIf="lang =='fr'">
+  <nav  *ngIf="isParentHome">
+    <ol class="cd-breadcrumb">
+      <li><a routerLink="{{homeurl}}"><i class="fa fa-home"></i>Accueil</a></li>
+      <li class="current"><em>{{previous }}</em></li>
+      <li class="current"><em>{{ current  }}</em></li>
+    </ol>
+  </nav>
+  <nav  *ngIf="!isParentHome">
+    <ol class="cd-breadcrumb">
+      <li><a routerLink="{{homeurl}}"><i class="fa fa-home"></i> Accueil</a></li>
+      <li><a routerLink="{{previousurl}}">{{parent }}</a></li>
+      <li><a routerLink="{{previousurl}}">{{previous }}</a></li>
+      <li class="current"><em>{{ current   }}</em></li>
+    </ol>
+  </nav>
+</div>
+<div *ngIf="lang =='ar'">
+<nav dir="rtl"  *ngIf="isParentHome">
+  <ol dir="rtl" class="cd-breadcrumb d-flex">
+    <li dir="rtl"><a routerLink="{{homeurl}}"><i class="fa fa-home"></i>{{'Acceuil' }}</a></li>
+    <li dir="rtl" class="current"><em>{{'LOGIN.'+previous }}</em></li>
+    <li dir="rtl" class="current"><em>{{current }}</em></li>
+  </ol>
+</nav>
+  <nav dir="rtl"  *ngIf="!isParentHome">
+    <ol dir="rtl" class="cd-breadcrumb d-flex">
+      <li dir="rtl"><a routerLink="{{homeurl}}"><i class="fa fa-home"></i>{{'Acceuil' }}</a></li>
+      <li dir="rtl"><a routerLink="{{previousurl}}">{{'LOGIN.'+parent }}</a></li>
+      <li dir="rtl"><a routerLink="{{previousurl}}">{{previous }}</a></li>
+      <li dir="rtl" class="current"><em>{{current }}</em></li>
+    </ol>
+  </nav>
+</div>

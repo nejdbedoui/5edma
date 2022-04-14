@@ -1,0 +1,18 @@
+.cercle {
+    width: 15px;
+    height: 15px;
+    border-radius: 20px;
+    background: green;
+}
+.cercle_gray {
+    width: 15px;
+    height: 15px;
+    border-radius: 20px;
+    background: gray;
+}
+.diplay_flex{
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    align-items: baseline;
+}

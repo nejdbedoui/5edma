@@ -1,0 +1,313 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card>
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Gestion des Produits / Articles</span></div>
+            <div class="col-md-6">
+                <!-- <span style="float: right">({{citoyens.length}} résultats)&nbsp;&nbsp;</span> -->
+                <span style="float: right">{{dt.totalRecords}} Produit(s)&nbsp;&nbsp;</span>
+
+            </div>
+        </div>
+    </nb-card-header>
+    <nb-card-body>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" *ngIf="!affichefilter" style="float: right;background: #79008e !important;"
+                    nbButton [shape]="'round'" (click)="affichefilter=true"> Afficher plus de critéres de
+                    recherche</button>&nbsp;&nbsp;
+                <button type="button" *ngIf="affichefilter" style="float: right" nbButton status="warning"
+                    [shape]="'round'" (click)="affichefilter=false"> Cacher les critères de
+                    recherche</button>&nbsp;&nbsp;
+            </div>
+        </div>
+        <br>
+        <fieldset *ngIf="affichefilter">
+            <legend>Critéres de recherche</legend>
+
+            <div class="row" style="padding-bottom: 10px;">
+                <!-- <div class="col-sm-2">
+                        <label  class="label">Catégorie</label>
+                        <nb-select fullWidth multiple [(ngModel)]="listselectcateg" >
+                            <nb-option *ngFor="let item of categories" [value]="item">
+                            {{ item.designation }}
+                            </nb-option>
+                        </nb-select>
+                
+                </div> -->
+                <!-- <div class="col-sm-1 ">
+                    
+                </div> -->
+                <div class="col-sm-4 ">
+                    <label class="label">Prix:</label><br>
+                    <span>de:&nbsp;&nbsp;</span>
+                    <input type="number" onkeypress="return event.charCode >= 46" min="0" [(ngModel)]="deprix"
+                        maxlength="100" nbInput>
+                </div>
+                <div class="col-sm-4 " style="padding-top: 6px;">
+                    <label class="label"></label><br>
+                    <span>à:&nbsp;&nbsp;</span>
+                    <input type="number" onkeypress="return event.charCode >= 46" min="0" [(ngModel)]="aprix"
+                        maxlength="100" nbInput>
+                </div>
+                <!-- <div class="col-sm-1 ">
+                        Date d'insertion:
+                </div> -->
+                <div class="col-sm-2 centreVerticalement">
+                    <label class="label"> Date d'insertion:</label>
+                    <p-calendar fullWidth [(ngModel)]="datecreation" placeholder="date" class="disgness pos"
+                        dateFormat="dd-mm-yy" [locale]="calendar"></p-calendar>
+                </div>
+
+            </div>
+            <div class="row">
+                <!-- <div class="col-sm-4">
+                    <nb-checkbox [(ngModel)]="notaffectedtocateg" status="success">non affecté à une categorie</nb-checkbox>
+                </div> -->
+                <div class="col-sm-4">
+                    <nb-checkbox [(ngModel)]="repturedestock" status="success">en repture de stock</nb-checkbox>
+                </div>
+                <!-- <div class="col-sm-4">
+                        <nb-checkbox [(ngModel)]="presquerepturestock" status="success">presque en repture de stock</nb-checkbox>
+                </div> -->
+                <div class="col-sm-4">
+                    <nb-checkbox [(ngModel)]="aveccodeinterne" status="success">avec code à bare interne</nb-checkbox>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <button nbButton type="button" *ngIf="fannule" status="danger" (click)="annuler();fannule=false"
+                        style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; "
+                        [shape]="'round'">Annuler</button>
+                </div>
+                <div class="col-sm-6">
+                    <button type="submit" nbButton status="success" (click)="search()" class="button-style"
+                        style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Chercher</button>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="row" style="margin-top:2%;">
+            <div class="col-md-8">
+                <div class="upload-btn-wrapper">
+                    <button class="btn cursor" style="margin-top: 15px; background-color: orange;"
+                        (click)="exportExcel()">{{!isStockCentral? "Exporter Produit": "Exporter Etat Stock"}}</button>
+                </div>
+            </div>
+
+        </div>
+        <p-table #dt [columns]="cols2" [value]="listproduit" [loading]="loading" [paginator]="true"
+            [rowsPerPageOptions]="[20,30,50]" [rows]="20" [responsive]="true"
+            [globalFilterFields]="['designation','code']">
+            <ng-template pTemplate="caption">
+                <div style="text-align: right">
+                    <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText size="50" placeholder="Chercher"
+                        (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:40%; min-height: 34px;">
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th rowspan="2">Désignation</th>
+                    <th colspan="3" style="text-align: center;"> Stock</th>
+                    <th rowspan="2" *ngIf="!isStockCentral"> Prix</th>
+                    <th rowspan="2" *ngIf="!isStockCentral">Date Création
+                    </th>
+                    <th rowspan="2" *ngIf="!isStockCentral">Action</th>
+                </tr>
+                <tr>
+                    <th>Stock reap</th>
+                    <th>Disponible</th>
+                    <th>Stock Alert</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-produit>
+                <tr>
+                    <td class="col-sm"><img *ngIf="produit.urlImg!=null" [src]="produit.urlImg" width="40px" alt="">
+                        {{produit.designation}}</td>
+                    <!-- <td class="col-sm">{{produit.stockQteDepart}}</td>
+                            <td class="col-sm">{{produit.produitpointvente.stockReel}}</td>
+                            <td class="col-sm">{{produit.stockAlert}}</td> -->
+                    <td class="col-sm">
+                        {{produit!=null?(produit.stockQteDepart!=null?produit.stockQteDepart:'----'):''}}</td>
+                    <!-- <td class="col-sm"> {{produit!=null?(produit.stockQteDepart!=null?produit.produitpointvente.stockReel:'----'):''}}</td> -->
+                    <td class="col-sm">
+                        <span style="padding: 3px; border-radius: 8px;font-weight: 900;"
+                            [ngStyle]="{'background-color':produit.stockactual!=null?(produit.produitpointvente.stockReel< produit.stockQteDepart &&produit.produitpointvente.stockReel> produit.stockAlert ? 'yellow' : produit.produitpointvente.stockReel <produit.stockAlert? 'red':''):'' }">
+                            {{produit!=null?(produit.stockQteDepart!=null?produit.produitpointvente.stockReel:'----'):''}}</span>
+                        <nb-icon *ngIf="
+                                    produit.produitpointvente.stockReel != null &&
+                                    produit.produitpointvente.stockReel < produit.stockAlert
+                                " icon="alert-triangle-outline" status="danger"></nb-icon>
+                        <nb-icon *ngIf="
+                        produit.produitpointvente.stockReel != null &&
+                        produit.produitpointvente.stockReel < produit.stockQteDepart &&
+                        produit.produitpointvente.stockReel > produit.stockAlert
+                                " icon="alert-triangle-outline" status="warning"></nb-icon>
+                    </td>
+                    <td class="col-sm">
+                        {{produit!=null?(produit.stockQteDepart!=null?produit.stockAlert:'----'):''}}</td>
+                    <td class="col-sm" *ngIf="!isStockCentral">{{produit.produitpointvente.prix}}</td>
+                    <td class="col-sm" *ngIf="!isStockCentral">{{produit.dateCreation |date}}</td>
+                    <td class="col-sm" *ngIf="!isStockCentral">
+                        <i (click)="getlistcategorie(produit.idProduit)" nbTooltip="Liste des categories"
+                            nbTooltipPlacement="bottom"
+                            class="far fa-eye cursor buttonround affiche1button"></i>&nbsp;&nbsp;
+                        <button (click)="prix(produit)" *ngIf="produit.fautorisGerant==1" nbButton
+                            class="btn  buttonround " style="background-color: #CF5FFE !important"
+                            nbTooltip="changer prix" nbTooltipPlacement="bottom"><i
+                                class="fas fa-dollar-sign"></i></button> &nbsp;&nbsp;
+                        <button (click)="mvt(produit)" *ngIf="produit.typeProduit=='stockable'"
+                            style="background-color: #8066FF !important" nbButton class="button-style buttonround"
+                            nbTooltip="Mouvement stock" nbTooltipPlacement="bottom"> <i
+                                class="fas fa-random"></i></button>
+                        <!-- 
+                                <i style="color: green" class="far fa-edit cursor col-sm-2"></i>
+                              <i (click)="mvt(produit)"   style="color: red" class="far fa-trash-alt cursor col-sm-2"></i> -->
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-produit>
+                <tr>
+                    <td [attr.colspan]="produit.length">
+                        <div style="display: flex;
+                                justify-content: center;">
+                            La liste est vide
+                        </div>
+
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+    </nb-card-body>
+</nb-card>
+
+<p-dialog [header]="currentproduit.designation" [(visible)]="diplay" [modal]="true" [responsive]="true"
+    [style]="{width: '700px', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+    <div class="row">
+        <div class="col-sm" *ngIf="currentproduit.produitpointvente!=null">
+            <div class="form-group">
+                Ancien prix: {{currentproduit.produitpointvente.prix}}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                Nouveau prix :
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="form-group">
+                <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100"
+                    [(ngModel)]="newprix" nbInput fullWidth placeholder="prix">
+            </div>
+        </div>
+    </div>
+    <p-footer>
+        <button type="button" nbButton (click)="diplay=false" status="danger"
+            style="background: #ff3d71; border-color: white;float:left;" [shape]="'round'">Quitter</button>
+        <button type="button" nbButton status="success" class="button-style" style=" border-color: white;"
+            [shape]="'round'" (click)="diplay=false;updatestock()">Enregistrer</button>
+    </p-footer>
+</p-dialog>
+
+<p-dialog [header]="currentproduit.designation" [(visible)]="diplay2" [modal]="true" [responsive]="true"
+    [style]="{width: '700px', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+    <div class="row">
+        <div class="col-sm">
+            <div class="form-group" *ngIf="currentproduit.produitpointvente!=null">
+                Quantité dispo :<b> {{currentproduit.produitpointvente.stockReel}}</b> unités
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm" *ngIf="mvtsotck.sens!=null">
+            <div class="form-group">
+                Dernier mouvement: {{mvtsotck.sens=='+'? 'alimentation':'abaissement'}} de <b> {{mvtsotck.quantite}}</b>
+                unités le {{mvtsotck.dateMvt|date}}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <div class="form-group">
+                Operation :
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="form-group">
+                <nb-select fullWidth [(ngModel)]="sens">
+                    <nb-option *ngFor="let item of operation" [value]="item.value">
+                        {{ item.label }}
+                    </nb-option>
+                </nb-select>
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="form-group">
+                quantité :
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="form-group">
+                <input type="number" onkeypress="return event.charCode >= 46" min="0" [(ngModel)]="quantite"
+                    maxlength="100" nbInput fullWidth placeholder="quantité">
+            </div>
+        </div>
+    </div>
+    <p-footer>
+        <button type="button" nbButton (click)="diplay2=false" status="danger"
+            style="background: #ff3d71; border-color: white;float:left;" [shape]="'round'">Quitter</button>
+        <button type="button" nbButton status="success" class="button-style" style=" border-color: white;"
+            [shape]="'round'" (click)="diplay2=false;entregistre()">Enregistrer</button>
+    </p-footer>
+</p-dialog>
+
+
+<p-dialog header="Sous catégories" [(visible)]="diplay3" [modal]="true" [responsive]="true"
+    [style]="{width: '700px', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+    <div class="row">
+        <div class="col-md-6"><span style="font-size: 20px;"></span></div>
+        <div class="col-md-6"><span style="float: right">{{np.totalRecords}} Catégorie(s)&nbsp;&nbsp;</span></div>
+    </div>
+    <br>
+    <p-table #np [columns]="cols" [loading]="loading2" [value]="listcategories" [rows]="10" [paginator]="true"
+        [responsive]="true" autoLayout="true" [globalFilterFields]="['catageory.designation']">
+        <ng-template pTemplate="caption">
+            <div style="text-align: right">
+                <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+                <input type="text" pInputText size="50" placeholder="Chercher"
+                    (input)="np.filterGlobal($event.target.value, 'contains')" style="width:40%; min-height: 34px;">
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Désignation</th>
+                <th>Active</th>
+                <!-- <th>Date Création</th> -->
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-categories>
+            <tr>
+                <td>{{categories!=null?categories.catageory.designation:''}}</td>
+                <!-- <td>{{categories!=null?categories.catageory.code:''}}</td> -->
+                <td>{{categories!=null? (categories.catageory.fActif==1?'oui':'non'):''}}</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-categori>
+            <tr>
+                <td [attr.colspan]="listcategories.length">
+                    <div style="display: flex;
+              justify-content: center;">
+                        La liste est vide
+                    </div>
+
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+
+</p-dialog>

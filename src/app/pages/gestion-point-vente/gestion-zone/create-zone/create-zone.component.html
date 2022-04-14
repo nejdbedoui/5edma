@@ -1,0 +1,122 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6">
+        <span style="font-size: 20px">Create Zone</span>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <form [formGroup]="zoneForm" (ngSubmit)="addZone()">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label class="label"
+              >Nom du Zone<span style="color: red">*</span></label
+            >
+            <input
+              type="text"
+              formControlName="name"
+              nbInput
+              fullWidth
+              placeholder="Nom du Zone"
+              [ngClass]="{
+                'has-error': isZoneFormSubmitted && formControls.name.errors
+              }"
+            />
+            <label
+              *ngIf="isZoneFormSubmitted && formControls.name.errors"
+              class="label-has-error"
+              ><i class="fas fa-exclamation-circle"></i>Veuiller remplir votre
+              nom du Zone</label
+            >
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label class="label"
+              >Employer <span style="color: red">*</span></label
+            >
+            <nb-select
+              fullWidth
+              formControlName="idEmployer"
+              placeholder="employer"
+              multiple
+              [status]="
+                isZoneFormSubmitted && formControls.idEmployer.errors
+                  ? 'danger'
+                  : ''
+              "
+            >
+              <nb-option
+                *ngFor="let item of employees"
+                [value]="item.idUtilisateur"
+              >
+                {{ item.nom }} {{ item.prenom }}
+              </nb-option>
+            </nb-select>
+            <label
+              *ngIf="isZoneFormSubmitted && formControls.idEmployer.errors"
+              class="label-has-error"
+              ><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre
+              employeur</label
+            >
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label class="label">Table <span style="color: red">*</span></label>
+            <nb-select
+              fullWidth
+              formControlName="tableCaissesIds"
+              placeholder="Table"
+              multiple
+              [status]="
+                isZoneFormSubmitted && formControls.tableCaissesIds.errors
+                  ? 'danger'
+                  : ''
+              "
+            >
+              <nb-option *ngFor="let item of tables" [value]="item.idTable">
+                {{ item.numTable }}
+              </nb-option>
+            </nb-select>
+            <label
+              *ngIf="isZoneFormSubmitted && formControls.tableCaissesIds.errors"
+              class="label-has-error"
+              ><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre
+              table</label
+            >
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <button
+            (click)="returntolist()"
+            nbButton
+            type="reset"
+            status="danger"
+            style="float: left; background: #ff3d71; margin-top: 15px"
+            [shape]="'round'"
+          >
+            Annuler
+          </button>
+        </div>
+        <div class="col-6">
+          <button
+            type="submit"
+            nbButton
+            status="success"
+            class="button-style"
+            style="float: right"
+            [shape]="'round'"
+          >
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+</nb-card>

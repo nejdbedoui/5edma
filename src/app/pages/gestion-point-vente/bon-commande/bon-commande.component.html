@@ -1,0 +1,58 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card>
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Gestion des Bons de Commandes</span></div>
+            <div class="col-md-6">
+                <!-- <span style="float: right">({{citoyens.length}} résultats)&nbsp;&nbsp;</span> -->
+                <span style="float: right">{{dt.totalRecords}} Bon(s) de Commande(s)&nbsp;&nbsp;</span>
+
+            </div>
+        </div>
+    </nb-card-header>
+    <nb-card-body>
+        <p-table #dt [columns]="cols" [value]="bonCommandes" [loading]="loading" [responsive]="true" [paginator]="true"
+            [rowsPerPageOptions]="[20,30,50]" [rows]="20">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Référencée 
+                    </th>
+                    <th>Total 
+                    </th>
+                    <th>État 
+                    </th>
+                    <th>Date de Géneration 
+                    </th>
+                    <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-table>
+                <tr>
+                    <td>{{table.referance}}</td>
+                    <td>{{table.total}}</td>
+                    <td>{{table.etat}}</td>
+                    <td>{{table.generatedDate| date :' dd-MM-yyyy hh:mm'}}</td>
+
+                    <td> 
+                        <i nbTooltip="generer bon de commande"
+                            nbTooltipPlacement="bottom" (click) = "exportPdf(table)"
+                            style="background-color: #79008e;padding-top: 10px;padding-bottom: 10px;"
+                            class=" btn fas fa-eye cursor buttonround"></i>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-table>
+                <tr>
+                    <td [attr.colspan]="table.length">
+                        <div style="display: flex;
+                                justify-content: center;">
+                            La liste est vide
+                        </div>
+
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+    </nb-card-body>
+</nb-card>

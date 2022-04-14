@@ -1,0 +1,135 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card >
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Gestion des Employés</span></div>
+      <div class="col-md-6">
+        <!-- <span style="float: right">({{citoyens.length}} résultats)&nbsp;&nbsp;</span> -->
+        <span style="float: right">{{dt.totalRecords}} Employé(s) ( {{getnbrh()}} Homme(s) / {{getnbrf()}}  Femme(s) )&nbsp;&nbsp;</span>
+
+</div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+      <div class="row">
+            <div class="col-md-6">
+                </div>
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-4">
+                    <div class="" style="text-align: center; margin-top: 8px;">
+                        <button type="button" (click)="adduser()" style="float: right;"  class="icon-btn add-btn">  
+                          <div class="add-icon"></div>
+                          <div class="btn-txt">Ajouter un Employé</div>
+                        </button>
+                      </div>
+                </div>
+      </div>
+      <br>
+      <p-table #dt [columns]="cols" [value]="utilisateurs" [loading]="loading" [responsive]="true" [paginator]="true" [rows]="10" [globalFilterFields]="['nom','prenom','identifiant','matricule','login']" >
+        <ng-template pTemplate="caption">
+          <div style="text-align: right">        
+              <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+              <input type="text" pInputText size="50" placeholder="Chercher" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:40%; min-height: 34px;">
+          </div>
+      </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="nom">Nom & Prenom <p-sortIcon field="nom"></p-sortIcon></th>
+                <th pSortableColumn="identifiant">Identifiant <p-sortIcon field="identifiant"></p-sortIcon></th>    
+                <th pSortableColumn="matricule">Matricule <p-sortIcon field="matricule"></p-sortIcon></th>
+                <th pSortableColumn="login">Login <p-sortIcon field="login"></p-sortIcon></th>
+                <th pSortableColumn="dateCreation">expérience <p-sortIcon field="dateCreation"></p-sortIcon></th>
+                <th pSortableColumn="isvalidated">Status <p-sortIcon field="isvalidated"></p-sortIcon></th>
+                <th>Action</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+            <tr>
+                <td>{{user.nom}} {{user.prenom}}</td>
+                <td>{{user.identifiant}}</td>
+                <td>{{user.matricule}}</td>
+                <td>{{user.login}}</td>
+                <td>{{calculeage(user.dateCreation)}}</td>
+                <td>
+                    <div class="ui-g-3"></div>
+                    <div class="btn btn-danger ui-g-6" [ngClass]="{'btn-danger':user.isvalidated==0 || user.isvalidated==null,'btn-success':user.isvalidated==1}">{{user.isvalidated==1? "Valid":"Non Valid"}}</div>
+                    <div class="ui-g-3"></div>
+                    </td>
+                 
+                        <td *ngIf="!verifconnecteduser(user)" >
+                                <a class="cuseur buttonround editbutton" style="cursor: pointer;padding-right: 10px;padding-left: 10px;" nbTooltip="Modifier Utilisateur" nbTooltipPlacement="bottom" (click)="edituser(user)"  > <i class=" cuseur far fa-edit"> </i> </a> &nbsp;&nbsp;
+                                <i (click)="blockuser(user)" style="cursor: pointer;" [ngClass]="{'  fa-lock-open':user.isvalidated==0 || user.isvalidated==null,' fa-lock':user.isvalidated!=0}" class=" fas cursor buttonround affiche1button" nbTooltip="Bloquer Utilisateur" nbTooltipPlacement="bottom"></i>&nbsp;&nbsp;
+                                <i (click)="currentuser=user;diplay2=true"  style="cursor: pointer;" class=" far fa-trash-alt cuseur buttonround deletebutton" nbTooltip="Supprimer Utilisateur" nbTooltipPlacement="bottom"></i>&nbsp;&nbsp;
+                                <i (click)="findAllOperationsByIdEmploye(user.idUtilisateur)"  style="margin-top: 10px;background-color: #79008e;padding-top: 10px;padding-bottom: 10px;" class=" btn fas fa-eye cursor buttonround" nbTooltip="Dépenses" nbTooltipPlacement="bottom"></i>&nbsp;&nbsp;
+
+                                <!-- <a class="cuseur buttonround deletebutton" style="padding-right: 10px;padding-left: 10px;" nbTooltip="Supprimer Utilisateur" nbTooltipPlacement="bottom" (click)="currentuser=user.idUtilisateur;diplay2=true"> <i class=" cuseur far fa-trash-alt"></i> </a> -->
+                            
+                     </td>
+            </tr>
+        </ng-template>
+        <ng-template  pTemplate="emptymessage" let-user>
+            <tr>
+                <td [attr.colspan]="user.length" >
+                    <div style="display: flex;
+                    justify-content: center;">
+                        La liste est vide
+                    </div>
+                    
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+  </nb-card-body>
+</nb-card>
+
+<p-dialog  header="Supprimer Utilisateur" [(visible)]="diplay2" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+Voulez-vous bien supprimer cette Utilisateur ?
+<p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplay2=false;deleteuser()">Supprimer</button>
+    <button type="button" nbButton  (click)="diplay2=false"  class="ui-button-secondary">Quitter</button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog  header="Bloquer Utilisateur" [(visible)]="diplay2blovk" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+Voulez-vous bien Bloquer cette Utilisateur ?
+<p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplay2blovk=false;block()">Supprimer</button>
+    <button type="button" nbButton  (click)="diplay2blovk=false"  class="ui-button-secondary">Quitter</button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog  header="dépence" [(visible)]="displaymap" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+<p-table [columns]="cols" [value]="operations" [loading]="loading1"  [responsive]="true" [paginator]="true" [rows]="10">
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="width: 100%;">Montant</th>
+            <th style="width: 100%;">Type opération</th>
+            <th style="width: 100%;">Date Création </th>
+
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-operations>
+        <tr>
+            <td>{{operations.montant}}</td>
+            <td>{{findoperationtype(operations.idTypeOperation)}}</td>
+            <td>{{operations.dateOperation |date:'dd-MM-yyyy'}}</td>
+       </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-operations>
+        <tr>
+            <td [attr.colspan]="operations.length" >
+                <div style="display: flex;
+                justify-content: center;">
+                    La liste est vide
+                </div>
+                
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+</p-dialog>
+

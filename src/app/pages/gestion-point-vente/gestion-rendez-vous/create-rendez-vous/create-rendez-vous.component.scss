@@ -1,0 +1,17 @@
+.autocomplete-container .input-container input{
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+    line-height: 1.5rem !important;
+    background-color: #f7f9fc !important;
+    border-color: #edf1f7 !important;
+    border-style: solid !important;
+    border-width: 1px !important;
+    color: #1a2138 !important;
+    font-family: Open Sans, sans-serif !important;
+    /* -webkit-appearance: none; */
+    transition-duration: 0.15s !important;
+    transition-property: border, background-color, color, box-shadow !important;
+    transition-timing-function: ease-in !important;
+    padding: 0.4375rem 1.125rem !important;
+    width: 100% !important;
+}

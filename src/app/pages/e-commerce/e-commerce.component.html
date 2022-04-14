@@ -1,0 +1,764 @@
+<div class="row" *ngIf="!type&&pointVente.typePv!='centraleStock'">
+  <div class="col-md-12">
+    <nb-card accent="info">
+      <nb-card-header>
+        <div class="row" *ngIf="!type">
+          <div class="col-md-5">
+            Evolution du chiffre d'affaires {{choise != null ? toDisplay():'' }}
+            <button class="btn btn-primary"
+              style="background-color: white; border-color:white; float: right;color:#417bff"
+              (click)="exporttoPdf('#bar1','Evolution du chiffre d\'affaires')" pInputText pTooltip="Enter your name"
+              tooltipPosition="bottom" placeholder="Bottom"><img src="../../../assets/images/export-pdf.PNG"
+                style="width: 30px" alt="pdf"></button>
+
+          </div>
+          <div class="col-md-4">
+            <form class="form-row" (ngSubmit)="period()" *ngIf="choise == 'P'">
+              <div class="col-md-5">
+                <div class="form-group">
+                  <input nbInput placeholder="Date Début" name="startdate" style="width: 105px;    height: 30px;"
+                    [nbDatepicker]="startDate" [(ngModel)]="mondayOfWeek">
+                  <nb-datepicker #startDate></nb-datepicker><i style="margin-left: 2%;font-weight:600"
+                    class="far fa-calendar-plus"></i>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <div class="form-group">
+                  <input nbInput placeholder="Date Fin" name="enddate" [nbDatepicker]="endDate"
+                    style="width: 105px; height: 30px;" [(ngModel)]="sundayOfWeek">
+                  <nb-datepicker #endDate></nb-datepicker> <i style="margin-left: 2%;font-weight:600"
+                    class="far fa-calendar-plus"></i>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <button type="submit" style="background-color: white;float: right;color:#417bff"
+                    class="btn btn-primary"><i class="fab fa-searchengin"></i></button>
+                </div>
+              </div>
+            </form>
+            <div *ngIf="this.choise != 'P'"
+              style="margin-right: 10px; margin-top: -8px; margin-bottom: -10px; display: flex;padding-top: 6px;">
+              <span style="color: #8f9bb3; margin-top: 7px;"> Journée : &nbsp; &nbsp;</span>
+              <p-calendar class="disgness" dateFormat="dd/mm/yy" fullWidth [(ngModel)]="today"
+                (ngModelChange)="loadWithDate()" id="dateDebut"></p-calendar>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <nb-select fullWidth [(selected)]="choise" (selectedChange)="toDisplay2()">
+              <nb-option *ngFor="let choise of choises" [value]="choise.value">
+                {{ choise.label }}
+              </nb-option>
+            </nb-select>
+          </div>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row">
+          <div class="col-md-12">
+            <!-- <chart #chart type="line" [data]="data" [options]="options" style="min-height: 250px;"></chart> -->
+            <p-chart #bar1 id="bar1" type="line" [data]="data" [options]="options" height='350px'
+              style="min-height: 350px;"></p-chart>
+
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+</div>
+<!-- <div class="row">
+  <div class="col-md-12">
+    <nb-card class="card-border-radius">
+      <nb-card-header>
+        <div class="row card-space">
+          <div style="margin-left: 10px;">
+            <span style="color: #8f9bb3;" *ngIf="pointVenteId!=null" >Point de Vente : </span> {{pointVente.designation}}
+          </div>
+          <div *ngIf="this.choise != 'P'" style="margin-right: 10px; margin-top: -8px; margin-bottom: -10px; display: flex;">
+            <span style="color: #8f9bb3; margin-top: 7px;"> Journée : &nbsp; &nbsp;</span>
+            <p-calendar class="disgness"  dateFormat="dd/mm/yy" fullWidth [(ngModel)]="today" (ngModelChange)="loadWithDate()" id="dateDebut"></p-calendar>
+          </div>
+          <div *ngIf="this.choise == 'P'" style="margin-right: 10px; margin-top: -8px; margin-bottom: -10px; display: flex;">
+            <span style="color: #8f9bb3; margin-top: 7px;"> Période : &nbsp; &nbsp;</span>
+            <span style="padding-top: 8px;"> De {{mondayOfWeek |date:'dd-MM-yyyy'}} à {{sundayOfWeek |date:'dd-MM-yyyy'}} </span> 
+          </div>
+        </div>
+      </nb-card-header>
+    </nb-card>
+  </div>
+</div> -->
+<div class="row">
+  <div class="col-md-4" *ngIf="!type&&pointVente.typePv!='centraleStock'">
+    <nb-card style="border-radius: 15px;">
+      <nb-card-header class="card-header-style">
+        <div class="header-card-style" *ngIf="this.choise != 'P'">Chiffre d'affaire de la journée</div>
+        <div class="header-card-style" *ngIf="this.choise == 'P'">Chiffre d'affaire par période</div>
+        <div style="display: flex; justify-content: center;">
+          <i class="fas fa-donate fa-3x icon-style"></i>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: center;">
+          <div>
+            <div class="price-style">{{todayCA | number : '1.2-2'}} TND</div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-4" *ngIf="!type &&pointVente.typePv=='centraleStock'">
+    <nb-card style="border-radius: 15px;">
+      <nb-card-header class="card-header-style2">
+        <div class="header-card-style">Nombre Mvts sortants </div>
+        <div style="display: flex; justify-content: center;">
+          <i class="fas fa-arrow-alt-circle-up fa-3x icon-styleout"></i>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: center;">
+          <div>
+            <div class="price-style2">{{mvtmoin.length || 0 }} </div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-4" *ngIf="!type &&pointVente.typePv=='centraleStock'">
+    <nb-card style="border-radius: 15px;">
+      <nb-card-header class="card-header-style2">
+        <div class="header-card-style">Nombre Mvts entrants </div>
+        <div style="display: flex; justify-content: center;">
+          <i class="fas fa-arrow-alt-circle-down fa-3x icon-stylein"></i>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: center;">
+          <div>
+            <div class="price-style2">{{mvtplus.length || 0 }} </div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-4" *ngIf="!type &&pointVente.typePv!='centraleStock'">
+    <nb-card style="border-radius: 15px;">
+      <nb-card-header class="card-header-style2">
+        <div class="header-card-style">panier moyen</div>
+        <div style="display: flex; justify-content: center;">
+          <i class="fas fa-shopping-cart fa-3x icon-style2"></i>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: center;">
+          <div>
+            <div class="price-style2">{{panierMoy || 0 | number : '1.2-2' }} TND</div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-4" *ngIf="!type&&pointVente.typePv!='centraleStock'">
+    <nb-card style="border-radius: 15px;">
+      <nb-card-header class="card-header-style3">
+        <div class="header-card-style">Tickets</div>
+        <div style="display: flex; justify-content: center;">
+          <i class="fas fa-ticket-alt fa-3x icon-style3"></i>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: center;">
+          <div>
+            <div class="price-style3">{{nbrTicket}}</div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+
+  <div class="col-md-3" *ngIf="type">
+    <nb-card style="border-radius: 15px;">
+      <nb-card-header class="card-header-style">
+        <div class="header-card-style">Nombre total des produits</div>
+        <div style="display: flex; justify-content: center;">
+          <i class="fab fa-product-hunt fa-3x icon-style"></i>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: center;">
+          <div>
+            <div class="price-style">{{nbrProduct}} </div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-3" *ngIf="type">
+    <nb-card style="border-radius: 15px;">
+      <nb-card-header class="card-header-style2">
+        <div class="header-card-style">Nombre total des catégories </div>
+        <div style="display: flex; justify-content: center;">
+          <i class="fas fa-th-large fa-3x icon-style2"></i>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: center;">
+          <div>
+            <div class="price-style2">{{nbrcategorie}}</div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-3" *ngIf="type">
+    <nb-card style="border-radius: 15px;">
+      <nb-card-header class="card-header-style3">
+        <div class="header-card-style">Nombre total des règles FID</div>
+        <div style="display: flex; justify-content: center;">
+          <i class="fas fa-shopping-cart fa-3x icon-style3"></i>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: center;">
+          <div>
+            <div class="price-style3">{{nbraction}}</div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-3" *ngIf="type">
+    <nb-card style="border-radius: 15px;">
+      <nb-card-header class="card-header-style3 backgroud-orange">
+        <div class="header-card-style">Nombre total des groupes client</div>
+        <div style="display: flex; justify-content: center;">
+          <i class="fas fa-users fa-3x icon-style3 backgroud-orange"></i>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: center;">
+          <div>
+            <div class="price-style3">{{nbrgroupes}}</div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-6" *ngIf="pointVenteId!=null&&pointVente.typePv!='centraleStock'">
+    <nb-card style="border-radius: 15px;">
+      <nb-card-header class="card-header-style3 backgroud-red">
+        <div class="header-card-style">Nombre des commandes annulées</div>
+        <div style="display: flex; justify-content: center;">
+          <i class="fas fa-ticket-alt fa-3x icon-style3 backgroud-red"></i>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: center;">
+          <div>
+            <div class="price-style3" style="color: #f56c62e0;">{{nbrCommandeAnnuler}}</div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-6" *ngIf="pointVenteId!=null&&pointVente.typePv!='centraleStock'">
+    <nb-card style="border-radius: 15px;">
+      <nb-card-header class="card-header-style3 backgroud-red">
+        <div class="header-card-style">Montant total des Commandes Annulées</div>
+        <div style="display: flex; justify-content: center;">
+          <i class="fas fa-donate fa-3x icon-style3 backgroud-red"></i>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: center;">
+          <div>
+            <div class="price-style3" style="color: #f56c62e0;">{{amountCommandeAnnuler|| 0 | number : '1.2-2'}} TND
+            </div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-2" *ngIf="!type&&pointVente.typePv!='centraleStock'">
+    <nb-card class="client-card " style="background-color: #7366b2 !important; height: 96%;">
+      <!--<nb-card-header>Nebula</nb-card-header>-->
+      <nb-card-body>
+        <div class="row" style="display: flex; justify-content: space-around;">
+          <div>
+            <div class="client-style"> C</div>
+            <div class="client-style"> L</div>
+            <div class="client-style"> I</div>
+            <div class="client-style"> E</div>
+            <div class="client-style"> N</div>
+            <div class="client-style"> T</div>
+            <div class="client-style"> S</div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-md-5" *ngIf="!type&&pointVente.typePv!='centraleStock'">
+    <div class="col-md-12 col-12 col-lg-12 col-xl-12 col-xxl-12">
+      <nb-card class="client-card">
+        <!--<nb-card-header>Nebula</nb-card-header>-->
+        <nb-card-body>
+          <div class="row" style="display: flex; justify-content: space-around;">
+            <div>
+              <i class="fas fa-walking fa-7x" style="color: white"></i>
+            </div>
+            <div>
+              <hr class="hr-style">
+            </div>
+            <div>
+              <div class="client-style">{{clientPassage}} Passager</div>
+              <!-- <div class="sub-style">Passager </div> -->
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+    <div class="col-md-12 col-12 col-lg-12 col-xl-12 col-xxl-12">
+      <nb-card class="client-card-2" style="background: no-repeat padding-box #53bae7;">
+        <!--<nb-card-header>Nebula</nb-card-header>-->
+        <nb-card-body>
+          <div class="row" style="display: flex; justify-content: space-around;">
+            <div>
+              <i class="fas fa-user fa-7x" style="color: white;"></i>
+            </div>
+            <div>
+              <hr class="hr-style">
+            </div>
+            <div>
+              <div class="client-style">{{newClient}} Nouveau</div>
+              <div class="sub-style"> Sur Caisse</div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+    <!-- <div class="col-md-6 col-6 col-lg-6 col-xl-6 col-xxl-6">
+      <nb-card class="client-card-2" style=" background: #7366b2 0% 0% no-repeat padding-box !important;">
+        <nb-card-body>
+          <div class="row" style="display: flex; justify-content: space-around;">
+            <div>
+              <i class="fas fa-user fa-7x" style="color: white;"></i>
+            </div>
+            <div>
+              <hr class="hr-style">
+            </div>
+            <div>
+              <div class="client-style">{{nbrnewclient}} Nouveau</div>
+              <div class="sub-style">Clients Mobile et caisse</div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div> -->
+
+    <div class="col-md-12 col-12 col-lg-12 col-xl-12 col-xxl-12">
+      <nb-card class="client-card-2" style="background: #FFC107 0% 0% no-repeat padding-box !important;">
+        <!--<nb-card-header>Nebula</nb-card-header>-->
+        <nb-card-body>
+          <div class="row" style="display: flex; justify-content: space-around;">
+            <div>
+              <i class="fas fa-mobile-alt fa-7x" style="color: white;"></i>
+            </div>
+            <div>
+              <hr class="hr-style">
+            </div>
+            <div>
+              <div class="client-style">{{nbrnewclientmobile}} Nouveau </div>
+              <div class="sub-style">Sur App </div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+
+
+  </div>
+  <div class="col-md-5" *ngIf="!type&&pointVente.typePv!='centraleStock'">
+    <div class="col-md-12 col-12 col-lg-12 col-xl-12 col-xxl-12">
+      <nb-card class="client-card-2 cadrerespansive"
+        style=" background: #36b637 0% 0% no-repeat padding-box !important;">
+        <!--<nb-card-header>Nebula</nb-card-header>-->
+        <nb-card-body>
+          <div class="row" style="display: flex; justify-content: space-around;">
+            <div>
+              <i class="fas fa-walking fa-7x" style="color: white"></i>
+            </div>
+            <div>
+              <hr class="hr-style">
+            </div>
+            <div>
+              <div class="client-style">{{nbrclientmobile}} N° Total</div>
+              <div class="sub-style">des Clients connectés</div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
+
+  <div class="col-md-12" *ngIf="pointVenteId!=null&&pointVente.typePv!='centraleStock'">
+    <nb-tabset (changeTab)=changetab($event)>
+      <nb-tab tabTitle="CA par produit">
+      </nb-tab>
+      <nb-tab *ngIf="pointVente.fAffectEmployetoservice==1" tabTitle="CA par employés">
+      </nb-tab>
+    </nb-tabset>
+  </div>
+
+  <div *ngIf="afficheproduit && pointVenteId!=null&&pointVente.typePv!='centraleStock'"
+    [ngClass]="{'col-xxl-6':listproducts.length<=10,'col-md-6':listproducts.length<=10,'col-xl-6':listproducts.length<=10,'col-lg-6':listproducts.length<=10,'col-6':listproducts.length<=10,'col-xxl-12':listproducts.length>10,'col-md-12':listproducts.length>10,'col-xl-12':listproducts.length>10,'col-lg-12':listproducts.length>10,'col-12':listproducts.length>10}"
+    style="width: 100%">
+    <nb-flip-card [showToggleButton]="false" [flipped]="flipped">
+      <nb-card-front>
+        <nb-card size="large">
+          <nb-card-header style="display: flex;">
+            <div class="col-md-12">
+              Chiffre d'affaire des produits vendus
+              <nb-icon icon="chevron-right-outline" pack="eva" class="flip-icon" (click)="toggleView()"></nb-icon>
+              <button class="btn btn-primary"
+                style="background-color: white; border-color:white; float: right;color:#417bff"
+                (click)="exporttoPdf('#CAPC','Chiffre d\'affaires des produits ','consommés',listproducts,'produit')"
+                pInputText pTooltip="Enter your name" tooltipPosition="bottom" placeholder="Bottom"><img
+                  src="../../../assets/images/export-pdf.PNG" style="width: 30px" alt="pdf"></button>
+            </div>
+
+          </nb-card-header>
+          <nb-card-body id="CAPC">
+            <nb-list>
+              <nb-list-item>
+                <div class="row">
+                  <div class="col-md-6">
+                    <b>Produit</b>
+                  </div>
+                  <div class="col-md-3">
+                    <b>Quantité</b>
+                  </div>
+                  <div class="col-md-3">
+                    <b>Chiffre d'affaire</b>
+                  </div>
+                </div>
+              </nb-list-item>
+              <nb-list-item *ngFor="let item of listproducts">
+                <div class="row">
+                  <div class="col-md-6">
+                    {{ item.designation }}
+                  </div>
+                  <div class="col-md-3">
+                    {{item.nbr}}
+                  </div>
+                  <div class="col-md-3">
+                    {{item.cA}}
+                  </div>
+                </div>
+
+                <span></span>
+
+
+              </nb-list-item>
+            </nb-list>
+            <br>
+            <div *ngIf="listproducts==null || listproducts.length==0">la liste est vide</div>
+
+            <!-- <chart #bar3 type="horizontalBar" [data]="barPartidata" [options]="chartoptions" style="height: 270px; width: 99%"></chart> -->
+          </nb-card-body>
+        </nb-card>
+      </nb-card-front>
+      <nb-card-back>
+        <nb-card size="large">
+          <nb-card-header style="display: flex;">
+            <div class="col-md-12">
+              Chiffre d'affaire des produits vendus
+              <nb-icon icon="chevron-right-outline" pack="eva" class="flip-icon" (click)="toggleView()"></nb-icon>
+              <button class="btn btn-primary"
+                style="background-color: white; border-color:white; float: right;color:#417bff"
+                (click)="exporttoPdf('#CAPCG','Chiffre d\'affaires des produits ','consommés')" pInputText
+                pTooltip="Enter your name" tooltipPosition="bottom" placeholder="Bottom"><img
+                  src="../../../assets/images/export-pdf.PNG" style="width: 30px" alt="pdf"></button>
+
+            </div>
+
+          </nb-card-header>
+          <nb-card-body id="CAPCG">
+            <!-- <chart #pie3 type="polarArea" [data]="pieProductdata" [options]="optionspie" style="height: 270px; width: 99%"></chart> -->
+            <p-chart type="polarArea" [data]="pieProductdata"></p-chart>
+
+          </nb-card-body>
+        </nb-card>
+      </nb-card-back>
+    </nb-flip-card>
+  </div>
+  <div *ngIf="afficheproduit && pointVenteId!=null&&pointVente.typePv!='centraleStock'"
+    [ngClass]="{'col-xxl-6':listpacks.length<=10,'col-md-6':listpacks.length<=10,'col-xl-6':listpacks.length<=10,'col-lg-6':listpacks.length<=10,'col-6':listpacks.length<=10,'col-xxl-12':listpacks.length>10,'col-md-12':listpacks.length>10,'col-xl-12':listpacks.length>10,'col-lg-12':listpacks.length>10,'col-12':listpacks.length>10}"
+    style="width: 100%">
+    <nb-flip-card [showToggleButton]="false" [flipped]="flipped2">
+      <nb-card-front>
+        <nb-card size="large">
+          <nb-card-header style="display: flex;">
+            <div class="col-md-12">
+              Chiffre d'affaire des packs consommés
+              <nb-icon icon="chevron-right-outline" pack="eva" class="flip-icon" (click)="toggleView2()"></nb-icon>
+              <button class="btn btn-primary"
+                style="background-color: white; border-color:white; float: right;color:#417bff"
+                (click)="exporttoPdf('#CAPC1','Chiffre d\'affaires des packs','consommés',listpacks,'pack')" pInputText
+                pTooltip="Enter your name" tooltipPosition="bottom" placeholder="Bottom"><img
+                  src="../../../assets/images/export-pdf.PNG" style="width: 30px" alt="pdf"></button>
+
+            </div>
+
+          </nb-card-header>
+          <nb-card-body id="CAPC1">
+            <nb-list>
+              <nb-list-item>
+                <div class="row">
+                  <div class="col-md-6">
+                    <b>Pack</b>
+                  </div>
+                  <div class="col-md-3">
+                    <b>Quantité</b>
+                  </div>
+                  <div class="col-md-3">
+                    <b>Chiffre d'affaire</b>
+                  </div>
+                </div>
+              </nb-list-item>
+              <nb-list-item *ngFor="let item of listpacks">
+                <div class="row">
+                  <div class="col-md-6">
+                    {{ item.designation }}
+                  </div>
+                  <div class="col-md-3">
+                    {{item.nbr}}
+                  </div>
+                  <div class="col-md-3">
+                    {{item.cA}}
+                  </div>
+                </div>
+
+                <span></span>
+
+
+              </nb-list-item>
+
+            </nb-list>
+            <br>
+            <div *ngIf="listpacks==null || listpacks.length==0">la liste est vide</div>
+
+            <!-- <chart #bar3 type="horizontalBar" [data]="barPartidata" [options]="chartoptions" style="height: 270px; width: 99%"></chart> -->
+          </nb-card-body>
+        </nb-card>
+      </nb-card-front>
+      <nb-card-back>
+        <nb-card size="large">
+          <nb-card-header style="display: flex;">
+            <div class="col-md-12">
+              Chiffre d'affaire des packs consommés
+              <nb-icon icon="chevron-right-outline" pack="eva" class="flip-icon" (click)="toggleView2()"></nb-icon>
+              <button class="btn btn-primary"
+                style="background-color: white; border-color:white; float: right;color:#417bff"
+                (click)="exporttoPdf('#CAPC1G','Chiffre d\'affaires des packs ','consommés')" pInputText
+                pTooltip="Enter your name" tooltipPosition="bottom" placeholder="Bottom"><img
+                  src="../../../assets/images/export-pdf.PNG" style="width: 30px" alt="pdf"></button>
+            </div>
+
+          </nb-card-header>
+          <nb-card-body id="CAPC1G">
+            <!-- <chart  #pie43 type="polarArea" [data]="piePackdata" [options]="optionspie" style="height: 270px; width: 99%"></chart> -->
+            <p-chart type="polarArea" [data]="piePackdata"></p-chart>
+
+          </nb-card-body>
+        </nb-card>
+      </nb-card-back>
+    </nb-flip-card>
+  </div>
+  <div
+    *ngIf="pointVente.fAffectEmployetoservice==1 && !afficheproduit && pointVenteId!=null&&pointVente.typePv!='centraleStock'"
+    class="col-xxl-12 col-md-12 col-12 col-lg-12" style="width: 100%">
+    <nb-card>
+      <nb-card-header style="display: flex;">
+        <div class="col-md-12">
+          Chiffre d'affaire par Employé
+        </div>
+
+      </nb-card-header>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <!-- <div class="page-header">
+					  <h1>Horizontal timeline</h1>
+					</div> -->
+            <div style="display:inline-block;width:100%;overflow-y:auto;">
+              <ul class="timeline timeline-horizontal">
+                <li class="timeline-item" *ngFor="let item of listemplyes">
+                  <div class="timeline-badge primary"><i class="far fa-user"></i></div>
+                  <div class="timeline-panel">
+                    <div class="timeline-heading">
+                      <h4 class="timeline-title">{{item.designation}}</h4>
+                      <!-- <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> produit : {{item.idProduit}}</small></p> -->
+                      <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> Nombre de service :
+                          {{item.nbr}}</small></p>
+                    </div>
+                    <div class="timeline-body">
+                      <p>chiffre d'affaire: {{item.cA}}</p>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nb-card>
+  </div>
+  <div class="col-md-12" *ngIf="pointVenteId!=null&&pointVente.typePv!='centraleStock'">
+    <nb-card>
+      <nb-card-header>
+        Liste des sessions fermées et des sessions en cours :
+        <span style="float: right">{{dt.totalRecords}} session(s)&nbsp;&nbsp;</span>
+
+      </nb-card-header>
+      <nb-card-body>
+        <p-table #dt [columns]="cols" [value]="sessions" [loading]="loading" [responsive]="true" [paginator]="true"
+          [rowsPerPageOptions]="[20,30,50]" [rows]="20">
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="utilisateur"> nom & prénom <p-sortIcon field="utilisateur.nom"></p-sortIcon>
+              </th>
+              <th pSortableColumn="dateDebut">Ouverture <p-sortIcon field="dateDebut"></p-sortIcon>
+              </th>
+              <th pSortableColumn="dateFin">fermeture <p-sortIcon field="dateFin"></p-sortIcon>
+              </th>
+              <th pSortableColumn="montantOuverture">Fond départ <p-sortIcon field="montantOuverture"></p-sortIcon>
+              </th>
+              <th pSortableColumn="ChiffreAffaireSession">CA <p-sortIcon field="ChiffreAffaireSession"></p-sortIcon>
+              </th>
+              <th pSortableColumn="montantTiroirCalculeSystem">Montant Tiroir ( calcul système) <p-sortIcon
+                  field="montantTiroirCalculeSystem"></p-sortIcon>
+              </th>
+              <th>Montant Cloture (saisi) </th>
+              <th pSortableColumn="montantTiroirCalculeSystem">Ecart <p-sortIcon field="montantTiroirCalculeSystem">
+                </p-sortIcon>
+              </th>
+              <th pSortableColumn="fFerme">Fermeture session <p-sortIcon field="fFerme"></p-sortIcon>
+              </th>
+              <!-- <th>Action</th> -->
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-table>
+            <tr>
+              <td>{{table?.utilisateur?.nom}} {{table?.utilisateur?.prenom}}</td>
+              <td>{{table.dateDebut|date:'dd-MM-yyyy HH:mm'}}</td>
+              <td>{{table.dateFin |date:'dd-MM-yyyy HH:mm'}}</td>
+              <td>{{table.montantOuverture| number : '1.2-2'}}</td>
+              <td>{{table.ChiffreAffaireSession| number : '1.2-2'}}</td>
+              <td>{{table.montantTiroirCalculeSystem| number : '1.2-2'}}</td>
+              <td style="font-weight: bold;">{{table.montantCloture| number : '1.2-2'}}</td>
+              <td>{{table.montantCloture-table.montantTiroirCalculeSystem | number : '1.2-2'}}
+
+                <nb-icon *ngIf="table.montantCloture-table.montantTiroirCalculeSystem <0 " icon="alert-triangle-outline"
+                  status="danger"></nb-icon>
+              </td>
+              <td>
+                <div *ngIf="table.fFerme==1" style="text-align: center;margin-left: 40%;" nbTooltip="session fermées"
+                  nbTooltipPlacement="bottom" [ngClass]="{'circlegreen':table.fFerme==0,'circlered':table.fFerme==1}">
+                </div>
+                <div (click)="diplaySession = true; currentSession = table" *ngIf="table.fFerme==0"
+                  style="text-align: center;margin-left: 40%;cursor: pointer;" nbTooltip="sessions en cours"
+                  nbTooltipPlacement="bottom" [ngClass]="{'circlegreen':table.fFerme==0,'circlered':table.fFerme==1}">
+                </div>
+              </td>
+
+              <!-- <td> <i (click)="edittable(table)"  class="far fa-edit cursor buttonround editbutton"></i>&nbsp;&nbsp;
+                      <i (click)="deletetable(table)" class="far fa-trash-alt buttonround deletebutton"></i>
+                  </td> -->
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage" let-table>
+            <tr>
+              <td [attr.colspan]="sessions.length">
+                <div style="display: flex;
+                      justify-content: center;">
+                  La liste est vide
+                </div>
+
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </nb-card-body>
+    </nb-card>
+  </div>
+
+  <div class="col-md-12" *ngIf="pointVenteId!=null">
+    <nb-card>
+      <nb-card-header>
+        Liste des Dépenses :
+        <button class="btn btn-primary" style="background-color: white; border-color:white; color:#417bff"
+          (click)="exporttoPdf('#de','Liste des Dépenses',null,depanceDtos,'depance')" pInputText
+          pTooltip="Enter your name" tooltipPosition="bottom" placeholder="Bottom"><img
+            src="../../../assets/images/export-pdf.PNG" style="width: 30px" alt="pdf"></button>
+
+        <span style="float: right">{{de.totalRecords}} Dépense(s)&nbsp;&nbsp;</span>
+
+      </nb-card-header>
+      <nb-card-body>
+        <p-table #de id="de" [columns]="cols2" [value]="depanceDtos" [loading]="loading" [responsive]="true"
+          [paginator]="true" [rowsPerPageOptions]="[20,30,50]" [rows]="20">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Type Dépense </th>
+              <th>Employé</th>
+              <th>Date Opération</th>
+              <th>Montant</th>
+
+              <!-- <th>Action</th> -->
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-table>
+            <tr>
+              <td style="background-color: inherit !important;border: 1px solid #c8c8c8 !important;"
+                [attr.rowspan]="table.depance.length+1">{{table.operationType.designation}}</td>
+
+            </tr>
+            <tr *ngFor="let item of table.depance">
+              <td style="background-color: inherit !important;border: 1px solid #c8c8c8 !important;">{{item.user.nom}}
+                {{item.user.prenom}}</td>
+              <td style="background-color: inherit !important;border: 1px solid #c8c8c8 !important;">
+                {{item.dateOperation| date:' dd-MM-yyyy hh:mm'}}</td>
+              <td style="background-color: inherit !important;border: 1px solid #c8c8c8 !important;">{{item.montant|
+                number : '1.2-2'}} DT</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage" let-table>
+            <tr>
+              <td [attr.colspan]="sessions.length">
+                <div style="display: flex;
+                      justify-content: center;">
+                  La liste est vide
+                </div>
+
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </nb-card-body>
+    </nb-card>
+  </div>
+
+
+</div>
+
+
+
+<p-dialog header="Fermeture session" [(visible)]="diplaySession" [modal]="true" [responsive]="true"
+  [style]="{width: '700px', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  Voulez-vous bien fermer la session ?
+  <p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplaySession=false;fermerSession()">fermer
+      session</button>
+    <button type="button" nbButton (click)="diplaySession=false" class="ui-button-secondary">Quitter</button>
+  </p-footer>
+</p-dialog>

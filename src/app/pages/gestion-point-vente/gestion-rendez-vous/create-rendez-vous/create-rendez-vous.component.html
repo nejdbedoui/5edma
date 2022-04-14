@@ -1,0 +1,126 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card >
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Nouveau Rendez-vous</span></div>
+        </div>
+    </nb-card-header>
+  <nb-card-body >
+        <form [formGroup]="rdvForm" (ngSubmit)="createRDV()">
+            <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="startdate" >Date Reseravation <span style="color: red">*</span></label>
+                            <p-calendar class="disgness" [showTime]="true" dateFormat="dd/mm/yy" fullWidth formControlName="dateReseravation" id="startdate" [showTime]="true"
+                            [ngClass]="{'disgnesserrue': (isSubmitted && (formControls.dateReseravation.errors )) || ( isSubmitted && !isDateChecked)}" (ngModelChange)="choosedate($event)"></p-calendar>
+                            <label *ngIf="(isSubmitted && (formControls.dateReseravation.errors ))" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez Choisir une date</label>
+                            <label *ngIf="(isSubmitted && (!formControls.dateReseravation.errors )) && !isDateChecked" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez choisir une date valide </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="enddate" >Date Fin Reseravation </label>
+                            <p-calendar class="disgness" [showTime]="true" dateFormat="dd/mm/yy"fullWidth formControlName="dateFinReseravation" id="enddate" [showTime]="true"
+                            [ngClass]="{'disgnesserrue': (isSubmitted && (formControls.dateFinReseravation.errors )) || ( isSubmitted && !isDateChecked)}"></p-calendar>
+                            <label *ngIf="(isSubmitted && (formControls.dateFinReseravation.errors ))" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez Choisir une date</label>
+                            <label *ngIf="(isSubmitted && (!formControls.dateFinReseravation.errors )) && !isDateChecked" class="label-has-error"><i class="fas fa-exclamation-circle"></i>  Veuillez choisir une date valide</label>
+                        </div>
+                    </div>
+            </div>
+            <div>
+                    <div class="row">
+                        
+                        <div class="col-md-6" *ngIf="pointvente.fGestionTable==1">
+                                <div class="form-group">
+                                  <label  class="label">Table :</label><br>
+                                  <nb-select fullWidth formControlName="idTable">
+                                    <nb-option *ngFor="let item of tables" [value]="item.idTable">
+                                      {{ item.numTable }}
+                                    </nb-option>
+                                  </nb-select>
+                  
+                                </div>
+                              </div>
+                        <div class="col-md-6" *ngIf="pointvente.fGestionTable==1" >
+                                <div class="form-group">
+                                    <label  class="label">Nombre de personnes : <span style="color: red">*</span></label><br>
+                                    <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100" nbInput fullWidth placeholder="Nombre de personnes" formControlName="nbrPers" >
+                                    <label *ngIf=" isSubmitted && (formControls.nbrPers.errors )" class="label-has-error">
+                                            <i class="fas fa-exclamation-circle"></i> Veuillez Saisir le Nombre de personnes </label>
+                    
+                                </div>
+                        </div>
+                    </div>
+                    <div class="row">
+    
+                    </div>
+                </div>
+            <div class="row">
+                    <div class="ng-autocomplete col-md-6 ">  
+                      <label  class="label">Consommateurs <span style="color: red">*</span></label><br>
+                      <ng-autocomplete  [ngClass]="{'has-error': isSubmitted && (formControls.idConsommateur.errors )}"
+                        fullWidth
+                        [data]="Consommateurs"
+                        [searchKeyword]="keyword"
+                        (selected)='selectEvent($event)'
+                        (inputChanged)='onChangeSearch($event)'
+                        (inputFocused)='onFocused($event)'
+                        (inputCleared)='cleardata($event)'
+                        [itemTemplate]="itemTemplate"
+                        formControlName="idConsommateur"
+                        >                                 
+                      </ng-autocomplete>
+                        
+                      <ng-template #itemTemplate let-item>
+                      <a [innerHTML]="getname(item)"></a>
+                      </ng-template>
+                        
+                      <!-- <ng-template #notFoundTemplate let-notFound>
+                      <div [innerHTML]="notFound"></div>
+                      </ng-template> -->
+                      <label *ngIf=" isSubmitted && (formControls.idConsommateur.errors )" class="label-has-error">
+                      <i class="fas fa-exclamation-circle"></i> Veuillez choisir le Consommateur </label>
+                            
+                    </div>
+                              
+                    <div class="col-md-6">
+                        <div class="form-group" *ngIf="pointvente.fGestionTable!=1">
+                            <label  class="label">Produit :</label><br>
+                            <nb-select fullWidth formControlName="idproduit">
+                            <nb-option *ngFor="let item of produitpointventes" [value]="item.produitpointvente.idproduitPointVente">
+                                {{ item.designation }}
+                            </nb-option>
+                            </nb-select>
+                        </div>
+                    </div>
+                    
+                    
+                    
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group" *ngIf="pointvente.fGestionTable!=1 && employees.length>0">
+                        <label  class="label">Employee :</label><br>
+                        <nb-select fullWidth formControlName="idemployee">
+                        <nb-option *ngFor="let item of employees" [value]="item.idUtilisateur">
+                            {{ item.nom }}
+                        </nb-option>
+                        </nb-select>
+        
+                    </div>
+            </div>
+                
+            </div>
+            <div class="row" >
+                    <div class="col-sm-6">
+                      <button  nbButton type="button" (click)="annuler()"  status="danger"  style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; " [shape]="'round'" >Annuler</button>
+                    </div>
+                    <div class="col-sm-6">
+                      <button type="submit"  nbButton status="success" class="button-style" style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Enregistrer</button>
+                    </div>
+                  </div>
+        </form>
+
+
+</nb-card-body>
+</nb-card>

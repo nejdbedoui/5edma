@@ -1,0 +1,469 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card >
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Liste des Clients</span></div>
+            <div class="col-md-6"><span style="float: right">{{dt.totalRecords}} Client(s)&nbsp;&nbsp;</span></div>
+
+        </div>
+    </nb-card-header>
+  <nb-card-body >
+        <div class="row" style="margin-top:2%;">
+          <div class="col-md-8">
+            <div class="upload-btn-wrapper">
+                <button class="btn cursor" style="margin-top: 15px;">Importer Client</button>
+                <input type="file" name="myfile" [(ngModel)]="filevalue" (change)="uploadClient($event)"  />
+              </div> &nbsp;&nbsp;
+              <div class="upload-btn-wrapper">
+                  <a href="../../../../assets/images/ad_Client.xlsx" download class="btn cursor" dow style="margin-top: 15px; background-color: rgb(0, 162, 255);"   >Télécharger modèle d'importation</a>
+                </div> &nbsp;&nbsp;
+                <div class="upload-btn-wrapper">
+                    <!-- <button class="btn cursor" style="margin-top: 15px; background-color: orange;"  (click)="exportExcel()" >Exporter Produit</button> -->
+                  </div>
+          </div>
+        
+              
+          </div>
+              <br>
+        <p-table #dt [columns]="cols" [value]="cutomers"  [rowsPerPageOptions]="[20,30,50]"  [rows]="20" [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['nom','prenom','email','nTel','dateCreation','soldePartn']">
+                <ng-template pTemplate="caption">
+                  <div style="text-align: right">
+                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText placeholder="chercher"  (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:40%; min-height: 34px;">
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="nom">Nom  <p-sortIcon field="nom"></p-sortIcon></th>
+                    <th pSortableColumn="prenom">Prénom  <p-sortIcon field="prenom"></p-sortIcon></th>
+                    <th pSortableColumn="email">Email  <p-sortIcon field="email"></p-sortIcon></th>
+                    <th pSortableColumn="soldePartn">Solde  <p-sortIcon field="soldePartn"></p-sortIcon></th>
+                    <th pSortableColumn="nTel">Téléphone  <p-sortIcon field="nTel"></p-sortIcon></th>
+                    <th pSortableColumn="dateCreation">Date Création  <p-sortIcon field="dateCreation"></p-sortIcon></th>
+                    <th pSortableColumn="idGroupeClient">Groupe  <p-sortIcon field="idGroupeClient"></p-sortIcon></th>
+                    <th>Action</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-mvt>
+                  <tr>
+                    <td ><div class="diplay_flex"><div  [nbTooltip]="mvt.isconnected==1?'Is connected':'Not connected'" nbTooltipPlacement="bottom" [ngClass]="{'cercle_gray':mvt.isconnected!=1,'cercle':mvt.isconnected==1}" ></div>{{mvt.nom}}</div></td>
+                    <td>{{mvt.prenom}}</td>
+                    <td>{{mvt.email}}</td>
+                    <td>{{mvt.soldePartn}}</td>
+                    <td>{{mvt.nTel}}</td>
+                    <td>{{mvt.dateCreation | date:'dd-MM-yyyy hh:mm'}}</td>
+                    <th style="text-align: center;">
+                      <span style="padding: 10px;
+                      border-radius: 10px;" [ngStyle]="{'background-color': getcolor(mvt.idGroupeClient)}"> {{getname(mvt.idGroupeClient)}}</span>
+                     </th>
+                    <td>
+                      <i (click)="deactive(mvt)" nbTooltip="Activé/Deactivé Client" nbTooltipPlacement="bottom" [ngClass]="{' fa-lock ':mvt.isActive!=0,' fa-unlock ':mvt.isActive==0,' deletebutton ':mvt.isActive!=0,' affiche2button ':mvt.isActive==0}" class="fas cursor "></i>&nbsp;&nbsp;
+                      <i (click)="edits(mvt)" nbTooltip="Modifier Client" nbTooltipPlacement="bottom" class=" far fa-edit cursor edit2button"></i>&nbsp;&nbsp;
+                      <i (click)="listmvt(mvt)" nbTooltip="Liste Mvt" nbTooltipPlacement="bottom" class=" fas fa-list-ul cursor affiche1button"></i>&nbsp;&nbsp;
+                      <i *ngIf="mvt.tokenNotification!=null &&  mvt.isconnected==1"  (click)="displynotif=true;currentuser=mvt"  nbTooltip="Envoyer une notification" nbTooltipPlacement="bottom" class="fas fa-share cursor affiche1button"></i>&nbsp;&nbsp;
+                  </td>
+                  <!-- <td> <a routerLink="/pages/Pointvente/gestionMouvement/NouveauMouvement/{{mvt.idCategorie}}"><i style="color: green" class="far fa-edit"></i></a></td> -->
+                  </tr>
+                </ng-template>
+                <ng-template  pTemplate="emptymessage" let-mvt>
+                    <tr>
+                        <td [attr.colspan]="mvt.length" >
+                            <div style="display: flex;
+                            justify-content: center;">
+                                La liste est vide
+                            </div>
+                            
+                        </td>
+                    </tr>
+                </ng-template>
+              </p-table>
+</nb-card-body>
+</nb-card>
+
+<p-dialog  header="Déactiver Client" [(visible)]="displyagent" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+
+Voulez-vous bien déactiver cet Client?
+<p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="displyagent=false;deleteagent()">Déactiver</button>
+    <button type="button" nbButton  (click)="displyagent=false"  class="ui-button-secondary">Quitter</button>
+  </p-footer>
+</p-dialog>
+
+
+<p-dialog  header="Envoyer une Notification" [(visible)]="displynotif" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10" >
+<form [formGroup]="createNotificationForm" (ngSubmit)="createNotification()" [nbSpinner]="loading2" nbSpinnerStatus="primary">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label  class="label">Titre <span style="color: red">*</span></label><br>
+        <input type="text" maxlength="100" formControlName="titre" nbInput fullWidth placeholder="Titre" [ngClass]="{'has-error': isSubmitted && (formControls.titre.errors )}">
+        <label *ngIf=" isSubmitted && (formControls.titre.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller remplir le champ titre </label>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label  class="label">Type de Notification <span style="color: red">*</span></label><br>
+          <nb-select fullWidth  formControlName="typeNotification" [ngClass]="{'disgnesserrue': isSubmitted && (formControls.typeNotification.errors )}">
+            <nb-option *ngFor="let item of typeNotification" [value]="item">
+              {{ item }}
+            </nb-option>
+          </nb-select>
+        <label *ngIf=" isSubmitted && (formControls.typeNotification.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller choisir un type de notification </label>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="label" for="dateDebut" >Date début <span style="color: red">*</span></label>
+        <p-calendar class="disgness"  dateFormat="dd/mm/yy" fullWidth formControlName="dateDebut" id="dateDebut"
+                    [ngClass]="{'disgnesserrue': (isSubmitted && (formControls.dateDebut.errors )) || ( isSubmitted && isDateChecked)}"></p-calendar>
+        <label *ngIf="(isSubmitted && (formControls.dateDebut.errors ))" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez Choisir une date</label>
+        <label *ngIf="(isSubmitted && (!formControls.dateDebut.errors )) && isDateChecked" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez choisir une date valide </label>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="label" for="dateFin" >Date Fin <span style="color: red">*</span></label>
+        <p-calendar class="disgness" dateFormat="dd/mm/yy" fullWidth formControlName="dateFin" id="dateFin"
+                    [ngClass]="{'disgnesserrue': (isSubmitted && (formControls.dateFin.errors )) || ( isSubmitted && isDateChecked)}"></p-calendar>
+        <label *ngIf="(isSubmitted && (formControls.dateFin.errors ))" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez Choisir une date</label>
+        <label *ngIf="(isSubmitted && (!formControls.dateFin.errors )) && isDateChecked" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez choisir une date valide </label>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+        <label  class="label">Description <span style="color: red">*</span></label><br>
+        <textarea formControlName="description" nbInput fullWidth placeholder="Description" [ngClass]="{'has-error': isSubmitted && (formControls.description.errors )}"></textarea>
+        <label *ngIf=" isSubmitted && (formControls.description.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller remplir le champ description </label>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+        <label  class="label">Body <span style="color: red">*</span></label><br>
+        <textarea formControlName="body" nbInput fullWidth placeholder="Body" [ngClass]="{'has-error': isSubmitted && (formControls.body.errors )}"></textarea>
+        <label *ngIf=" isSubmitted && (formControls.body.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller remplir le champ body </label>
+      </div>
+    </div>
+    <div class="col-md-12 ">
+      <div class="form-group">
+        <label  class="label">Image</label>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="custom-file" id="customFile" lang="es">
+              <input  maxlength="255" #customfiles type="file" accept="image/*" [(ngModel)]="file"  [ngModelOptions]="{standalone: true}"  nbInput fullWidth (change)="onFileChange($event)" class="custom-file-input" id="exampleInputFile" aria-describedby="fileHelp" required="true">
+              <label  class="label1 custom-file-label" for="exampleInputFile" >
+                {{files!=null?files.name:''}}
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-6" *ngIf="image!=null" style="text-align: center;">
+            <img [src]="image" style="width: 38%; margin-top: -23px;" >
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12" *ngIf="image!=null">
+      <div class="form-group">
+        <nb-checkbox [(ngModel)]="isSlider" [ngModelOptions]="{standalone: true}" status="success">Afficher l’image dans le Slider </nb-checkbox>
+      </div>
+    </div>
+  </div>
+  <div class="row" >
+    <div class="col-sm-6">
+      <a (click)="displynotif=false"      nbButton type="button"  status="danger"  style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; " [shape]="'round'" >Annuler</a>
+    </div>
+    <div class="col-sm-6">
+      <button type="submit"  nbButton status="success" class="button-style" style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Enregistrer</button>
+    </div>
+  </div>
+</form>
+<!-- <p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="displyagent=false;deleteagent()">Déactiver</button>
+    <button type="button" nbButton  (click)="displyagent=false"  class="ui-button-secondary">Quitter</button>
+  </p-footer> -->
+</p-dialog>
+
+
+<p-dialog  header="Modifier un Client" [(visible)]="editclient" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+
+<form [formGroup]="clientForm" >
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label  class="label">Nom<span style="color: red">*</span></label>
+          <input type="text" maxlength="100" formControlName="nom" nbInput fullWidth  placeholder="Nom" [ngClass]="{'has-error': isSubmitted2 && (formclientControls.nom.errors )}">
+          <label *ngIf=" isSubmitted2 && (formclientControls.nom.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir le nom du client</label>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label  class="label">Prénom<span style="color: red">*</span></label>
+          <input type="text" maxlength="100" formControlName="prenom" nbInput fullWidth  placeholder="prenom" [ngClass]="{'has-error': isSubmitted2 && (formclientControls.prenom.errors )}">
+          <label *ngIf=" isSubmitted2 && (formclientControls.prenom.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir le prenom du client</label>
+        </div>
+      </div>
+  </div>
+  <div class="row">
+    <!-- <div class="col-sm-6 centreVerticalement">
+      <div class="form-group">
+        <label  class="label">Date Naissance</label>
+          <p-calendar  fullWidth  placeholder="date"    [(ngModel)]="datecreation" [ngModelOptions]="{standalone: true}"  class="disgness pos"
+            [ngClass]="{'calendar': isSubmitted2 && (formclientControls.dateNaissance.errors ) }" dateFormat="dd-mm-yy" [locale]="calendar"  ></p-calendar>
+        <label *ngIf=" isSubmitted2 && (formclientControls.dateNaissance.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir le nom du client</label>
+      </div>
+    </div> -->
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label  class="label">Groupe</label>
+        <nb-select fullWidth  formControlName="idgroupe"   >
+          <nb-option *ngFor="let item of groupes" [value]="item.idGroupeClientPartenaire">
+          {{ item.designation }}
+          </nb-option>
+      </nb-select>
+      </div>
+    </div>
+    
+    <!-- <div class="col-sm-6">
+      <div class="form-group">
+        <label  class="label">email</label>
+        <input type="text" maxlength="100" formControlName="prenom" nbInput fullWidth  placeholder="email" [ngClass]="{'has-error': isSubmitted2 && (formclientControls.email.errors )}">
+      </div>
+    </div> -->
+</div>
+
+<!-- <div class="row">
+<div class="col-sm-6">
+      <div class="form-group">
+        <label  class="label">Genre<span style="color: red">*</span></label>
+        <input type="text" maxlength="100" formControlName="genre" nbInput fullWidth  placeholder="genre" [ngClass]="{'has-error': isSubmitted2 && (formclientControls.genre.errors )}">
+      </div>
+    </div>
+  <div class="col-sm-6">
+    <div class="form-group">
+      <label  class="label">Groupe<span style="color: red">*</span></label>
+      <nb-select fullWidth  formControlName="idgroupe"   >
+        <nb-option *ngFor="let item of groupes" [value]="item.idGroupeClientPartenaire">
+        {{ item.designation }}
+        </nb-option>
+    </nb-select>
+    </div>
+  </div>
+</div> -->
+  </form>
+<p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="editclientform()">Enregistrer</button>
+    <button type="button" nbButton  (click)="editclient=false"  class="ui-button-secondary">Quitter</button>
+  </p-footer>
+</p-dialog>
+
+
+<p-dialog  header="Liste Mouvement solde" [(visible)]="displylistmvts" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+<nb-tabset>
+  <nb-tab tabTitle="Mouvement solde">
+    <div class="row">
+      <div class="col-md-12">
+              <!-- <span style="float: right">({{citoyens.length}} résultats)&nbsp;&nbsp;</span> -->
+              <span style="float: right">{{dtss.totalRecords}} Mouvement solde(s)&nbsp;&nbsp;</span>
+  
+      </div>
+  </div>
+  <br>
+  <p-table #dtss [value]="listmvts" [columns]="cols3" [rowsPerPageOptions]="[20,30,50]"  [rows]="20" [loading]="loading2" [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['source','montant','sens','dateOperation']">
+      <ng-template pTemplate="caption">
+        <div style="text-align: right">        
+            <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+            <input type="text" pInputText size="50" placeholder="Chercher" (input)="dtss.filterGlobal($event.target.value, 'contains')" style="width:40%; min-height: 34px;">
+        </div>
+    </ng-template>      
+      <ng-template pTemplate="header">
+              <tr>
+                <th>Source</th>
+                <th>Montant</th>
+                <th>Sens</th>
+                <th>Date Operation</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-mvt>
+              <tr>
+                <td>{{mvt.source}}</td>
+                <td>{{mvt.montant}}</td>
+                <td><i *ngIf="mvt.sens=='+'"  style="color: green" class="fas fa-plus"></i><i  *ngIf="mvt.sens=='-'" style="color: red" class="fas fa-minus"></i>  </td>
+                <td>
+                    {{mvt.dateOperation | date :' dd-MM-yyyy hh:mm'}}
+                </td>
+                                 
+            </tr>
+            </ng-template>
+            <ng-template  pTemplate="emptymessage" let-mvt>
+                <tr>
+                    <td [attr.colspan]="mvt.length" >
+                        <div style="display: flex;
+                        justify-content: center;">
+                            La liste est vide
+                        </div>
+                        
+                    </td>
+                </tr>
+            </ng-template>
+          </p-table>
+  </nb-tab>
+  <nb-tab tabTitle="Mouvement solde par mois">
+    <div class="row">
+      <div class="col-md-12">
+              <!-- <span style="float: right">({{citoyens.length}} résultats)&nbsp;&nbsp;</span> -->
+              <span style="float: right">{{dtm.totalRecords}} Mouvement solde(s)&nbsp;&nbsp;</span>
+  
+      </div>
+  </div>
+  <br>
+  <p-table #dtm [value]="groupArrays" [columns]="cols3" [rowsPerPageOptions]="[20,30,50]"  [rows]="20" [loading]="loading2" [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['date','game']">
+      <ng-template pTemplate="caption">
+        <div style="text-align: right">        
+            <i class="pi pi-search" style="margin:4px 4px 0 0"></i>
+            <input type="text" pInputText size="50" placeholder="Chercher" (input)="dtm.filterGlobal($event.target.value, 'contains')" style="width:40%; min-height: 34px;">
+        </div>
+    </ng-template>      
+      <ng-template pTemplate="header">
+              <tr>
+                <th>Mois</th>
+                <th>Montant</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-mvt>
+              <tr>
+                <td>{{mvt.date}}</td>
+                <td>{{mvt.games.toFixed(2)}}</td>
+                <!-- <td><i *ngIf="mvt.sens=='+'"  style="color: green" class="fas fa-plus"></i><i  *ngIf="mvt.sens=='-'" style="color: red" class="fas fa-minus"></i>  </td>
+                <td>
+                    {{mvt.dateOperation |date:'dd-MM-yyyy'}}
+                </td> -->
+                                 
+            </tr>
+            </ng-template>
+            <ng-template  pTemplate="emptymessage" let-mvt>
+                <tr>
+                    <td [attr.colspan]="mvt.length" >
+                        <div style="display: flex;
+                        justify-content: center;">
+                            La liste est vide
+                        </div>
+                        
+                    </td>
+                </tr>
+            </ng-template>
+          </p-table>
+  </nb-tab>
+</nb-tabset>
+
+
+</p-dialog>
+
+<p-dialog  header="Produit Importer" [(visible)]="diplayclient" [modal]="true" [responsive]="true" [style]="{width: '1000px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+<p-table  [value]="importedClients" *ngIf="diplayclient" [paginator]="true" [rows]="10" >
+    <ng-template pTemplate="header">
+        <tr>
+          <th>nom</th>
+          <th>prenom</th>
+          <th>nTel</th>
+          <th>email</th>
+          <th>genre</th>
+          <th>adress</th>
+          <th>dateNaissance</th>
+          <th>Action</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-produit>
+        <tr>
+            
+                <td pEditableColumn>
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <input pInputText type="text" [(ngModel)]="produit.nom">
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{produit.nom}}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+
+                <td pEditableColumn>
+                <p-cellEditor >
+                    <ng-template pTemplate="input">
+                        <input pInputText type="text" [(ngModel)]="produit.prenom">
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{produit.prenom}}
+                    </ng-template>
+                </p-cellEditor>
+                </td>
+
+                <td pEditableColumn>
+                    <p-cellEditor >
+                        <ng-template pTemplate="input">
+                            <input pInputText type="text" [(ngModel)]="produit.nTel">
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{produit.nTel}}
+                        </ng-template>
+                    </p-cellEditor>
+                    </td>
+
+                    <td pEditableColumn>
+                        <p-cellEditor >
+                            <ng-template pTemplate="input">
+                                <input pInputText type="text" [(ngModel)]="produit.email">
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                                {{produit.email}}
+                            </ng-template>
+                        </p-cellEditor>
+                        </td>
+                        <td pEditableColumn>
+                            <p-cellEditor >
+                                <ng-template pTemplate="input">
+                                    <input pInputText type="text" [(ngModel)]="produit.genre">
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{produit.genre}}
+                                </ng-template>
+                            </p-cellEditor>
+                            </td>
+                            <td pEditableColumn>
+                              <p-cellEditor >
+                                  <ng-template pTemplate="input">
+                                      <input pInputText type="text" [(ngModel)]="produit.adress">
+                                  </ng-template>
+                                  <ng-template pTemplate="output">
+                                      {{produit.adress}}
+                                  </ng-template>
+                              </p-cellEditor>
+                            </td>
+            <td>
+                {{produit.dateNaissance |date}}
+              </td>                               
+            <td>
+              <i (click)="deletesimport(produit)"   style="background-color: #E82121;padding-top: 10px;padding-bottom: 10px;" class="btn far fa-trash-alt cursor  buttonround"></i>
+          </td>
+        </tr>
+    </ng-template>
+    <ng-template  pTemplate="emptymessage" let-produit>
+        <tr>
+            <td [attr.colspan]="produit?.length" >
+                <div style="display: flex;
+                justify-content: center;">
+                    La liste est vide
+                </div>
+                
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+<p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplayclient=false;annulerClient()">Annuler</button>
+    <button type="button" nbButton  (click)="saveimported()"  class="button-style">Enregister</button>
+  </p-footer>
+</p-dialog>

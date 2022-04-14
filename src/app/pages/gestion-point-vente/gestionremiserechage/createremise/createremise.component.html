@@ -1,0 +1,51 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card  [nbSpinner]="loading" nbSpinnerStatus="primary" >
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Create Remise</span></div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+        <form [formGroup]="remiseForm" (ngSubmit)="addremise()">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label  class="label">De<span style="color: red">*</span></label>
+                      <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100" formControlName="min" nbInput fullWidth  placeholder="min" [ngClass]="{'has-error': isSubmitted && (formControls.min.errors )}">
+                      <label *ngIf=" isSubmitted && (formControls.min.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre valeur</label>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label  class="label">Jusqu'à<span style="color: red">*</span></label>
+                      <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100" formControlName="max" nbInput fullWidth  placeholder="max" [ngClass]="{'has-error': isSubmitted && (formControls.max.errors )}">
+                      <label *ngIf=" isSubmitted && (formControls.max.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre valeur</label>
+                    </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <span style="padding-top: 12px;padding-left: 16px"> <i class="far fa-arrow-alt-circle-right"></i> Vous bénéficiez de</span>
+               
+                <div class="col-sm-2">
+                    <div class="form-group">
+                         
+                        <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100" formControlName="remise" nbInput fullWidth  placeholder="remise" [ngClass]="{'has-error': isSubmitted && (formControls.max.errors )}"> 
+                      <label *ngIf=" isSubmitted && (formControls.remise.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre remise</label>
+                    </div>
+                  </div>
+                  <br>
+                  <span style="padding-top: 12px;">% de remise</span> 
+              </div>
+              <div class="row" >
+                <div class="col-6" >
+                    <button (click)="returntolist()"  nbButton type="reset"  status="danger" style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'" >Annuler</button>
+      
+                </div>
+                <div class="col-6" >
+                    <button  type="submit"   nbButton status="success" class="button-style"  style="float: right;" [shape]="'round'">Enregistrer</button>
+      
+                </div>
+      </div>
+              </form>               
+  </nb-card-body>
+</nb-card>

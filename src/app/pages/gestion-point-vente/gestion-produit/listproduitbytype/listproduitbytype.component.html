@@ -1,0 +1,48 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card >
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Gestion des Produits / Articles</span></div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+        <div class="form-group">
+                <label class="label">Type d'article <span style="color: red">*</span></label><br>
+                <nb-select placeholder="Type d'article" fullWidth  (selectedChange)="choosetype($event)" >
+                  <nb-option *ngFor="let type of articleTypes" value="{{type.value}}">{{type.label}}</nb-option>
+                </nb-select>
+              </div>
+              <p-table [columns]="cols2" [value]="listproduit" [loading]="loading" *ngIf="!hide" >
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Désignation</th>
+                            <th>Code</th>
+                            <th >Date Création            
+                            </th>
+                            
+                            <th>Composition</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-produit>
+                        <tr>
+                            <td>{{produit.designation}}</td>
+                            <td>{{produit.code}}</td>
+                            <td>{{produit.dateCreation |date}}</td>                               
+                            <td> {{produit.composition}}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template  pTemplate="emptymessage" let-produit>
+                        <tr>
+                            <td [attr.colspan]="produit.length" >
+                                <div style="display: flex;
+                                justify-content: center;">
+                                    La liste est vide
+                                </div>
+                                
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                
+  </nb-card-body>
+</nb-card>

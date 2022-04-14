@@ -1,0 +1,87 @@
+//.bd-placeholder-img {
+//  font-size: 1.125rem;
+//  text-anchor: middle;
+//  -webkit-user-select: none;
+//  -moz-user-select: none;
+//  -ms-user-select: none;
+//  user-select: none;
+//}
+//
+//@media (min-width: 768px) {
+//  .bd-placeholder-img-lg {
+//    font-size: 3.5rem;
+//  }
+//}
+.has-error {
+  border-color: #d33c3c !important;
+  color: #d33c3c;
+}
+.login-container {
+  margin-top: 1%;
+  margin-bottom: 5%;
+}
+.login-form-1 {
+  padding: 5%;
+  box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+}
+.login-form-1 h3 {
+  text-align: center;
+  color: #333;
+}
+.login-form-2 {
+  padding: 5%;
+  //background: #0062cc;
+  background-image: url("../../../assets/images/resto.png");
+  box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+}
+.login-form-2 h3 {
+  text-align: center;
+  color: #fff;
+}
+.login-container form {
+  padding: 10%;
+}
+.btnSubmit {
+  width: 37%;
+    border-radius: 2rem;
+    padding: 2.5%;
+    border: none;
+    cursor: pointer;
+}
+.login-form-1 .btnSubmit {
+  font-weight: 600;
+  color: #fff;
+  background-color: #0062cc;
+}
+.login-form-2 .btnSubmit {
+  font-weight: 600;
+  color: #fff;
+  background-color: #CF5FFE;
+}
+.login-form-2 .ForgetPwd {
+  color: #0F9CC1;
+  font-weight: 600;
+  text-decoration: none;
+}
+.login-form-1 .ForgetPwd {
+  color: #0062cc;
+  font-weight: 600;
+  text-decoration: none;
+}
+.Auth{
+  background-color: white;
+  display:flex;
+  text-align:center;
+  align-items: center
+}
+
+@media screen and (min-width: 200px) and (max-width: 640px) {
+  .btnSubmit {
+    width: 100% !important;
+
+  }
+}
+
+a:hover {
+  color: #9e9e9ecc !important;
+}

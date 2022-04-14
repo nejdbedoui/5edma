@@ -1,0 +1,455 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Ajouter une Categorie Article</span></div>
+        </div>
+    </nb-card-header>
+  <nb-card-body >
+        <h3 class="first">Catégorie</h3>
+        <p-tree [value]="filesTree0" emptyMessage="la liste est vide"></p-tree>
+  
+        <form [formGroup]="categorieForm" (ngSubmit)="createcategorie()">
+            <div class="row">
+                <div class="col-md-6">
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group" style="display: flex; justify-content: flex-end;">
+                  <label class=newbtn>
+                    <img nbTooltip="cliquez ici pour ajouter une image" nbTooltipPlacement="bottom" src="{{image!=null?image:'../../../../../assets/images/add_photo.png'}}" style="max-width: 120px; min-width: 120px;" >
+                    <input id="pic" type="file" accept="image/*" [(ngModel)]="file"  [ngModelOptions]="{standalone: true}" (change)="onFileChange($event)" hidden>
+                  </label>
+                  </div>
+                </div>
+              </div>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <div class="form-group">
+                      <label  class="label">Désignation <span style="color: red">*</span></label><br>
+                      <input type="text" maxlength="100" formControlName="designation" nbInput fullWidth (keyup)="onKey($event)"  placeholder="Désignation" [ngClass]="{'has-error': iscategorieFormSubmitted && (formControls.designation.errors )}">
+                      <label *ngIf=" iscategorieFormSubmitted && (formControls.designation.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller  remplir votre designation </label>
+      
+                    </div>
+                  </div>
+                  <div class="col-sm-3">
+                        <div class="form-group">
+                            <br>
+                            <label  class="label" style="color: #fff">.</label>
+                            <nb-checkbox formControlName="actif"  status="success">Actif</nb-checkbox> 
+                            <nb-checkbox formControlName="fMobile"  status="success">Afficher dans l'application mobile</nb-checkbox> 
+                              </div>
+                    </div>
+                    <div class="col-sm-3">
+                            <label  class="label">Description</label><br>
+                            <input type="text" maxlength="100" formControlName="description" nbInput fullWidth  placeholder="Description">
+
+                </div>
+                <div class="col-sm-3">
+                    <label  class="label">Couleur</label>
+                    <input [(colorPicker)]="color" cpPosition="bottom" nbInput fullWidth [style.background]="color" (cpSliderDragEnd)="onEventLog('cpSliderDragEnd', $event)"/>
+            
+                  </div>
+                </div>
+                <br>
+                <div class="row" *ngIf="idpointVente==null">
+                    <div class="col-md-12" style="display: flex; justify-content: center">
+                            <nb-radio-group [(ngModel)]="pv" [ngModelOptions]="{standalone: true}">
+                                    <nb-radio  style="display: inline !important;"
+                                      *ngFor="let item of pvs"
+                                      [value]="item.value">
+                                      {{ item.label }}
+                                    </nb-radio>
+                            </nb-radio-group>
+                            
+                    </div>
+                </div>
+                <br>
+                    <div class="row" *ngIf="pv=='1' && idpointVente==null"  >
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6" >  
+                            <div  class="shadow"  style="text-align: center ">
+                                <div  *ngFor="let item of listpointvente" >
+                                    <div>
+                                        {{item.designation}}
+                                        <nb-radio-group [(ngModel)]="item.fVisible" [ngModelOptions]="{standalone: true}" [name]="item.idPointVente" >
+                                            <nb-radio  style="display: inline !important;"
+                                            *ngFor="let item of visible"
+                                            [value]="item.value">
+                                            {{ item.label }}
+                                            </nb-radio>
+                                        </nb-radio-group>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                  
+                <div class="row">
+                    <div class="col-sm-6">
+                        <button type="button" (click)="diplay=true" nbButton status="success" class="button-style" style=" float:left;border-color: white;" [shape]="'round'">Ajouter une Sous catégories</button>
+                    </div>
+                    <div class="col-sm-6">
+                            <!-- <div class="" style="text-align: center; margin-top: 8px;">
+                                    <button type="button" (click)="diplay=true" style="float: right; color: #79008e"  class="icon-btn add-btn">  
+                                      <div class="add-icon"></div>
+                                      <div class="btn-txt">Ajouter une Sous catégories</div>
+                                    </button>
+                                  </div>  -->
+                            <!-- <label  class="label" style="color: #fff">.</label>
+                            <button fullWidth nbButton type="button" (click)="diplay=true"   status="danger"  class="button-style" style="border-color: white; " [shape]="'round'" >Ajouter une Sous catégories</button>             -->
+
+                    </div>
+                    
+                </div>
+                <br><br>
+<hr>
+<form [formGroup]="orderForm">
+  
+        <div formArrayName="items">
+      
+            <div *ngFor="let phone of itemForms.controls; let i=index" 
+                  [formGroupName]="i" class="shadow-lg p-3 mb-5 bg-white rounded">
+                  <div class="row">
+                      <div class="col-sm-6">Sous catégories</div>
+                      <div class="col-sm-6">
+                            <div class="" style="text-align: center; margin-top: 8px;">
+                                    <button type="button" (click)="deleteitem(i)" style="float: right;"  class="icon-btn add-btn">  
+                                      <div class=""></div>
+                                      <div class="btn-txt">Supprimer une Sous catégories</div>
+                                    </button>
+                                  </div>
+                      </div>
+                    
+                  </div>
+                  <div class="row" *ngIf="!phone.controls.islistcategie.value" >
+                        <div class="col-sm-3">
+                          <div class="form-group">
+                            <label  class="label">Désignation <span style="color: red">*</span></label><br>
+                            <input type="text" maxlength="100" (keyup)="onKeychild(i)"  formControlName="designation1" nbInput fullWidth  placeholder="Désignation" [ngClass]="{'has-error': iscategorieFormSubmitted && (phone.controls.designation1.errors )}">
+                            <label *ngIf=" iscategorieFormSubmitted && (phone.controls.designation1.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller  remplir votre designation </label>
+                            
+                            
+                          </div>
+                        </div>
+                        <div class="col-sm-3 ">
+                              <div class="form-group">
+                                  <br>
+                                  <label  class="label" style="color: #fff">.</label>
+                                  <nb-checkbox formControlName="actif1"  status="success">Actif</nb-checkbox> 
+                                  <nb-checkbox formControlName="fMobile1"  status="success">Afficher dans l'application mobile</nb-checkbox> 
+
+                                    </div>
+                          </div>
+                          <div class="col-sm-3">
+                                  <label  class="label">Description</label><br>
+                                  <input type="text" maxlength="100" formControlName="description1" nbInput fullWidth  placeholder="Description">
+      
+                      </div>
+                      <div class="col-sm-3">
+                            <label  class="label">Couleur</label>
+                            <input [(colorPicker)]="phone.controls.color.value" cpPosition="bottom" nbInput fullWidth [style.background]="phone.controls.color.value" (cpSliderDragEnd)="onEventLogfils('cpSliderDragEnd', $event,i)"/>
+                    
+                        </div>
+                        
+                      </div>
+                      <div class="row" *ngIf="phone.controls.islistcategie.value">
+                          <div class="col-sm-12">
+                                <div class="form-group">
+                                        <label  class="label">Liste Categorie</label>
+                                        <nb-select fullWidth multiple formControlName="categorieexistante" >
+                                            <nb-option *ngFor="let item of categories" [value]="item">
+                                                {{ item.designation }}
+                                            </nb-option>
+                                        </nb-select> 
+                                    </div>
+                          </div>
+                            
+                      </div>
+                      <div class="row" *ngIf="idpointVente==null">
+                            <div class="col-md-12" style="display: flex; justify-content: center">
+                                    <nb-radio-group formControlName="allpv" [name]="i">
+                                            <nb-radio  style="display: inline !important;"
+                                              *ngFor="let item of phone.controls.pvradio.value"
+                                              [value]="item.value">
+                                              {{ item.label }}
+                                            </nb-radio>
+                                    </nb-radio-group>
+ 
+                            </div>
+                        </div>
+                        <br>
+                            <div class="row" *ngIf="phone.controls.allpv.value==1 && idpointVente==null"  >
+                                <div class="col-md-3"></div>
+                                <div class="col-md-6" >  
+                                    <div  class="shadow"  style="text-align: center ">
+                                        <div  *ngFor="let item of phone.controls.listpvs1.value" >
+                                            <div>
+                                                {{item.designation}}
+                                                <nb-radio-group  [(ngModel)]="item.fVisible"  [ngModelOptions]="{standalone: true}" (valueChange)="choosepv(item,$event)" [name]="item.idPointVente+i" >
+                                                    <nb-radio  style="display: inline !important;"
+                                                    *ngFor="let item of phone.controls.radio.value"
+                                                    [value]="item.value">
+                                                    {{ item.label }}
+                                                    </nb-radio>
+                                                </nb-radio-group>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <nb-checkbox status="success" formControlName="chooseproduit"> Affecter des produits a cette sous catégories</nb-checkbox>
+                            <br>
+                            <p-table *ngIf="phone.controls.chooseproduit.value"  #dt [columns]="cols" [value]="phone.controls.products.value"  [paginator]="true" [rows]="10" [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['designation','code']"  >
+                                    <ng-template pTemplate="caption">
+                                        <div style="text-align: right">
+                                          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                                          <input type="text" pInputText placeholder="chercher"  (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                                        </div>
+                                      </ng-template>    
+                                    <ng-template pTemplate="header">
+                                            <tr>
+                                                <th>Désignation</th>
+                                                <th>Code</th>
+                                                <th >Date Création </th>
+                                                <th >Action</th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-produit>
+                                            <tr>
+                                                <td>{{produit.designation}}</td>
+                                                <td>{{produit.code}}</td>
+                                                <td>{{produit.dateCreation |date}}</td> 
+                                                <td><nb-checkbox status="success" [(ngModel)]="produit.isActif" [ngModelOptions]="{standalone: true}"></nb-checkbox>
+                                                </td>
+                                                <!-- <td>
+                                                        <p-tableCheckbox [value]="produit"></p-tableCheckbox>
+                                                    </td>     -->
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template  pTemplate="emptymessage" let-produit>
+                                            <tr>
+                                                <td [attr.colspan]="produit.length" >
+                                                    <div style="display: flex;
+                                                    justify-content: center;">
+                                                        La liste est vide
+                                                    </div>
+                                                    
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                <!-- <button (click)="deleteitem(i)">Delete</button> -->
+      
+            </div>
+        </div>      
+      </form>
+<!-- <h5 style="text-decoration : underline;">Affecter les Produits a une Categorie d'article</h5>
+<br> -->
+<!-- <nb-tabset>
+        <nb-tab [tabTitle]="item.categorieArticle.designation" *ngFor="let item of categoryArticleProductDtos" [active]="item.categorieArticle.designation==categoryArticleProductDtos[0].categorieArticle.designation" >
+                <p-table #dt [columns]="cols" [value]="item.products" [paginator]="true" [rows]="10" [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['designation','code']"  >
+                    <ng-template pTemplate="caption">
+                        <div style="text-align: right">
+                          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                          <input type="text" pInputText placeholder="chercher"  (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                        </div>
+                      </ng-template>    
+                    <ng-template pTemplate="header">
+                            <tr>
+                                <th>Désignation</th>
+                                <th>Code</th>
+                                <th >Date Création </th>
+                                <th>Action</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-produit>
+                            <tr>
+                                <td>{{produit.designation}}</td>
+                                <td>{{produit.code}}</td>
+                                <td>{{produit.dateCreation |date}}</td> 
+                                <td><nb-checkbox status="success" [(ngModel)]="produit.isActif" [ngModelOptions]="{standalone: true}"></nb-checkbox>
+                                </td>    
+                            </tr>
+                        </ng-template>
+                        <ng-template  pTemplate="emptymessage" let-produit>
+                            <tr>
+                                <td [attr.colspan]="produit.length" >
+                                    <div style="display: flex;
+                                    justify-content: center;">
+                                        La liste est vide
+                                    </div>
+                                    
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+        </nb-tab>
+      </nb-tabset> -->
+      <nb-checkbox *ngIf="this.itemForms.value.length==0" status="success" [(ngModel)]="globalproduit" [ngModelOptions]="{standalone: true}"> Affecter des produits a cette catégories</nb-checkbox>
+
+<div *ngIf="this.itemForms.value.length==0 && globalproduit" >
+        <p-table #dt [columns]="cols" [value]="listproduit" [paginator]="true" [rows]="10" *ngIf="listproduit.length>0" [paginator]="true" [responsive]="true" autoLayout ="true" [globalFilterFields]="['designation','code']"  >
+            <ng-template pTemplate="caption">
+                <div style="text-align: right">
+                  <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                  <input type="text" pInputText placeholder="chercher"  (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                </div>
+              </ng-template>    
+            <ng-template pTemplate="header">
+                    <tr>
+                        <th>Désignation</th>
+                        <th>Code</th>
+                        <th >Date Création </th>
+                        <th>Action</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-produit>
+                    <tr>
+                        <td>{{produit.designation}}</td>
+                        <td>{{produit.code}}</td>
+                        <td>{{produit.dateCreation |date}}</td>                               
+                        <td><nb-checkbox status="success" [(ngModel)]="produit.isActif" [ngModelOptions]="{standalone: true}"></nb-checkbox></td>
+                    </tr>
+                </ng-template>
+                <ng-template  pTemplate="emptymessage" let-produit>
+                    <tr>
+                        <td [attr.colspan]="produit.length" >
+                            <div style="display: flex;
+                            justify-content: center;">
+                                La liste est vide
+                            </div>
+                            
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+</div>
+
+                <div class="row" >
+                        <div class="col-sm-6">
+                    <a routerLink='/pages/Pointvente/gestionCategorieArticle'     nbButton type="button"  status="danger"  style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; " [shape]="'round'" >Annuler</a>
+                    </div>
+                    <div class="col-sm-6">
+                    <button type="submit"  nbButton status="success" class="button-style" style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Enregistrer</button>
+                    </div>
+                    </div>
+    </form> 
+
+    
+
+
+</nb-card-body>
+</nb-card>
+<!-- <p-dialog  header="Sous catégories" [(visible)]="diplay" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+        [maximizable]="true" [baseZIndex]="10">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label  class="label" style="color: #fff">.</label>
+                    <nb-checkbox [(ngModel)]="exist" status="success">Catégorie existante</nb-checkbox> 
+                </div>
+            </div>
+        </div>
+
+        <div class="row"  *ngIf="!exist">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label  class="label">Désignation <span style="color: red">*</span></label><br>
+                    <input type="text" maxlength="100" [(ngModel)]="desi" nbInput fullWidth  placeholder="Désignation" [ngClass]="{'has-error': iscategorieFormSubmitted && (formControls.designation.errors )}">
+                    <label *ngIf=" iscategorieFormSubmitted && (formControls.designation.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller  remplir votre designation </label>
+    
+                  </div>
+                </div>
+                <div class="col-sm-1 ">
+                      <div class="form-group">
+                          <label  class="label" style="color: #fff">.</label>
+                          <nb-checkbox [(ngModel)]="desi"  status="success">Actif</nb-checkbox> 
+                            </div>
+                  </div>
+                  <div class="col-sm-5">
+                          <label  class="label">Description</label><br>
+                          <input type="text" maxlength="100"[(ngModel)]="desi" nbInput fullWidth  placeholder="Description">
+
+              </div>
+        </div>
+        <div class="row"  *ngIf="!exist">
+                <div class="col-md-12" style="display: flex; justify-content: center">
+                        <nb-radio-group [(ngModel)]="pv">
+                                <nb-radio  style="display: inline !important;"
+                                  *ngFor="let item of pvs"
+                                  [value]="item.value">
+                                  {{ item.label }}
+                                </nb-radio>
+                        </nb-radio-group>
+                        
+                </div>
+            </div>
+            <br>
+                <div class="row" *ngIf="pv==1 && !exist" >
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6" >  
+                        <div  style="border:1px solid black;text-align: center ">
+                            <div  *ngFor="let item of listpointvente" >
+                                <div>
+                                    {{item.designation}}
+                                    <nb-radio-group [(ngModel)]="item.fVisible" [name]="item.idPointVente+1" >
+                                        <nb-radio  style="display: inline !important;"
+                                        *ngFor="let item of visible"
+                                        [value]="item.value">
+                                        {{ item.label }}
+                                        </nb-radio>
+                                    </nb-radio-group>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+        <div class="row">
+            <div class="col-sm-6" *ngIf="exist" >
+                <div class="form-group">
+                    <label  class="label">Liste Categorie</label>
+                    <nb-select fullWidth multiple [(ngModel)]="listcateogrie"  >
+                        <nb-option *ngFor="let item of categories" [value]="item">
+                            {{ item.designation }}
+                        </nb-option>
+                    </nb-select> 
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label  class="label" style="color: #fff">.</label>
+                    <button fullWidth nbButton type="button" (click)="diplay=false;choosecategorie()"   status="danger"  class="button-style" style="border-color: white; " [shape]="'round'" >Enregistrer</button>            
+                </div>
+            </div>
+                
+        </div>
+        </p-dialog> -->
+
+<p-dialog  header="Sous catégories" [(visible)]="diplay" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+voulez-vous utiliser une Sous catégories existante ?
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="form-group">
+            <label  class="label" style="color: #fff">.</label>
+            <button fullWidth nbButton type="button" (click)="diplay=false;addItem(true)"   status="danger"  style="background: #ff3d71; border-color: white;float:left; border-color: white; " [shape]="'round'" >Oui</button>            
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            <label  class="label" style="color: #fff">.</label>
+            <button fullWidth nbButton type="button" (click)="diplay=false;addItem(false)"   status="danger"  class="button-style" style="border-color: white; " [shape]="'round'" >Non</button>            
+        </div>
+    </div>
+</div>
+    
+        
+</p-dialog>

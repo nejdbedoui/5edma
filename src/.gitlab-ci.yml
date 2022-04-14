@@ -1,0 +1,59 @@
+cache:
+  paths:
+  - node-modules/
+  - dist
+
+stages:
+  - install
+  - build
+  - deploy
+
+install_dependencies:
+  stage: install
+  script:
+    - yarn install
+    - yarn ngcc --properties es2015 --create-ivy-entry-points
+  cache:
+    key:
+      files:
+        - yarn.lock
+    paths:
+      - node_modules
+  only:
+    changes:
+      - yarn.lock
+
+build:
+  stage: build
+  script:
+    - yarn ng build --prod
+
+deploy:
+  stage: deploy
+  script:
+    - sudo docker container rm -f $CI_PROJECT_NAME || true
+    - sudo docker rmi -f $CI_PROJECT_NAME
+    - sudo docker container ls 
+    - sudo docker build --no-cache -t $CI_PROJECT_NAME .
+    - sudo docker run --name $CI_PROJECT_NAME -d -p 4200:80  $CI_PROJECT_NAME
+  only :
+    - development
+  tags:
+    - deploy
+
+
+deploy-prod:
+  stage: deploy
+  script:
+    - zip -r /tmp/dist.zip dist
+    - sshpass -p6k3XZ9JAPUPR ssh -o StrictHostKeyChecking=no ubuntu:6k3XZ9JAPUPR@192.99.43.197 'sudo rm -Rf /var/www/bprice/dist'
+    - lftp sftp://root:devops*2020@192.99.43.197/tmp -e "put dist.zip; bye"
+    - sshpass -p6k3XZ9JAPUPR ssh -o StrictHostKeyChecking=no ubuntu:6k3XZ9JAPUPR@192.99.43.197 'sudo unzip /var/www/bprice/dist.zip -d /var/www/bprice;sudo rm -Rf /tmp/dist.zip'
+
+  only :
+    - master
+  tags:
+    - deploy
+
+
+

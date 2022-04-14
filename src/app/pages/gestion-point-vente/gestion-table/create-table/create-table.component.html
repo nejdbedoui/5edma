@@ -1,0 +1,56 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card  [nbSpinner]="loading" nbSpinnerStatus="primary" >
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Create Table</span></div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+        <form [formGroup]="tableForm" (ngSubmit)="addtable()">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label  class="label">Numéro Table<span style="color: red">*</span></label>
+                      <input type="number" onkeypress="return event.charCode >= 46" min="0" maxlength="100" formControlName="numTable" nbInput fullWidth  placeholder="Numéro Table" [ngClass]="{'has-error': istableFormSubmitted && (formControls.numTable.errors )}">
+                      <label *ngIf=" istableFormSubmitted && (formControls.numTable.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre Numéro de Table</label>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label  class="label">Capacite Table<span style="color: red">*</span></label>
+                      <input type="text" maxlength="100" formControlName="capaciteTable" nbInput fullWidth  placeholder="Capacite Table" [ngClass]="{'has-error': istableFormSubmitted && (formControls.capaciteTable.errors )}">
+                      <label *ngIf=" istableFormSubmitted && (formControls.capaciteTable.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre Capacite de Table</label>
+                    </div>
+                  </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label  class="label">Type</label>
+                    <nb-select fullWidth formControlName="typeTable" placeholder="Type Table" >
+                      <nb-option *ngFor="let item of Types" [value]="item.value">
+                        {{ item.label }}
+                      </nb-option>
+                    </nb-select>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label  class="label">Description</label>
+                    <input type="text" maxlength="100" formControlName="description" nbInput fullWidth  placeholder="Description" >
+                  </div>
+                </div>
+              </div>
+              <div class="row" >
+                <div class="col-6" >
+                    <button (click)="returntolist()"  nbButton type="reset"  status="danger" style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'" >Annuler</button>
+      
+                </div>
+                <div class="col-6" >
+                    <button  type="submit"   nbButton status="success" class="button-style"  style="float: right;" [shape]="'round'">Enregistrer</button>
+      
+                </div>
+      </div>
+              </form>               
+  </nb-card-body>
+</nb-card>

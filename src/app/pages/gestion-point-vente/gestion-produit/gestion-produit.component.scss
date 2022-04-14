@@ -1,0 +1,106 @@
+
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+  }
+  
+  .upload-btn-wrapper .btn {
+   // border: 2px solid gray;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    background: #8DCE4C 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 30px #352C600D;
+    border-radius: 15px;
+    opacity: 1;
+    cursor: pointer;
+  }
+  
+  .upload-btn-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+  }
+  .cursor{
+    cursor: pointer;
+  }
+  
+  fieldset {
+    display: block !important;
+    margin-left: 2px !important;
+    margin-right: 2px !important;
+    padding-top: 0.35em !important;
+    padding-bottom: 0.625em !important;
+    padding-left: 0.75em !important;
+    padding-right: 0.75em !important;
+    border-bottom: 1px groove !important;
+    border-top: 1px groove  !important;
+  }
+  legend {
+    max-width: 25% !important;
+   }
+   li {
+    list-style-type: '- ';
+}
+
+.example-container {
+  width: 400px;
+  max-width: 100%;
+  margin: 0 25px 25px 0;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.example-list {
+  border: solid 1px #ccc;
+  min-height: 60px;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+  display: block;
+}
+
+.example-box {
+  padding: 20px 10px;
+  border-bottom: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: move;
+  background: white;
+  font-size: 14px;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+              0 8px 10px 1px rgba(0, 0, 0, 0.14),
+              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-box:last-child {
+  border: none;
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+div.ui-table-wrapper.ng-star-inserted{
+  border: 1px solid #c8c8c8 !important;
+}

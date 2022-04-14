@@ -1,0 +1,36 @@
+import { Ingredient } from './Ingredient';
+import { PrimaryProduction } from './PrimaryProduction';
+export class Prodcut{
+  ajoutePar: string;
+  code: string;
+  codeBarre: string;
+  composition: string;
+  couleur: string;
+  dateCreation: Date;
+  description: string;
+  designation: string;
+  fAchete: number;
+  fRacourci: number;
+  fVendu: number;
+  fautorisGerant: number;
+  idCateg: string;
+  idPartenaire: string;
+  idProduit: string;
+  mesure: string;
+  prixHt: number;
+  prixTtc: number;
+  reference: string;
+  referenceInterne: string;
+  stockAlert: number;
+  stockQteDepart: number;
+  stockReel: number;
+  tva: number;
+  typeProduit: string;
+  urlImg: string;
+  ingredients:Ingredient[];
+  fMobile:number;
+  fPrimaire:number;
+  fSuppliment:number;
+  primaryProduction:PrimaryProduction[];
+  famille:string;
+}

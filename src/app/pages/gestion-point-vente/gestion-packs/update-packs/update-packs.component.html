@@ -1,0 +1,195 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Modifier un Pack</span></div>
+        </div>
+    </nb-card-header>
+  <nb-card-body >
+  
+        <form [formGroup]="packForm" (ngSubmit)="verifproduit()">
+
+                <div class="row">
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <label  class="label">Désignation <span style="color: red">*</span></label><br>
+                      <input type="text" maxlength="100" formControlName="designation" nbInput fullWidth  placeholder="Désignation" [ngClass]="{'has-error': isSubmitted && (formControls.designation.errors )}">
+                      <label *ngIf=" isSubmitted && (formControls.designation.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller  remplir la designation </label>
+      
+                    </div>
+                  </div>
+                  <div class="col-sm-4 ">
+                        <div class="form-group">
+                            <label  class="label">Prix<span style="color: red">*</span></label><br>
+                            <input type="text" maxlength="100" formControlName="prix" nbInput fullWidth  placeholder="prix" [ngClass]="{'has-error': isSubmitted && (formControls.prix.errors )}">
+                            <label *ngIf=" isSubmitted && (formControls.prix.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuiller  remplir le prix </label>
+
+                              </div>
+                    </div>
+                    <div class="col-sm-4">
+                            <label  class="label">indication remise</label><br>
+                            <input type="number" min="0" onkeypress="return event.charCode >= 46" maxlength="100" formControlName="indicremise" nbInput fullWidth  placeholder="indication remise">
+
+                </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label  class="label">Catégorie</label>
+                        <nb-select fullWidth multiple formControlName="categorie" >
+                            <nb-option *ngFor="let item of categories" [value]="item">
+                            {{ item.designation }}
+                            </nb-option>
+                        </nb-select>
+                        <!-- <label *ngIf=" isSubmitted && (formControls.typeProduit.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre Type Produit</label> -->
+                
+                </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-12" style="display: flex; justify-content: center">
+                            <nb-radio-group [(ngModel)]="pv" [ngModelOptions]="{standalone: true}">
+                                    <nb-radio  style="display: inline !important;"
+                                      *ngFor="let item of pvs"
+                                      [value]="item.value">
+                                      {{ item.label }}
+                                    </nb-radio>
+                            </nb-radio-group>
+                            
+                    </div>
+                </div>
+                <br>
+                    <div class="row" *ngIf="pv=='1'"  >
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6" >  
+                            <div  style="border:1px solid black;text-align: center ">
+                                <div  *ngFor="let item of listpointvente" >
+                                    <div>
+                                        {{item.designation}}
+                                        <nb-radio-group [(ngModel)]="item.fVisible" [ngModelOptions]="{standalone: true}" [name]="item.idPointVente" >
+                                            <nb-radio  style="display: inline !important;"
+                                            *ngFor="let item of visible"
+                                            [value]="item.value">
+                                            {{ item.label }}
+                                            </nb-radio>
+                                        </nb-radio-group>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                  
+                <br>
+                <div class="col-sm-6 ">
+                    <div class="form-group">
+                        <label  class="label" style="color: #fff">.</label>
+                        <nb-checkbox formControlName="autorisegerant"  status="success">Autoriser le gérant à modifier le pack</nb-checkbox> 
+                          </div>
+                </div>
+                <div class="col-sm-6 ">
+                    <div class="form-group">
+                        <label  class="label" style="color: #fff">.</label>
+                        <nb-checkbox formControlName="fRacourci"  status="success">créer un raccourci du pack au niveau de la caisse</nb-checkbox> 
+                          </div>
+                </div>
+                <br>
+                <fieldset >
+                    <legend>Ajouter les produits au packs</legend>
+                    <div class="row">
+                        <div class="col-sm-3">
+                          <div class="form-group">
+                            <label  class="label">QTe<span style="color: red">*</span></label><br>
+                          <input type="number" min="1" onkeypress="return event.charCode >= 46" maxlength="100" nbInput fullWidth  placeholder="Quantité"  [ngClass]="{'has-error': qteeereur}"  [(ngModel)]="produitpack.qte" [ngModelOptions]="{standalone: true}" >
+                          <label *ngIf=" qteeereur" class="label-has-error"><i class="fas fa-exclamation-circle"></i> Veuillez remplir la Quantité supérieur à 0 </label>
+                        </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <label  class="label">sélectionner un produit<span style="color: red">*</span></label>
+                            <nb-select fullWidth multiple [(ngModel)]="produitpack.prodcuts" [status]="prodcutserreur ? 'danger': ''" [ngModelOptions]="{standalone: true}" >
+                                <nb-option *ngFor="let item of prodcuts" [value]="item">
+                                {{ item.designation }}
+                                </nb-option>
+                            </nb-select>
+                            <label *ngIf=" prodcutserreur" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir le(s) Produit(s)</label>
+                    
+                    </div>
+                        <div class="col-sm-3">
+                            <button type="button" (click)="diplayproduit=true"  nbButton status="warning" style=" float:right;border-color: white;  margin-top: 15px;background: #FFCC00" [shape]="'round'">Recherche produit</button>
+
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" (click)="addproduit()"   nbButton status="success" class="button-style" style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Ajouter</button>
+
+                        </div>
+                      </div>
+                      <br><br>
+        <p-table [columns]="cols2" [value]="produitpacks" [loading]="loading1" [paginator]="true" [rows]="10"  >
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Qte</th>
+                    <th>Nom Produit</th>
+                    <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-produit>
+                <tr>
+                    <td>{{produit.qte}}</td>
+                    <td>{{produit.prodcuts.designation}}</td>
+                    <td> 
+                      <i (click)="addqte(produit)"  style="background-color: #8DCE4C;padding-top: 10px;padding-bottom: 10px;" class=" btn fas fa-plus cursor buttonround"></i>&nbsp;&nbsp;
+                      <i (click)="rmoveqte(produit)"  style="background-color: #ff7f00;padding-top: 10px;padding-bottom: 10px;" class=" btn fas fa-minus cursor buttonround"></i>&nbsp;&nbsp;
+                      <i (click)="diplay=true;currentproduitpacks=produit" style="background-color: #E82121;padding-top: 10px;padding-bottom: 10px;" class="btn far fa-trash-alt cursor  buttonround"></i>&nbsp;&nbsp;
+                      <!-- <button type="button" style="background-color: #7366B2"  class="btn buttonround" (click)="createfid(produit);addfid=false" > FID</button> -->
+                  </td>
+                </tr>
+            </ng-template>
+            <ng-template  pTemplate="emptymessage" let-produit>
+                <tr>
+                    <td [attr.colspan]="produit.length" >
+                        <div style="display: flex;
+                        justify-content: center;">
+                            La liste est vide
+                        </div>
+                        
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+                </fieldset>
+
+                <div class="row" >
+                        <div class="col-sm-6">
+                    <a routerLink='/pages/Pointvente/gestionPacks'    nbButton type="button"  status="danger"  style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; " [shape]="'round'" >Annuler</a>
+                    </div>
+                    <div class="col-sm-6">
+                    <button type="submit"  nbButton status="success" class="button-style" style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Enregistrer</button>
+                    </div>
+                    </div>
+    </form> 
+
+    
+
+
+</nb-card-body>
+</nb-card>
+
+<p-dialog  header="Supprimer Produit" [(visible)]="diplay" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+Voulez-vous bien supprimer ce produit ?
+<p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplay=false;delteproduit()">Supprimer</button>
+    <button type="button" nbButton  (click)="diplay=false"  class="ui-button-secondary">Quitter</button>
+  </p-footer>
+        
+</p-dialog>
+
+<p-dialog  header="Rechercher Produit" [(visible)]="diplayproduit" [modal]="true" [responsive]="true" [style]="{width: '700px', minWidth: '200px'}" [minY]="70"
+[maximizable]="true" [baseZIndex]="10">
+    <ngx-produitfilter (changePage)="onChangeproduit($event)" ></ngx-produitfilter>
+<!-- <p-footer>
+    <button type="button" nbButton [status]="'danger'" (click)="diplayproduit=false;delteproduit()">Supprimer</button>
+    <button type="button" nbButton  (click)="diplayproduit=false"  class="ui-button-secondary">Quitter</button>
+  </p-footer> -->
+        
+</p-dialog>

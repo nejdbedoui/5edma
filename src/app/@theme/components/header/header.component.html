@@ -1,0 +1,41 @@
+<div class="header-container">
+  <div class="logo-container">
+    <a (click)="toggleSidebar()" href="#" class="sidebar-toggle">
+      <nb-icon icon="menu-2-outline"></nb-icon>
+    </a>
+    <a class="logo" *ngIf="!partenaireexist"  href="#" (click)="navigateHome()">Bprice</a>
+    <a class="logo" style="text-align: center;" *ngIf="partenaireexist" href="#" (click)="navigateHome()"><img *ngIf="logo!=null"  style="width: 50%;" [src]="logo"></a>
+    
+  </div>
+  <!-- <nb-select [selected]="currentTheme" (selectedChange)="changeTheme($event)" status="primary">
+    <nb-option *ngFor="let theme of themes" [value]="theme.value"> {{ theme.name }}</nb-option>
+  </nb-select> -->
+  <!-- <nb-select *ngIf="afficheselect"  [(selected)]="currentpv" (selectedChange)="changepv($event)" status="primary">
+    <nb-option *ngFor="let item of pointventes" [value]="item.idPointVente"> {{ item.designation }}</nb-option>
+  </nb-select> -->
+  <div style="margin-left: 10px;padding-right: 40px; " *ngIf="pointvente!=null">
+    <span style="color: #8f9bb3;" *ngIf="pointvente!=null && pointvente.idPointVente!=null" >Point de Vente : </span> {{pointvente.designation}}
+  </div>
+  <button class="btn " *ngIf="afficheselect" style="background: #7366b2 0% 0% no-repeat padding-box;color:#fff" (click)="navigateaccueil()"><i class="fas fa-arrow-left"></i> Retour à la page d'accueil</button>
+
+</div>
+
+<div class="header-container">
+  <nb-actions size="small">
+
+    <nb-action class="control-item">
+      <nb-search type="rotate-layout"></nb-search>
+    </nb-action>
+    <nb-action class="control-item" icon="email-outline"></nb-action>
+    <nb-action class="control-item" icon="bell-outline"></nb-action>
+    <nb-action class="user-action" *nbIsGranted="['view', 'user']" >
+      <nb-user [nbContextMenu]="userMenu"
+                nbContextMenuTag="my-context-menu"
+               [onlyPicture]="userPictureOnly"
+               [name]="username"
+               picture="http://pluspng.com/img-png/user-png-icon-account-avatar-human-male-man-men-people-person-download-svg-download-png-edit-icon-512.png"
+               >
+      </nb-user>
+    </nb-action>
+  </nb-actions>
+</div>

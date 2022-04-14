@@ -1,0 +1,183 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Modifier Employe</span></div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <nb-tabset>
+      <nb-tab tabTitle="Informations Générales">
+        <form [formGroup]="userForm" (ngSubmit)="adduser()">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">nom<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="nom" nbInput fullWidth placeholder="nom"
+                  [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.nom.errors )}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.nom.errors )" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i>Veuiller remplir votre nom</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">Prénom<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="prenom" nbInput fullWidth placeholder="prenom"
+                  [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.prenom.errors )}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.prenom.errors )" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i>Veuiller remplir votre prenom</label>
+              </div>
+            </div>
+            <!-- </div>
+              <div class="row"> -->
+            <div class="col-sm-6" *ngIf="formControlsuser.idTypeUtilisateur.value.code!='collaborateur' ">
+              <div class="form-group">
+                <label class="label">login<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="login" nbInput fullWidth placeholder="login"
+                  [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.login.errors )}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.login.errors )" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i>Veuiller remplir votre login</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">matricule</label>
+                <input type="text" maxlength="100" formControlName="matricule" nbInput fullWidth
+                  placeholder="matricule">
+                <!-- <label *ngIf=" isuserFormSubmitted && (formControlsuser.matricule.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller  remplir votre matricule</label> -->
+              </div>
+            </div>
+            <!-- </div>
+            <div class="row"> -->
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">identifiant<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="identifiant" nbInput fullWidth
+                  placeholder="identifiant"
+                  [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.identifiant.errors )}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.identifiant.errors )" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i>Veuiller remplir votre identifiant</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">email</label>
+                <input type="text" maxlength="100" formControlName="email" nbInput fullWidth placeholder="email"
+                  [ngClass]="{'has-error': isuserFormSubmitted && isemailvalid  && formControlsuser.email.value.length >0}">
+                <label *ngIf=" isuserFormSubmitted && isemailvalid  && formControlsuser.email.value.length >0"
+                  class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller remplir un email
+                  Valid</label>
+              </div>
+            </div>
+            <!-- </div>
+          <div class="row"> -->
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">Type Utilisateur<span style="color: red">*</span></label>
+                <nb-select fullWidth formControlName="idTypeUtilisateur"
+                  [status]="isuserFormSubmitted && (formControlsuser.idTypeUtilisateur.errors ) ? 'danger': ''">
+                  <nb-option *ngFor="let item of typeutlisateurs" [value]="item">
+                    {{ item.designation }}
+                  </nb-option>
+                </nb-select>
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.idTypeUtilisateur.errors )"
+                  class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre Type
+                  Utilisateur</label>
+
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">Sexe<span style="color: red">*</span></label><br>
+                <!-- <input type="password" maxlength="100" formControlName="sexe" nbInput fullWidth  placeholder="Sexe" [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.sexe.errors )}"> -->
+                <nb-radio-group formControlName="sexe">
+                  <nb-radio style="display: inline !important;" *ngFor="let option of sexe" [value]="option.value">
+                    {{ option.label }}
+                  </nb-radio>
+                </nb-radio-group>
+              </div>
+            </div>
+            <!-- <div class="col-sm-6">
+              <div class="form-group">
+                <label  class="label">Type Profil<span style="color: red">*</span></label>
+                <nb-select fullWidth formControlName="idProfil" [status]="isuserFormSubmitted && (formControlsuser.idProfil.errors ) ? 'danger': ''">
+                  <nb-option *ngFor="let item of profils" [value]="item">
+                    {{ item.designation }}
+                  </nb-option>
+                </nb-select>
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.idProfil.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre Type Profil</label>
+  
+              </div>
+            </div> -->
+            <!-- </div>
+          <div class="row"> -->
+            <div class="col-sm-6" *ngIf="formControlsuser.idTypeUtilisateur.value.code!='collaborateur' ">
+              <div class="form-group">
+                <label class="label">mot de passe<span style="color: red">*</span></label>
+                <input type="password" maxlength="100" formControlName="password" nbInput fullWidth
+                  placeholder="mot de passe"
+                  [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.password.errors )}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.password.errors )" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i>Veuiller remplir votre mot de passe</label>
+              </div>
+            </div>
+            <div class="col-sm-6" *ngIf="formControlsuser.idTypeUtilisateur.value.code!='collaborateur' ">
+              <div class="form-group">
+                <label class="label">Confirmer mot de passe<span style="color: red">*</span></label>
+                <input type="password" maxlength="100" formControlName="Cpassword" nbInput fullWidth
+                  placeholder="Confirmer mot de passe"
+                  [ngClass]="{'has-error': isuserFormSubmitted && ((formControlsuser.Cpassword.errors )|| confirmpass)}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.Cpassword.errors )" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i>Veuiller Confirmer votre mot de passe</label>
+                <label *ngIf=" isuserFormSubmitted && !(formControlsuser.Cpassword.errors ) && confirmpass"
+                  class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller remplir le meme mot de
+                  passe</label>
+
+              </div>
+              <!-- <br>
+                <button (click)="affectrandompassword()" type="button"  class="btn btn-primary">Generer mot de passe  </button> -->
+            </div>
+            <!-- </div>
+          <div class="row"> -->
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">Téléphone<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="tel" nbInput fullWidth placeholder="Téléphone"
+                  [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.tel.errors )}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.tel.errors )" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i>Veuiller remplir votre Téléphone</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="label">Adresse<span style="color: red">*</span></label>
+                <input type="text" maxlength="100" formControlName="adresse" nbInput fullWidth placeholder="adresse"
+                  [ngClass]="{'has-error': isuserFormSubmitted && (formControlsuser.adresse.errors )}">
+                <label *ngIf=" isuserFormSubmitted && (formControlsuser.adresse.errors )" class="label-has-error"><i
+                    class="fas fa-exclamation-circle"></i>Veuiller remplir votre adresse</label>
+              </div>
+              <!-- <br>
+              <button (click)="affectrandompassword()" type="button"  class="btn btn-primary">Generer mot de passe  </button> -->
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-6">
+              <button (click)="returntolist()" nbButton type="reset" status="danger"
+                style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'">Annuler</button>
+
+            </div>
+            <div class="col-6">
+              <button type="submit" nbButton status="success" class="button-style" style="float: right;"
+                [shape]="'round'">Enregistrer</button>
+
+            </div>
+          </div>
+        </form>
+      </nb-tab>
+      <nb-tab tabTitle="Droits d'accès">
+        <ngx-access-permissions *ngIf="user" [user]="user"></ngx-access-permissions>
+      </nb-tab>
+    </nb-tabset>
+  </nb-card-body>
+</nb-card>

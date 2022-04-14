@@ -1,0 +1,71 @@
+<!-- <div class="container login-container"  *ngIf="isExist">
+  <div class="row">
+    <div class="col-md-6 login-form-1 Auth slider-container" style="justify-content: center">
+      <div style="margin-top: 1%;">
+      <img src="../../../assets/images/bprice.jpg" class="img-fluid" alt="Responsive image">
+      </div>
+    </div>
+    <div class="col-md-6 login-form-2">
+      <h3></h3>
+      <form [formGroup]="loginform" (ngSubmit)="doLogin()">
+        <div class="form-group">
+          <input type="text" id="identifiant" class="form-control" formControlName="email"  [ngClass]="{'has-error': (isSubmitted && (formControls.email.errors )) || loginError }" placeholder="login" required autofocus />
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" placeholder="mot de passe" formControlName="password"  [ngClass]="{'has-error': (isSubmitted && (formControls.password.errors )) || loginError }" required />
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btnSubmit">Connection</button>
+        </div>
+
+        <div class="form-group">
+
+          <a (click)="Motpasseoublie()" class="ForgetPwd" value="Login" >Mot de passe oublié</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> -->
+
+<div class="container login-container"  *ngIf="isExist">
+  <div class="row">
+    <div class="col-md-4 login-form-1 Auth slider-container" style="justify-content: center">
+      <div style="margin-top: 1%;">
+      <img src="../../../assets/images/Logo_BP_Caisse.png" style="max-width: 70% !important;" class="img-fluid" alt="Responsive image">
+      </div>
+    </div>
+    <div class="col-md-8 login-form-2">
+      <h3></h3>
+      <form [formGroup]="loginform" (ngSubmit)="doLogin()">
+        <div class="form-group">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-default"><i style="color: #352C60" class="fas fa-user"></i></span>
+                </div>
+                <input type="text" id="identifiant" aria-label="Default" class="form-control" formControlName="email" aria-describedby="inputGroup-sizing-default"  [ngClass]="{'has-error': (isSubmitted && (formControls.email.errors )) || loginError }" placeholder="login" required autofocus />
+
+              </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-default"><i style="color: #352C60" class="fas fa-lock"></i></span>
+                </div>
+                <input type="password" id="identifiant"  class="form-control cursor" aria-label="Default" placeholder="mot de passe" formControlName="password" aria-describedby="inputGroup-sizing-default"  [ngClass]="{'has-error': (isSubmitted && (formControls.password.errors )) || loginError }" required />
+
+              </div>
+        </div>
+        <div class="form-group">
+
+            <a (click)="Motpasseoublie()" class="ForgetPwd" value="Login" style="color:#0F9CC1" >Mot de passe oublié ?</a>
+          </div>
+        <div class="form-group" style="justify-content: center;
+        display: flex;">
+          <button type="submit" class="btnSubmit" >Login</button>
+        </div>
+
+        
+      </form>
+    </div>
+  </div>
+</div>

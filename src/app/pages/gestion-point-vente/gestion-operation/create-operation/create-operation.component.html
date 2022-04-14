@@ -1,0 +1,125 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card  [nbSpinner]="loading" nbSpinnerStatus="primary" >
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Ajouter une opération</span></div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+        <form [formGroup]="operationForm" (ngSubmit)="addoperation()">
+               
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label  class="label">Montant : <span style="color: red">*</span></label>
+                    <input maxlength="100" type="number" onkeypress="return event.charCode >= 46" formControlName="montant" nbInput fullWidth  placeholder="Montant" [ngClass]="{'has-error': isFormSubmitted && (formControls.montant.errors )}" >
+                    <label *ngIf=" isFormSubmitted && (formControls.montant.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller remplir le montant de l'opération</label>  
+                </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label  class="label">Type Opération: <span style="color: red">*</span></label>
+                    <nb-select fullWidth formControlName="type" placeholder="Type Opération" [status]="isFormSubmitted && (formControls.type.errors ) ? 'danger': ''" >
+                      <nb-option *ngFor="let item of operationstypes" [value]="item">
+                        {{ item.designation }}
+                      </nb-option>
+                    </nb-select>
+                    <label *ngIf=" isFormSubmitted && (formControls.type.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir un type d'Opération</label>  
+                  </div>
+                </div>
+                
+              </div>
+            <br>
+            <div class="row">
+              <div class="col-sm-6" *ngIf="formControls.type.value.designation=='transfert'">
+                <div class="form-group">
+                  <label  class="label">Caisse Source: <span style="color: red">*</span></label>
+                  <nb-select fullWidth formControlName="CaisseC" placeholder="Caisse Source" [status]="isFormSubmitted && (formControls.CaisseC.value==null || formControls.CaisseC.value=='' ) ? 'danger': ''" >
+                    <nb-option *ngFor="let item of caisses" [value]="item.idCaisse">
+                      {{ item.numCaisse }}
+                    </nb-option>
+                  </nb-select>
+                  <label *ngIf=" isFormSubmitted && (formControls.CaisseC.value==null || formControls.CaisseC.value=='' )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir la caisse crédirt</label>  
+                </div>
+              </div>
+                <div class="col-sm-6" *ngIf="formControls.type.value.designation=='transfert'">
+                    <div class="form-group">
+                      <label  class="label">Caisse destinataire : <span style="color: red">*</span></label>
+                      <nb-select fullWidth formControlName="CaisseD" placeholder="Caisse destinataire" [status]="isFormSubmitted && (formControls.CaisseD.value==null || formControls.CaisseD.value==''  ) ? 'danger': ''" >
+                        <nb-option *ngFor="let item of caisses" [value]="item.idCaisse">
+                          {{ item.numCaisse }}
+                        </nb-option>
+                      </nb-select>
+                      <label *ngIf=" isFormSubmitted && (formControls.CaisseD.value==null || formControls.CaisseD.value=='' )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir la caisse débuit</label>  
+                    </div>
+                  </div>
+                  <div class="col-sm-6" *ngIf="formControls.type.value.designation=='avoir'" >
+                    <div class="form-group">
+                    <label  class="label">N°commande / facture : <span style="color: red">*</span></label>
+                      <input maxlength="100" type="text" formControlName="numcommantaire" nbInput fullWidth  placeholder="N°commande / facture" [ngClass]="{'has-error': isFormSubmitted && (formControls.numcommantaire.value==null ||formControls.numcommantaire.value=='' ) }" >
+                      <label *ngIf=" isFormSubmitted && (formControls.numcommantaire.value==null ||formControls.numcommantaire.value=='' )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller remplir le N°commande de l'opération</label>  
+                  </div>
+                  </div>
+                  <div class="col-sm-6" *ngIf="formControls.type.value.designation=='avoir' || formControls.type.value.designation=='paiement facture'" >
+                    <div class="form-group">
+                      <label  class="label">Fournisseur : </label>
+                      <nb-select fullWidth formControlName="fournisseurid" placeholder="Fournisseur" >
+                        <nb-option *ngFor="let item of fournisseurs" [value]="item.idFournisseur">
+                          {{ item.nom }}
+                        </nb-option>
+                      </nb-select>
+                    </div>
+                  </div>
+                  <div class="col-sm-6" *ngIf="formControls.type.value.designation=='avance' || formControls.type.value.designation=='prime' || formControls.type.value.designation=='salaire'" >
+                    <div class="form-group">
+                      <label  class="label">Employé : <span style="color: red">*</span></label>
+                      <nb-select fullWidth formControlName="employerid" placeholder="Employé" >
+                        <nb-option *ngFor="let item of utilisateurs" [value]="item.idUtilisateur">
+                          {{ item.nom }}
+                        </nb-option>
+                      </nb-select>
+                      <label *ngIf=" isFormSubmitted && (formControls.employerid.value==null || formControls.employerid.value=='' )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir un Employé</label>  
+
+                    </div>
+                  </div>
+                  <div class="col-sm-6" *ngIf="formControls.type.value.designation=='avance' || formControls.type.value.designation=='prime' || formControls.type.value.designation=='salaire'" >
+                    <div class="form-group">
+                      <label  class="label">Date : <span style="color: red">*</span></label>
+                      <p-calendar class="disgness"  dateFormat="dd/mm/yy" fullWidth formControlName="date" id="dateDebut"></p-calendar>
+                    </div>
+                  </div>
+                  <!-- <div class="col-sm-6">
+                    <div class="form-group">
+                      <label  class="label">Caisse Débuit: <span style="color: red">*</span></label>
+                      <nb-select fullWidth formControlName="CaisseD" placeholder="Caisse Débuit" [status]="isFormSubmitted && (formControls.CaisseD.errors ) ? 'danger': ''" >
+                        <nb-option *ngFor="let item of caisses" [value]="item.idCaisse">
+                          {{ item.numCaisse }}
+                        </nb-option>
+                      </nb-select>
+                      <label *ngIf=" isFormSubmitted && (formControls.CaisseD.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir la caisse débuit</label>  
+                    </div>
+                  </div> -->
+                  
+            </div>
+            <div class="row" >
+                <div class="col-sm-12">
+                    <div class="form-group">
+                      <label  class="label">Commenatire : <span style="color: red" *ngIf="formControls.type.value.designation=='avoir' || formControls.type.value.designation=='transfert'">*</span></label>
+                      <textarea maxlength="100" cols="30" rows="10" type="text" formControlName="commenatire" nbInput fullWidth  placeholder="commenatire" ></textarea>
+                      <label *ngIf=" isFormSubmitted && (formControls.type.value.designation=='avoir' || formControls.type.value.designation=='transfert') && (formControls.commenatire.value==null || formControls.commenatire.value=='')" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller remplir le commenatire</label>  
+                  </div>
+                  </div>
+            </div>
+              <div class="row" >
+                <div class="col-6" >
+                    <button (click)="returntolist()"  nbButton type="reset"  status="danger" style="float: left ;background: #ff3d71; margin-top: 15px; " [shape]="'round'" >Annuler</button>
+      
+                </div>
+                <div class="col-6" >
+                    <button  type="submit"   nbButton status="success" class="button-style"  style="float: right;" [shape]="'round'">Enregistrer</button>
+      
+                </div>
+      </div>
+              </form>               
+  </nb-card-body>
+</nb-card>

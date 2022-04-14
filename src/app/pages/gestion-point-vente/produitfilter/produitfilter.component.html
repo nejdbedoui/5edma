@@ -1,0 +1,139 @@
+<div class="row">
+    <div class="col-md-12">
+        <button type="button" *ngIf="!affichefilter" style="float: right;background: #79008e !important;" nbButton
+            [shape]="'round'" (click)="affichefilter=true"> Afficher plus de critéres de recherche</button>&nbsp;&nbsp;
+        <button type="button" *ngIf="affichefilter" style="float: right" nbButton status="warning" [shape]="'round'"
+            (click)="filtercriter();affichefilter=false"> Cacher les critères de recherche</button>&nbsp;&nbsp;
+    </div>
+</div>
+<br>
+<fieldset *ngIf="affichefilter">
+    <legend>Critéres de recherche</legend>
+
+    <div class="row" style="padding-bottom: 10px;">
+        <div class="col-sm-2">
+            <!-- <label  class="label">Catégorie<span style="color: red">*</span></label> -->
+            <nb-select fullWidth multiple [(ngModel)]="listselectcateg">
+                <nb-option *ngFor="let item of categories" [value]="item">
+                    {{ item.designation }}
+                </nb-option>
+            </nb-select>
+            <!-- <label *ngIf=" isSubmitted && (formControls.typeProduit.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre Type Produit</label> -->
+
+        </div>
+        <div class="col-sm-1 ">
+            Prix:
+        </div>
+        <div class="col-sm-3 ">
+            <span>de:&nbsp;&nbsp;</span>
+            <input type="number" onkeypress="return event.charCode >= 46" min="0" [(ngModel)]="deprix" maxlength="100"
+                nbInput>
+        </div>
+        <div class="col-sm-3 ">
+            <span>à:&nbsp;&nbsp;</span>
+            <input type="number" onkeypress="return event.charCode >= 46" min="0" [(ngModel)]="aprix" maxlength="100"
+                nbInput>
+        </div>
+        <div class="col-sm-1 ">
+            Date d'insertion:
+        </div>
+        <div class="col-sm-2 centreVerticalement">
+            <p-calendar fullWidth [(ngModel)]="datecreation" placeholder="date" class="disgness pos"
+                dateFormat="dd-mm-yy" [locale]="calendar"></p-calendar>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            <nb-checkbox [(ngModel)]="notaffectedtocateg" status="success">non affecté à une categorie</nb-checkbox>
+        </div>
+        <div class="col-sm-4">
+            <nb-checkbox [(ngModel)]="repturedestock" status="success">en repture de stock</nb-checkbox>
+        </div>
+        <div class="col-sm-4">
+            <nb-checkbox [(ngModel)]="presquerepturestock" status="success">presque en repture de stock</nb-checkbox>
+        </div>
+        <div class="col-sm-4">
+            <nb-checkbox [(ngModel)]="aveccodeinterne" status="success">avec code à bare interne</nb-checkbox>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <button nbButton type="button" *ngIf="fannule" status="danger" (click)="annuler();fannule=false"
+                style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; "
+                [shape]="'round'">Annuler</button>
+        </div>
+        <div class="col-sm-6">
+            <button type="submit" nbButton status="success" (click)="search()" class="button-style"
+                style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Enregistrer</button>
+        </div>
+    </div>
+</fieldset>
+
+<br>
+<p-table [columns]="cols2" [value]="listproduit" [loading]="loading" [paginator]="true" [(selection)]="selectedCars3"
+    [rows]="10">
+    <ng-template pTemplate="header">
+
+        <tr>
+            <th rowspan="2" style="width: 3em">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th rowspan="2">Désignation</th>
+            <th rowspan="2">Code a Barre </th>
+            <th rowspan="2">Catégorie</th>
+            <th colspan="3"> Stock</th>
+            <th rowspan="2">Prix</th>
+            <!-- <th   rowspan="2">Action</th> -->
+        </tr>
+        <tr>
+            <th>Départ</th>
+            <th>Actuel</th>
+            <th>Limite</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-produit>
+
+        <tr>
+            <td>
+                <p-tableCheckbox [value]="produit"></p-tableCheckbox>
+            </td>
+            <td>{{produit.produit!=null?produit.produit.designation:''}}</td>
+            <td>{{produit.produit!=null?produit.produit.codeBarre:''}}</td>
+            <td>
+                <ul>
+                    <li *ngFor="let item of produit.categorieArticleProduits">
+                        <div class="etc">{{getname(item.idCategArticle)}}</div>
+                    </li>
+                </ul>
+            </td>
+            <td> {{produit.produit!=null?produit.produit.stockQteDepart:''}}</td>
+            <td> {{produit.produit!=null?produit.stockactual:''}}</td>
+            <td> {{produit.produit!=null?produit.produit.stockAlert:''}}</td>
+            <td> {{produit.produit!=null?produit.produit.prixTtc:''}}</td>
+            <!-- <td> 
+                        
+                    </td> -->
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-produit>
+        <tr>
+            <td [attr.colspan]="produit.length">
+                <div style="display: flex;
+                        justify-content: center;">
+                    La liste est vide
+                </div>
+
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+<br><br>
+<div class="row">
+    <div class="col-sm-12">
+
+        <button type="button" (click)="chooseporduct()" nbButton status="success" class="button-style"
+            style="float: right;" [shape]="'round'">Enregistrer</button>
+
+    </div>
+</div>

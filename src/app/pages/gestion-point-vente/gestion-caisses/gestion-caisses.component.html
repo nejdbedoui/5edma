@@ -1,0 +1,60 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card >
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Veuillez choisir un Point Vente</span></div>
+        </div>
+    </nb-card-header>
+  <nb-card-body [nbSpinner]="loading" nbSpinnerStatus="primary">
+        <p-dataView #dv [value]="pointventes" [paginator]="true" [rows]="20" paginatorPosition="bot" filterBy="designation"
+        [sortField]="sortField" [sortOrder]="sortOrder" layout="grid" emptyMessage="Aucun enregistrement trouvé">
+        <p-header>
+                <div class="ui-helper-clearfix">
+                    <div class="ui-g">
+                        <div class="ui-g-12 ui-md-4">
+                            <p-dropdown [options]="sortOptions" [(ngModel)]="sortKey" placeholder="Trier par" (onChange)="onSortChange($event)" [style]="{'min-width':'140px'}"></p-dropdown>
+                        </div>
+                        <div class="ui-g-6 ui-md-4 filter-container">
+                            <div style="position:relative">
+                                <input type="search" pInputText placeholder="Recherché par" (input)="dv.filter($event.target.value)">
+                            </div>
+                        </div>
+                        <div class="ui-g-6 ui-md-4" style="text-align:right">
+                            <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+                        </div>
+                    </div>
+                </div>
+            </p-header>
+            <ng-template let-pointvente pTemplate="listItem">
+                    <div class="ui-g-12">
+                        <div class="car-details" >
+                            <div>
+                                <div class="ui-g-4">
+                                        <img src="https://www.gea-bag.com/trolley_20icon_20orange_200.png?v=1mzfyk5czxbgv0j" width="100">
+                                </div>
+                                <div class="ui-g-8">
+                                    <div class="ui-g-12">Désignation: <b>{{pointvente.designation}}</b></div>
+                                    <div class="ui-g-12">Adresse: <b>{{pointvente.adresse}}</b></div>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <!-- <button pButton type="button" icon="pi pi-search" ></button> -->
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template let-pointvente pTemplate="gridItem">
+                        <div style="padding:.5em" class="ui-g-12 ui-md-3">
+                                <p-panel [header]="pointvente.designation" [style]="{'text-align':'center'}">
+                                    <img src="https://www.gea-bag.com/trolley_20icon_20orange_200.png?v=1mzfyk5czxbgv0j" width="100">
+                                    <div class="car-detail">{{pointvente.adresse}}</div>
+                                    <!-- <hr class="ui-widget-content" style="border-top:0">
+                                    <button pButton type="button" icon="pi pi-search" style="margin-top:0"></button> -->
+                                </p-panel>
+                            </div>
+                    <div>
+                    </div>
+                </ng-template>
+            </p-dataView>
+</nb-card-body>
+</nb-card>

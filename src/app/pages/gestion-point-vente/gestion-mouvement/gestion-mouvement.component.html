@@ -1,0 +1,374 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card>
+  <nb-card-header>
+    <div class="row">
+      <div class="col-md-6"><span style="font-size: 20px;">Gestion des Mouvements de Stock</span></div>
+      <div class="col-md-6">
+        <!-- <span style="float: right">({{citoyens.length}} résultats)&nbsp;&nbsp;</span> -->
+        <span style="float: right" *ngIf="!nbrplus">{{dt.totalRecords }} Mouvements Stock(s)&nbsp;&nbsp;</span>
+        <span style="float: right" *ngIf="nbrplus">{{dt1.totalRecords }} Mouvements Stock(s)&nbsp;&nbsp;</span>
+
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+
+    <div class="row">
+      <div class="col-md-12">
+        <button type="button" *ngIf="!affichefilter" style="float: right;background: #79008e !important;" nbButton
+          [shape]="'round'" (click)="affichefilter=true"> Afficher plus de critéres de recherche</button>&nbsp;&nbsp;
+        <button type="button" *ngIf="affichefilter" style="float: right" nbButton status="warning" [shape]="'round'"
+          (click)="affichefilter=false"> Cacher les critères de recherche</button>&nbsp;&nbsp;
+      </div>
+    </div>
+    <br>
+    <fieldset *ngIf="affichefilter">
+      <legend><span>Par Produit</span></legend>
+
+      <div class="row" style="padding-bottom: 10px;">
+        <div class="col-sm-4">
+          <label class="label">Produits</label>
+          <nb-select placeholder="Produits" fullWidth multiple [(ngModel)]="listselectcateg">
+            <nb-option *ngFor="let item of prodcuts" [value]="item">
+              {{ item.designation }}
+            </nb-option>
+          </nb-select>
+
+          <!-- <label *ngIf=" isSubmitted && (formControls.typeProduit.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre Type Produit</label> -->
+
+        </div>
+        <div class="col-sm-2 ">
+          <label class="label"> Opération:</label><br>
+          <nb-select fullWidth [(ngModel)]="sens">
+            <nb-option *ngFor="let item of operation" [value]="item.value">
+              {{ item.label }}
+            </nb-option>
+          </nb-select>
+        </div>
+        <!-- <div class="col-sm-1 " style="padding-top: 11px;">
+         
+      </div> -->
+      </div><br>
+      <br>
+      <legend><span>Par Période</span></legend>
+      <div class="row">
+        <div class="col-sm-2 centreVerticalement">
+          <label class="label"> Date début :</label>
+          <p-calendar fullWidth [(ngModel)]="datecreation" placeholder="Date début" class="disgness pos"
+            dateFormat="dd-mm-yy" [locale]="calendar"></p-calendar>
+        </div>
+        <div class="col-sm-2 centreVerticalement">
+          <label class="label"> Date Fin :</label>
+          <p-calendar fullWidth [(ngModel)]="datefincreation" placeholder="date fin" class="disgness pos"
+            dateFormat="dd-mm-yy" [locale]="calendar"></p-calendar>
+        </div>
+      </div>
+      <br><br>
+      <legend><span>Par Point Vente / Fournisseur</span></legend>
+      <div class="row">
+        <div class="col-sm-2">
+          <label class="label">Point de vente :</label>
+          <nb-select placeholder="Point Vente" fullWidth [(ngModel)]="selectedPv">
+            <nb-option *ngFor="let item of pointVentes" [value]="item">
+              {{ item.designation }}
+            </nb-option>
+          </nb-select>
+          <!-- <label *ngIf=" isSubmitted && (formControls.typeProduit.errors )" class="label-has-error"><i class="fas fa-exclamation-circle"></i>Veuiller choisir votre Type Produit</label> -->
+
+        </div>
+        <div class="col-sm-3 ">
+          <label class="label"> Qantite:</label><br>
+          <span>de:&nbsp;&nbsp;</span>
+          <input type="number" onkeypress="return event.charCode >= 46" min="0" [(ngModel)]="dequantite"
+            maxlength="1000" nbInput>
+        </div>
+        <div class="col-sm-3 " style="margin-top: 7px;">
+          <label class="label"></label><br>
+          <span>à:&nbsp;&nbsp;</span>
+          <input type="number" onkeypress="return event.charCode >= 46" min="0" [(ngModel)]="aquantite" maxlength="1000"
+            nbInput>
+        </div>
+
+        <!-- <div class="col-sm-2 centreVerticalement">
+          <label  class="label"> Date :</label>
+        <p-calendar  fullWidth [(ngModel)]="datecreation" placeholder="date" class="disgness pos"  dateFormat="dd-mm-yy" [locale]="calendar"  ></p-calendar>
+      </div>
+     -->
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <button nbButton type="button" *ngIf="fannule" status="danger" (click)="annuler();fannule=false"
+            style="background: #ff3d71; border-color: white;float:left;  margin-top: 15px; "
+            [shape]="'round'">Annuler</button>
+        </div>
+        <div class="col-sm-6">
+          <button type="submit" nbButton status="success" (click)="newSearch()" class="button-style"
+            style=" float:right;border-color: white;  margin-top: 15px;" [shape]="'round'">Chercher</button>
+        </div>
+      </div>
+    </fieldset>
+
+
+
+    <div class="row" style="margin-top:2%;">
+      <div class="col-md-3">
+      </div>
+      <div class="col-md-5">
+
+      </div>
+
+      <div class="col-md-4">
+        <div class="" style="text-align: center; margin-top: 8px;">
+          <button (click)="redirect()" style="float: right;" class="icon-btn add-btn">
+            <div class="add-icon"></div>
+            <div class="btn-txt">Ajouter un Nouveau Mouvement</div>
+          </button>
+        </div>
+      </div>
+    </div>
+    <br>
+    <nb-tabset id="tabset" name="tabset" #tabset (changeTab)="onChangeTab($event)">
+      <nb-tab tabTitle="mouvement entrant ">
+        <p-table #dt1 [value]="mvts" [columns]="cols" [rowsPerPageOptions]="[20,30,50]" [rows]="20" [loading]="loading"
+          [paginator]="true" [responsive]="true" autoLayout="true" (sortFunction)="customSort($event)" id="tabmvt"
+          styleClass="p-datatable-striped" [customSort]="true">
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <!-- <th>Produit</th>
+                        <th>Stock Reel</th>
+                        <th>Opération</th>
+                        <th>Quantité</th>
+                        <th>Date Operation</th> -->
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                {{col.header}}
+                <p-sortIcon [field]="col.field"></p-sortIcon>
+              </th>
+              <th>
+                Montant Achat
+              </th>
+              <!-- <th>Action</th> -->
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-mvt>
+            <tr style=" border: 1px solid #c8c8c8 !important;">
+              <!-- <td><i *ngIf="mvt.mvtStock.sens=='+'"  style="color: green" class="fas fa-plus"></i><i  *ngIf="mvt.mvtStock.sens=='-'" style="color: red" class="fas fa-minus"></i></td> -->
+              <td style=" border: 1px solid #c8c8c8 !important;" [attr.rowspan]="mvt.mvts.length+1">
+                {{getname(mvt.idProduit)}}</td>
+              <td style=" border-bottom: 1px solid #c8c8c8 !important;text-align: center;"
+                [attr.rowspan]="mvt.mvts.length+1">
+                {{mvt.produit!=null?(mvt.produit.stockQteDepart!=null?mvt.produit.stockQteDepart:'----'):''}}</td>
+              <td style=" border-bottom: 1px solid #c8c8c8 !important;text-align: center;"
+                [attr.rowspan]="mvt.mvts.length+1">
+                {{mvt.produit!=null?(mvt.produit.stockQteDepart!=null?mvt.produit.stockAlert:'----'):''}}</td>
+              <td
+                style=" border-bottom: 1px solid #c8c8c8 !important;border-right: 1px solid #c8c8c8 !important;text-align: center;"
+                [attr.rowspan]="mvt.mvts.length+1"><span
+                  style="padding: 3px; border-radius: 8px;font-weight: 900;">{{mvt.stockReel
+                  | number}}</span>
+                <nb-icon *ngIf="
+                  mvt?.stockReel != null &&
+                  mvt?.stockReel < mvt?.produit?.stockAlert 
+                  " icon="alert-triangle-outline" status="danger"></nb-icon>
+                <nb-icon *ngIf="
+                  mvt?.stockReel != null &&
+                  mvt?.stockReel < mvt?.produit?.stockQteDepart &&
+                  mvt?.stockReel > mvt?.produit?.stockAlert 
+                  " icon="alert-triangle-outline" status="warning"></nb-icon>
+              </td>
+            </tr>
+            <tr *ngFor="let item of mvt.mvts">
+              <td style="text-align: center;"> <i *ngIf="item.sens=='+'" style="color: green" class="fas fa-plus"></i><i
+                  *ngIf="item.sens=='-'" style="color: red" class="fas fa-minus"></i> </td>
+              <td style="font-weight: 900;"> {{item.quantite}} </td>
+              <td> {{item.type}} {{item.type=='transfert'&&item.sens=='-'?' vers '+
+                item?.pointVenteDest?.designation:item.type=='transfert'&&item.sens=='+'?' depuis ' +
+                item?.pointVenteSource?.designation:'' }} </td>
+              <td> {{item.dateMvt |date:'dd-MM-yyyy'}} </td>
+              <td> {{item.valeur}}</td>
+              <!-- <td style="background-color: white !important;" >  <a routerLink="/pages/Pointvente/gestionMouvement/NouveauMouvement/{{mvt.idCategorie}}"><i style="color: green" class="far fa-edit"></i></a>  </td> -->
+            </tr>
+            <!-- <td>{{mvt.mvtStock.quantite}}</td>
+    
+                        <td>{{mvt.mvtStock.dateMvt |date:'dd-MM-yyyy'}}</td> -->
+            <!-- <td> <a routerLink="/pages/Pointvente/gestionMouvement/NouveauMouvement/{{mvt.idCategorie}}"><i style="color: green" class="far fa-edit"></i></a></td> -->
+
+          </ng-template>
+          <ng-template pTemplate="emptymessage" let-mvts>
+            <tr>
+              <td [attr.colspan]="mvts.length">
+                <div style="display: flex;
+                                justify-content: center;">
+                  La liste est vide
+                </div>
+
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </nb-tab>
+      <nb-tab tabTitle="mouvement sortant" id="mvtSortant" name="mvtSortant" #mvtSortant>
+        <div class="row">
+          <div class="col-sm-8"></div>
+          <div class="col-sm-2" *ngIf="canCheak && selectedMvts.length > 0">
+            <button type="button" nbButton status="success" (click)="diplay = true" class="button-style"
+              style=" border-color: white;  margin-top: 25px;" [shape]="'round'">Géneration bon de livaison </button>
+          </div>
+        </div>
+        <br><br>
+        <p-table #dt [value]="mvtmoin" [columns]="cols" [rowsPerPageOptions]="[20,30,50]" [rows]="20"
+          [loading]="loading" [paginator]="true" [responsive]="true" autoLayout="true"
+          (sortFunction)="customSort($event)" [customSort]="true" [(selection)]="selectedMvts">
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <!-- <th>Produit</th>
+                        <th>Stock Reel</th>
+                        <th>Opération</th>
+                        <th>Quantité</th>
+                        <th>Date Operation</th> -->
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                {{col.header}}
+                <p-sortIcon [field]="col.field"></p-sortIcon>
+              </th>
+              <th>Qte Convertie</th>
+              <th>Prix Vente</th>
+              <!-- <th>Action</th> -->
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-mvt>
+
+            <tr style=" border: 1px solid #c8c8c8 !important;">
+            <tr>
+              <td [attr.rowspan]="mvt.mvts.length+1">
+                <p-tableCheckbox [value]="mvt"></p-tableCheckbox>
+              </td>
+              <!-- <td><i *ngIf="mvt.mvtStock.sens=='+'"  style="color: green" class="fas fa-plus"></i><i  *ngIf="mvt.mvtStock.sens=='-'" style="color: red" class="fas fa-minus"></i></td> -->
+              <td style=" border: 1px solid #c8c8c8 !important;" [attr.rowspan]="mvt.mvts.length+1">
+                {{getname(mvt.idProduit)}}</td>
+              <td [attr.rowspan]="mvt.mvts.length+1">
+                {{mvt.produit!=null?(mvt.produit.stockQteDepart!=null?mvt.produit.stockQteDepart:'----'):''}}</td>
+              <td [attr.rowspan]="mvt.mvts.length+1">
+                {{mvt.produit!=null?(mvt.produit.stockQteDepart!=null?mvt.produit.stockAlert:'----'):''}}</td>
+              <td [attr.rowspan]="mvt.mvts.length+1"
+                style=" border-right: 1px solid #c8c8c8 !important;font-weight: 900;">{{mvt.stockReel}}
+                <nb-icon *ngIf="
+                mvt?.stockReel != null &&
+                mvt?.stockReel < mvt?.produit?.stockAlert 
+                " icon="alert-triangle-outline" status="danger"></nb-icon>
+                <nb-icon *ngIf="
+                mvt?.stockReel != null &&
+                mvt?.stockReel < mvt?.produit?.stockQteDepart &&
+                mvt?.stockReel > mvt?.produit?.stockAlert 
+                " icon="alert-triangle-outline" status="warning"></nb-icon>
+              </td>
+            </tr>
+            <tr *ngFor="let item of mvt.mvts">
+              <td> <i *ngIf="item.sens=='+'" style="color: green" class="fas fa-plus"></i><i *ngIf="item.sens=='-'"
+                  style="color: red" class="fas fa-minus"></i> </td>
+              <td style=" font-weight: 
+              900;"> {{item.quantite}} </td>
+              <td> {{item.type}} {{item.type=='transfert'&&item.sens=='-'?' vers '+
+                item?.pointVenteDest?.designation:item.type=='transfert'&&item.sens=='+'?' depuis ' +
+                item?.pointVenteSource?.designation:'' }} </td>
+              <td> {{item.dateMvt |date:'dd-MM-yyyy'}} </td>
+              <td>{{item?.qteConversion}}</td>
+              <td>{{item?.prixVente}}</td>
+              <!-- <td style="background-color: white !important;" >  <a routerLink="/pages/Pointvente/gestionMouvement/NouveauMouvement/{{mvt.idCategorie}}"><i style="color: green" class="far fa-edit"></i></a>  </td> -->
+            </tr>
+            <!-- <td>{{mvt.mvtStock.quantite}}</td> -->
+
+            <!-- <td>{{mvt.mvtStock.dateMvt |date:'dd-MM-yyyy'}}</td> -->
+            <!-- <td> <a routerLink="/pages/Pointvente/gestionMouvement/NouveauMouvement/{{mvt.idCategorie}}"><i style="color: green" class="far fa-edit"></i></a></td> -->
+
+          </ng-template>
+          <ng-template pTemplate="emptymessage" let-mvts>
+            <tr>
+              <td [attr.colspan]="mvts.length">
+                <div style="display: flex;
+                                justify-content: center;">
+                  La liste est vide
+                </div>
+
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </nb-tab>
+    </nb-tabset>
+
+  </nb-card-body>
+</nb-card>
+
+
+<p-dialog header="Confirmation Génération Bon de livraison" [(visible)]="diplay" [modal]="true" [responsive]="true"
+  [style]="{ width: '800px', minWidth: '200px' }" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+  <div>
+    etes-vous sur de vouloir génerer le bon de livaison pour le point de vente ?
+  </div>
+
+  <div>
+    Récapitulatif :
+  </div>
+
+  <div>
+    <p-table #dt2 [value]="selectedMvts" [columns]="cols" [rows]="20" [loading]="loading" [paginator]="true"
+      [responsive]="true" autoLayout="true">
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th>Désignation</th>
+          <th>Qte/portion</th>
+          <th>Unité</th>
+          <th>Qte(conversion)</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-mvt>
+
+
+        <tr *ngFor="let item of mvt.mvts">
+          <td> {{mvt?.produit?.designation}}</td>
+          <td> {{item?.quantite}} </td>
+          <td> {{item?.mesureConversion}} </td>
+          <td> {{item?.qteConversion}} </td>
+
+          <!-- <td style="background-color: white !important;" >  <a routerLink="/pages/Pointvente/gestionMouvement/NouveauMouvement/{{mvt.idCategorie}}"><i style="color: green" class="far fa-edit"></i></a>  </td> -->
+        </tr>
+
+
+
+      </ng-template>
+      <ng-template pTemplate="emptymessage" let-mvts>
+        <tr>
+          <td [attr.colspan]="mvts.length">
+            <div style="display: flex;
+                    justify-content: center;">
+              La liste est vide
+            </div>
+
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <button nbButton type="button" (click)="diplay = false" status="danger" style="
+          background: #ff3d71;
+          border-color: white;
+          float: left;
+          margin-top: 15px;
+        " [shape]="'round'">
+        Annuler
+      </button>
+    </div>
+    <div class="col-sm-6">
+      <button type="button" nbButton status="success" class="button-style"
+        style="float: right; border-color: white; margin-top: 15px" [shape]="'round'"
+        (click)="exportPdf();diplay = false">
+        Valider
+      </button>
+    </div>
+  </div>
+</p-dialog>

@@ -1,0 +1,77 @@
+<ngx-bread-crumb></ngx-bread-crumb>
+<nb-card>
+    <nb-card-header>
+        <div class="row">
+            <div class="col-md-6"><span style="font-size: 20px;">Gestion des Dépenses</span></div>
+            <div class="col-md-6">
+                <!-- <span style="float: right">({{citoyens.length}} résultats)&nbsp;&nbsp;</span> -->
+                <span style="float: right">{{dt.totalRecords}} Opération(s)&nbsp;&nbsp;</span>
+
+            </div>
+        </div>
+    </nb-card-header>
+    <nb-card-body>
+        <div class="row">
+            <div class="col-md-6">
+            </div>
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-4">
+                <div class="" style="text-align: center; margin-top: 8px;">
+                    <button type="button" (click)="addoperation()" style="float: right;" class="icon-btn add-btn">
+                        <div class="add-icon"></div>
+                        <div class="btn-txt">Ajouter une Nouvelle Opération</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <br>
+        <p-table #dt [columns]="cols" [value]="operation" [loading]="loading" [responsive]="true" [paginator]="true"
+            [rowsPerPageOptions]="[20,30,50]" [rows]="20">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Montant</th>
+                    <th>Caisse Srouce</th>
+                    <th>Caisse Destination</th>
+                    <th>Type opération</th>
+                    <th>Date Création</th>
+                    <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-ope>
+                <tr>
+                    <td>{{ope.montant}}</td>
+                    <td>{{findcaisse(ope.idCaisse)}}</td>
+                    <td>{{findcaisse(ope.caiIdCaisse)}}</td>
+                    <td>{{findoperationtype(ope.idTypeOperation)}}</td>
+                    <td>{{ope.dateOperation |date:'dd-MM-yyyy'}}</td>
+                    <td> <i (click)="editoperation(ope)"
+                            class="far fa-edit cursor buttonround editbutton"></i>&nbsp;&nbsp;
+                        <i (click)="supprimeoperation(ope)" class="far fa-trash-alt buttonround deletebutton"></i>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-ope>
+                <tr>
+                    <td [attr.colspan]="ope.length">
+                        <div style="display: flex;
+                                justify-content: center;">
+                            La liste est vide
+                        </div>
+
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+    </nb-card-body>
+</nb-card>
+
+<p-dialog header="Supprimer Operation" [(visible)]="diplay" [modal]="true" [responsive]="true"
+    [style]="{width: '700px', minWidth: '200px'}" [minY]="70" [maximizable]="true" [baseZIndex]="10">
+    Voulez-vous bien supprimer cette Opération ?
+    <p-footer>
+        <button type="button" nbButton [status]="'danger'" (click)="diplay=false;deleteoperation()">Supprimer</button>
+        <button type="button" nbButton (click)="diplay=false" class="ui-button-secondary">Quitter</button>
+    </p-footer>
+</p-dialog>
