@@ -36,13 +36,13 @@
 
         </div>
         <div class="col-sm-3 ">
-          <label class="label">Status:</label><br>
+          <label class="label">Statut:</label><br>
           <nb-select [(selected)]="statusbon" fullWidth placeholder="Default" (ngModelChange)="select2($event)"
             name="status" #status="ngModel" [(ngModel)]="typeSel2">
             <nb-option value="default">Default </nb-option>
-            <nb-option value="crée">crée </nb-option>
-            <nb-option value="en cour">en cour </nb-option>
-            <nb-option value="livrée">livrée </nb-option>
+            <nb-option value="0">crée </nb-option>
+            <nb-option value="1">en cour </nb-option>
+            <nb-option value="2">traité </nb-option>
           </nb-select>
 
         </div>
@@ -114,7 +114,7 @@
             </div>
           </div>
         </div>
-        <p-table [value]="bon$" dataKey="idBonCommande" [loading]="loading" [rowsPerPageOptions]="[20,30,50]" #dta
+        <p-table rowExpandMode="single" [value]="bon$" dataKey="idBonCommande" [loading]="loading" [rowsPerPageOptions]="[20,30,50]" #dta
           [rows]="20" [paginator]="true" [responsive]="true" autoLayout="true"
           [globalFilterFields]="['numBonCommande','date']">
           <ng-template pTemplate="header">
@@ -124,11 +124,11 @@
               </th>
               <th pSortableColumn="nomPointVente">Pointvente <p-sortIcon field="nomPointVente"></p-sortIcon>
               </th>
-              <th pSortableColumn="nomCategorie">Categorie <p-sortIcon field="nomCategorie"></p-sortIcon>
+              <th pSortableColumn="nomCategorie">Catégorie <p-sortIcon field="nomCategorie"></p-sortIcon>
               </th>
               <th pSortableColumn="nomFournisseur">Type <p-sortIcon field="nomFournisseur"></p-sortIcon>
               </th>
-              <th pSortableColumn="statut">Status <p-sortIcon field="statut"></p-sortIcon>
+              <th pSortableColumn="statut">Statut <p-sortIcon field="statut"></p-sortIcon>
               </th>
               <th pSortableColumn="date">Date <p-sortIcon field="date"></p-sortIcon>
               </th>
@@ -136,7 +136,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-bon let-expanded="expanded" let-i="rowIndex">
-            <tr *ngIf="bon.statut !='0'">
+            <tr [ngStyle]="{'background-color':expanded ? '#C9FF80' : 'white' }" *ngIf="bon.statut !='0'">
               <td>
                 <button type="button" (click)="getListeCommande(bon.idBonCommande,i)" pButton pRipple
                   [pRowToggler]="bon" class="p-button-text p-button-rounded p-button-plain"
@@ -155,27 +155,25 @@
               </td>
             </tr>
           </ng-template>
-          <ng-template pTemplate="rowexpansion" let-bon let-rb="rowIndex">
+          <ng-template  pTemplate="rowexpansion" let-bon let-rb="rowIndex">
             <tr>
-              <td colspan="6">
+              <td colspan="6" >
                 <div class="p-3">
                   <!--Starts HERE-->
 
                   <p-table [value]="bon.ListeCommandes" dataKey="idCommandePv" [loading]="loading2" autoLayout="true">
                     <ng-template pTemplate="header">
-            <tr>
-              <th style="width: 3rem"></th>
-              <th pSortableColumn="numCommande">Numero Commande <p-sortIcon field="numCommande"></p-sortIcon>
-              </th>
-              <th pSortableColumn="dateLivraision">Heure de Livraison <p-sortIcon field="dateLivraision"></p-sortIcon>
-              </th>
-              <th pSortableColumn="dateEnvoi">Heure de sortie de labo <p-sortIcon field="dateEnvoi"></p-sortIcon>
-              </th>
-              <th pSortableColumn="dateReelLivraision">Heure Réel de Livraison <p-sortIcon field="dateReelLivraision">
-                </p-sortIcon>
-              </th>
-
-            </tr>
+                      <tr>
+                        <th style="width: 3rem"></th>
+                        <th pSortableColumn="numCommande">Numero Commande <p-sortIcon field="numCommande"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="dateCreation">Date de Création<p-sortIcon field="dateCreation"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="dateReelLivraision">Date de Livraison <p-sortIcon field="dateReelLivraision">
+                          </p-sortIcon>
+                        </th>
+          
+                      </tr>
           </ng-template>
           <ng-template pTemplate="body" let-commande let-expanded="expanded" let-j="rowIndex">
             <tr>
@@ -185,8 +183,7 @@
                   [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
               </td>
               <td>{{commande.numCommande}}</td>
-              <td>{{commande.dateLivraision | date :'HH:mm' }}</td>
-              <td>{{commande.dateEnvoi | date :'HH:mm' }}</td>
+              <td>{{commande.dateCreation | date :'HH:mm' }}</td>
               <td>{{commande.dateReelLivraision | date :'HH:mm' }}</td>
               
 
@@ -202,11 +199,11 @@
             <tr>
               <th pSortableColumn="nomProduit">Produit <p-sortIcon field="nomProduit"></p-sortIcon>
               </th>
-              <th pSortableColumn="quantiteDemande">Quantite Demander<p-sortIcon field="quantiteDemande"></p-sortIcon>
+              <th pSortableColumn="quantiteDemande">Quantité Demandée<p-sortIcon field="quantiteDemande"></p-sortIcon>
               </th>
-              <th pSortableColumn="quantiteLivree">Quantite Livrée <p-sortIcon field="quantiteLivree"></p-sortIcon>
+              <th pSortableColumn="quantiteLivree">Quantité Livrée <p-sortIcon field="quantiteLivree"></p-sortIcon>
               </th>
-              <th pSortableColumn="quantiteRestante">Quantite Restante <p-sortIcon field="quantiteRestante">
+              <th pSortableColumn="quantiteRestante">Quantité Restante <p-sortIcon field="quantiteRestante">
                 </p-sortIcon>
               </th>
               <th style="width:8rem"></th>

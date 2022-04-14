@@ -75,7 +75,7 @@ export class GestionBonCommandesComponent implements OnInit {
     else if(stat==1)
     return "En Cours"
     else if(stat==2)
-    return "Traiter"
+    return "traité"
   
   }
 
@@ -89,7 +89,7 @@ export class GestionBonCommandesComponent implements OnInit {
 
     if(b!="default")
     this.bon$ = this.bon$.filter(
-      item => item.statut === b
+      item => this.getStatus(item.statut) === this.getStatus(b)
     );
 
     if(c!="default")
@@ -232,13 +232,16 @@ loading2:boolean=false
 
     })
   }
+
+
+  
   Traiter(bon:BonCommandePv){
     bon.statut=2;
     this._bonCommandeService.updateBonCommande(bon).subscribe(respone=>{
       if (respone.result == 1){
         let index = this.ListeBonCommande.findIndex(val=>val.idBonCommande==bon.idBonCommande);
         this.ListeBonCommande[index].statut= 2;
-        this._GlobalService.showToast("success", "success", "la Bon Commande ete traiter avec succès")
+        this._GlobalService.showToast("success", "success", "la Bon Commande ete traité avec succès")
       } else {
         this._GlobalService.showToast("danger", "Erreur", respone.errorDescription)
 

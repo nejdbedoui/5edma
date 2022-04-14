@@ -73,7 +73,7 @@ export class GestionBonCommandesPvComponent implements OnInit {
 
     if (b != "default")
       this.bon$ = this.bon$.filter(
-        item => item.statut === b
+        item => this.getStatus(item.statut) === this.getStatus(b)
       );
 
     if (c != "default")
@@ -126,7 +126,7 @@ export class GestionBonCommandesPvComponent implements OnInit {
     else if (stat == 1)
       return "En Cours"
     else if (stat == 2)
-      return "Traiter"
+      return "Traité"
 
   }
 
@@ -222,7 +222,7 @@ export class GestionBonCommandesPvComponent implements OnInit {
   async Envoyer(bon: BonCommandePv) {
     let find = true
 
-    this._bonCommandeService.findByIdBonCommandeAllCommandes(bon.idBonCommande).subscribe(val => {
+    this._bonCommandeService.findByIdBonCommandeAllCommandes(bon.idBonCommande).subscribe(async val => {
       if (val.objectResponse.length > 0) {
         val.objectResponse.forEach(value =>
 
@@ -235,7 +235,7 @@ export class GestionBonCommandesPvComponent implements OnInit {
           })
         )
 
-
+        await this.delay(1000);
       } else {
 
         this._GlobalService.showToast("danger", "Erreur", "Bon de commande vide")
@@ -244,9 +244,23 @@ export class GestionBonCommandesPvComponent implements OnInit {
       }
     })
 
-    await this.delay(1000);
+    
     if (find) {
-      this.update(bon)
+      bon.statut = 1;
+      this._bonCommandeService.updateBonCommande(bon).subscribe(respone => {
+        if (respone.result == 1) {
+          
+          let index = this.ListeBonCommande.findIndex(val => val.idBonCommande == bon.idBonCommande);
+          this.ListeBonCommande[index].statut = 1;
+          this._GlobalService.showToast("success", "success", "la Bon Commande ete confirmer avec succès")
+        } else {
+          this._GlobalService.showToast("danger", "Erreur", respone.errorDescription)
+  
+        }
+      }, erreur => {
+        this._GlobalService.showToast("danger", "Erreur", "erreur")
+  
+      })
     } else if (!find) {
       this._GlobalService.showToast("danger", "Erreur", "commande vide")
     }
@@ -257,22 +271,7 @@ export class GestionBonCommandesPvComponent implements OnInit {
     return new Promise( resolve => setTimeout(resolve, ms) );
 }
 
-  update(bon: BonCommandePv) {
-    this._bonCommandeService.updateBonCommande(bon).subscribe(respone => {
-      if (respone.result == 1) {
-        bon.statut = 1;
-        let index = this.ListeBonCommande.findIndex(val => val.idBonCommande == bon.idBonCommande);
-        this.ListeBonCommande[index].statut = 1;
-        this._GlobalService.showToast("success", "success", "la Bon Commande ete confirmer avec succès")
-      } else {
-        this._GlobalService.showToast("danger", "Erreur", respone.errorDescription)
-
-      }
-    }, erreur => {
-      this._GlobalService.showToast("danger", "Erreur", "erreur")
-
-    })
-  }
+  
   detaili: number;
   bonci: number;
   comi: number;

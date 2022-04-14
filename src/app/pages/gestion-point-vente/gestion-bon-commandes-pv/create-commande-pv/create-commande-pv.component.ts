@@ -71,8 +71,6 @@ Submit(){
   if(listeDetailsCommandes.length!=0){
     let commande:CommandePv = new CommandePv();
     commande.dateCreation = new Date();
-    commande.dateEnvoi= null;
-    commande.dateLivraision= null;
     commande.dateReelLivraision= null;
     commande.idBonCommandePV=this.idb;
     this._bonCommandeService.createCommande(commande).subscribe(response=>{

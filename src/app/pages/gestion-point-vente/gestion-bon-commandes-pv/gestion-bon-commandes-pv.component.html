@@ -36,13 +36,13 @@
 
         </div>
         <div class="col-sm-3 ">
-          <label class="label">Status:</label><br>
+          <label class="label">Statut:</label><br>
           <nb-select [(selected)]="statusbon" fullWidth placeholder="Default" (ngModelChange)="select2($event)"
             name="status" #status="ngModel" [(ngModel)]="typeSel2">
             <nb-option value="default">Default </nb-option>
             <nb-option value="0">crée </nb-option>
             <nb-option value="1">en cour </nb-option>
-            <nb-option value="2">livrée </nb-option>
+            <nb-option value="2">traité </nb-option>
           </nb-select>
 
         </div>
@@ -73,7 +73,7 @@
           <nb-datepicker (dateChange)="filterDateFin($event)" #picker1></nb-datepicker>
         </div>
         <div class="col-sm-3">
-          <nb-checkbox (checkedChange)="ShowAllBons()"[ngModel]="AllBonCommande" status="success">Afficher toute les Bon de Commandes</nb-checkbox>
+          <nb-checkbox (checkedChange)="ShowAllBons()"[ngModel]="AllBonCommande" status="success">Afficher tous les Bon de Commandes</nb-checkbox>
       </div>
 
 
@@ -128,7 +128,7 @@
             </div>
           </div>
         </div>
-        <p-table  [value]="bon$" dataKey="idBonCommande" [loading]="loading" [rowsPerPageOptions]="[20,30,50]" #dta
+        <p-table rowExpandMode="single" [value]="bon$" dataKey="idBonCommande" [loading]="loading" [rowsPerPageOptions]="[20,30,50]" #dta
           [rows]="20" [paginator]="true" [responsive]="true" autoLayout="true"
           [globalFilterFields]="['numBonCommande','date']">
           <ng-template pTemplate="header">
@@ -136,11 +136,11 @@
               <th style="width: 3rem"></th>
               <th pSortableColumn="numBonCommande">Numero Bon Commande <p-sortIcon field="numBonCommande"></p-sortIcon>
               </th>
-              <th pSortableColumn="nomCategorie">Categorie <p-sortIcon field="nomCategorie"></p-sortIcon>
+              <th pSortableColumn="nomCategorie">Catégorie <p-sortIcon field="nomCategorie"></p-sortIcon>
               </th>
               <th pSortableColumn="nomFournisseur">Type <p-sortIcon field="nomFournisseur"></p-sortIcon>
               </th>
-              <th pSortableColumn="statut">Status <p-sortIcon field="statut"></p-sortIcon>
+              <th pSortableColumn="statut">Statut <p-sortIcon field="statut"></p-sortIcon>
               </th>
               <th pSortableColumn="date">Date <p-sortIcon field="date"></p-sortIcon>
               </th>
@@ -148,7 +148,7 @@
             </tr>
           </ng-template>
           <ng-template  pTemplate="body" let-bon let-expanded="expanded" let-i="rowIndex">
-            <tr >
+            <tr [ngStyle]="{'background-color':expanded ? '#C9FF80' : 'white' }">
               <td>
                 <button  type="button" (click)="getListeCommande(bon.idBonCommande,i)" pButton pRipple
                   [pRowToggler]="bon" class="p-button-text p-button-rounded p-button-plain"
@@ -163,7 +163,7 @@
               <td *ngIf="bon.statut=='0'">
                 <i (click)="deleteBonCommande(bon.idBonCommande)" style="cursor: pointer;"
                   nbTooltip="Supprimer Bon Commande" class=" far fa-trash-alt cuseur buttonround deletebutton"></i>
-                  <i (click)="update(bon)" class="fas fa-check cursor buttonround editbutton" nbTooltip="Envoyer Bon Commande" nbTooltipPlacement="bottom"></i>    
+                  <i (click)="Envoyer(bon)" class="fas fa-check cursor buttonround editbutton" nbTooltip="Envoyer Bon Commande" nbTooltipPlacement="bottom"></i>    
     
               </td>
             </tr>
@@ -174,19 +174,15 @@
                 <div class="p-3">
                   <!--Starts HERE-->
 
-                  <p-table [value]="bon.ListeCommandes" dataKey="idCommandePv" [loading]="loading2" autoLayout="true">
+                  <p-table  [value]="bon.ListeCommandes" dataKey="idCommandePv" [loading]="loading2" autoLayout="true">
                     <ng-template pTemplate="header">
             <tr>
               <th style="width: 3rem"></th>
               <th pSortableColumn="numCommande">Numero Commande <p-sortIcon field="numCommande"></p-sortIcon>
               </th>
-              <th pSortableColumn="dateCreation">Date de Creation<p-sortIcon field="dateCreation"></p-sortIcon>
+              <th pSortableColumn="dateCreation">Date de Création<p-sortIcon field="dateCreation"></p-sortIcon>
               </th>
-              <th pSortableColumn="dateEnvoi">Date d'envoie <p-sortIcon field="dateEnvoi"></p-sortIcon>
-              </th>
-              <th pSortableColumn="dateLivraision">Date de Livraison <p-sortIcon field="dateLivraision"></p-sortIcon>
-              </th>
-              <th pSortableColumn="dateReelLivraision">Date Réel de Livraison <p-sortIcon field="dateReelLivraision">
+              <th pSortableColumn="dateReelLivraision">Date de Livraison <p-sortIcon field="dateReelLivraision">
                 </p-sortIcon>
               </th>
               <th>Action</th>
@@ -194,7 +190,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-commande let-expanded="expanded" let-j="rowIndex">
-            <tr>
+            <tr >
               <td>
                 <button type="button" (click)="getListeDetailCommande(commande.idCommandePv,commande.idBonCommandePV,j)"
                   pButton pRipple [pRowToggler]="commande" class="p-button-text p-button-rounded p-button-plain"
@@ -202,8 +198,6 @@
               </td>
               <td>{{commande.numCommande}}</td>
               <td>{{commande.dateCreation | date}}</td>
-              <td>{{commande.dateEnvoi | date}}</td>
-              <td>{{commande.dateLivraision | date}}</td>
               <td>{{commande.dateReelLivraision | date}}</td>
               <td *ngIf="bon.statut=='0'"> <i (click)="deleteCommande(commande.idCommandePv,rb,j)"
                   style="cursor: pointer;" nbTooltip="Supprimer une Commande"
@@ -222,11 +216,11 @@
             <tr>
               <th pSortableColumn="nomProduit">Produit <p-sortIcon field="nomProduit"></p-sortIcon>
               </th>
-              <th pSortableColumn="quantiteDemande">Quantite Demander<p-sortIcon field="quantiteDemande"></p-sortIcon>
+              <th pSortableColumn="quantiteDemande">Quantité Demandée<p-sortIcon field="quantiteDemande"></p-sortIcon>
               </th>
-              <th pSortableColumn="quantiteLivree">Quantite Livrée <p-sortIcon field="quantiteLivree"></p-sortIcon>
+              <th pSortableColumn="quantiteLivree">Quantité Livrée <p-sortIcon field="quantiteLivree"></p-sortIcon>
               </th>
-              <th pSortableColumn="quantiteRestante">Quantite Restante <p-sortIcon field="quantiteRestante">
+              <th pSortableColumn="quantiteRestante">Quantité Restante <p-sortIcon field="quantiteRestante">
                 </p-sortIcon>
               </th>
               <th style="width:8rem"></th>
