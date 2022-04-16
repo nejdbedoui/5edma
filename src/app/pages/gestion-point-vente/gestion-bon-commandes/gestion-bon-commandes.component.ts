@@ -292,80 +292,112 @@ onRowEditCancel(detail: DetailCommandePv, ind: number,rb:number,rc:number) {
 
 
 
-onSubmit(bon:BonCommandePv) {
+  async onSubmit(bon:BonCommandePv) {
 
   let dates = bon.date
   
 
   var docDefinition = { pageSize: 'A4',
-  header: {text: 'Facture ', fontSize:30 ,alignment: 'center',bold:true},
+  
   content: [
     
     {	table: {
+      widths: [100, 200, 200,],
+      heights: [20, 20, 20],
       body: [
-        [
-          {
-            border: [false, true, false, false],
-            fillColor: '#eeeeee',
-            text: 'border:\n[false, true, false, true]'
-          },
-          {
-            border: [false, false, false, false],
-            fillColor: '#dddddd',
-            text: 'border:\n[false, false, false, false]'
-          },
-          {
-            border: [true, true, true, true],
-            fillColor: '#eeeeee',
-            text: 'border:\n[true, true, true, true]'
-          }
-        ],
         [
           {
             rowSpan: 3,
             border: [true, true, true, true],
-            fillColor: '#eeeeff',
-            text: 'rowSpan: 3\n\nborder:\n[true, true, true, true]'
+            fillColor: '#ffffff',
+            image: await this.getBase64ImageFromURL(
+              "https://scontent.fnbe1-2.fna.fbcdn.net/v/t1.6435-9/120883964_160599515734638_2210341519121456506_n.jpg?_nc_cat=108&ccb=1-5&_nc_sid=174925&_nc_ohc=YCFpqukuatoAX9HYo08&_nc_ht=scontent.fnbe1-2.fna&oh=00_AT9Eyrr6nG-IqG6iFu-tFzJjSc8PNTPG5PeiGB4prtD-DA&oe=627E525E"),
+              width: 106,
+              height: 70,
+            alignment:'center',
           },
-          {
-            border: undefined,
-            fillColor: '#eeeeee',
-            text: 'border:\nundefined'
-          },
-          {
-            border: [true, false, false, false],
-            fillColor: '#dddddd',
-            text: 'border:\n[true, false, false, false]'
-          }
-        ],
-        [
-          '',
           {
             colSpan: 2,
             border: [true, true, true, true],
-            fillColor: '#eeffee',
-            text: 'colSpan: 2\n\nborder:\n[true, true, true, true]'
+            fillColor: '#c18630',
+            text: 'Bon de commande pour Société SFC',
+            color:'#ffffff',
+            alignment:'center',
+            bold:true,
+            margin: [0, 2.5, 0, 0],
+            fontSize:11.5
+            
           },
           ''
         ],
         [
           '',
           {
-            border: undefined,
-            fillColor: '#eeeeee',
-            text: 'border:\nundefined'
+            border: [true, true, true, true],
+            fillColor: '#ffffff',
+            text: 'Société BC COFFEE COMPANY',
+            bold:true,
+            alignment:'center',
+            margin: [0, 2.5, 0, 0],
+            fontSize:11.5
+            
           },
           {
-            border: [false, false, true, true],
-            fillColor: '#dddddd',
-            text: 'border:\n[false, false, true, true]'
+            border: [true, true, true, true],
+            fillColor: '#becde8',
+            text: 'Point de Vente : '+bon.nomPointVente,
+            bold:true,
+            alignment:'center',
+            margin: [0, 2.5, 0, 0],
+            fontSize:11.5
           }
-        ]
-      ]
-    }},
+        ],
+        [
+          '',
+          {
+            border: [true, true, true, true],
+            fillColor: '#ffffff',
+            text: 'Date : '+this.format(bon.date),
+            margin: [2, 2.5, 0, 0],
+            fontSize:11.5,
+            bold:true,
+          },
+          {
+            border: [true, true, true, true],
+            fillColor: '#f2f2f2',
+            text: 'Bon n° : '+bon.numBonCommande,
+            margin: [2, 2.5, 0, 0],
+            fontSize:11.5,
+            bold:true,
+          }
+        ],
+
+      ],alignment: "center"
+    },layout: {
+      hLineWidth: function (i, node) {
+        return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+      },
+      vLineWidth: function (i, node) {
+        return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+      },
+      hLineColor: function (i, node) {
+        return (i === 0 || i === node.table.body.length) ? 'gray' : 'gray';
+      },
+      vLineColor: function (i, node) {
+        return (i === 0 || i === node.table.widths.length) ? 'gray' : 'gray';
+      },
+    },margin: [-8, 0, 0, 0],
+
+  },
     
-    {text: "signature client", listType: 'none',bold: true,italics: true,margin: [0, 40, 0, 0]},
-    {text: "signature entreprise", listType: 'none',bold: true,italics: true,margin: [0, -12, 0, 0], alignment:'right'},
+    
+    {text: bon.nomCategorie,
+     listType: 'none',
+     bold: true,
+     alignment:'center',
+     fontSize:18,
+     margin: [0, 20, 0, 0],
+     },
   
 
 ]
@@ -377,6 +409,24 @@ pdfMake.createPdf(docDefinition).open();
 
 }
 
-
+getBase64ImageFromURL(url) {
+  return new Promise((resolve, reject) => {
+    var img = new Image();
+    img.setAttribute("crossOrigin", "anonymous");
+    img.onload = () => {
+      var canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      var dataURL = canvas.toDataURL("image/png");
+      resolve(dataURL);
+    };
+    img.onerror = error => {
+      reject(error);
+    };
+    img.src = url;
+  });
+}
 
 }
