@@ -150,7 +150,7 @@
               <td>{{getStatus(bon.statut)}}</td>
               <td>{{bon.date|date}}</td>
               <td >
-                  <i *ngIf="bon.statut=='1'" (click)="Traiter(bon)" class="fas fa-truck cursor buttonround editbutton" nbTooltip="Traiter Bon Commande" nbTooltipPlacement="bottom"></i>    
+                  <i *ngIf="bon.statut=='1'" (click)="Traiter(bon,i)" class="fas fa-truck cursor buttonround editbutton" nbTooltip="Traiter Bon Commande" nbTooltipPlacement="bottom"></i>    
                   <button  *ngIf="bon.statut=='2'" class="btn btn-primary" style="background-color: white; border-color:white; color:#417bff"
           (click)="onSubmit(bon)" pInputText
           pTooltip="Enter your name" tooltipPosition="bottom" placeholder="Bottom"><img
@@ -164,7 +164,7 @@
                 <div class="p-3">
                   <!--Starts HERE-->
 
-                  <p-table [value]="bon.ListeCommandes" dataKey="idCommandePv" [loading]="loading2" autoLayout="true">
+                  <p-table [value]="bon.ListeCommandes" dataKey="idCommandePv" [loading]="loading2" autoLayout="true" editMode="row" #tableCommandes>
                     <ng-template pTemplate="header">
                       <tr>
                         <th style="width: 3rem"></th>
@@ -175,11 +175,12 @@
                         <th pSortableColumn="dateReelLivraision">Date de Livraison <p-sortIcon field="dateReelLivraision">
                           </p-sortIcon>
                         </th>
+                        <th style="width:8rem"></th>
           
                       </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-commande let-expanded="expanded" let-j="rowIndex">
-            <tr>
+          <ng-template pTemplate="body" let-commande let-expanded="expanded"let-editing="editing" let-j="rowIndex">
+            <tr [pEditableRow]="commande">
               <td>
                 <button type="button" (click)="getListeDetailCommande(commande.idCommandePv,commande.idBonCommandePV,j)"
                   pButton pRipple [pRowToggler]="commande" class="p-button-text p-button-rounded p-button-plain"
@@ -187,7 +188,24 @@
               </td>
               <td>{{commande.numCommande}}</td>
               <td>{{commande.dateCreation | date :'HH:mm' }}</td>
-              <td>{{commande.dateReelLivraision | date :'HH:mm' }}</td>
+              <td>
+                <p-cellEditor class="ontop">
+                  <ng-template pTemplate="input">
+                    <p-calendar [(ngModel)]="commande.dateReelLivraision" [timeOnly]="true" appendTo="body"></p-calendar>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{commande.dateReelLivraision | date :'HH:mm' }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td><button *ngIf="!editing && bon.statut=='1'" style="float: right" pButton pRipple type="button" pInitEditableRow
+                icon="pi pi-pencil" (click)="onRowEditInitCommande(commande,rb,j)"
+                class="p-button-rounded p-button-text"></button>
+              <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
+                class="ui-button-success"
+                (click)="onRowEditSaveCommande(commande,rb)"></button>
+              <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
+                class="ui-button-danger" (click)="onRowEditCancelCommande(commande, rb,j)"></button></td>
               
 
             </tr>
