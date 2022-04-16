@@ -1,7 +1,7 @@
 import { CommandePv } from "./CommandePv";
 
 export class BonCommandePv{
-      idBonCommande:String;
+      idBonCommande:string;
       numBonCommande:String;
       idPointVente:String;
       nomPointVente:String;
