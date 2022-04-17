@@ -114,6 +114,10 @@ export class GestionBonCommandesComponent implements OnInit {
 this.cat = this.cat.filter(function(elem, index, self) {
   return index === self.indexOf(elem);
 })
+
+this.listepointsVente = this.listepointsVente.filter(function(elem, index, self) {
+  return index === self.indexOf(elem);
+})
 }
 format(a){
   return this.datePipe.transform(a, 'dd/MM/yyyy')
@@ -162,12 +166,15 @@ clean(){
 }
 
 ShowAllBons(){
+  this.datedeb=null
+  this.datefin=null
   this.AllBonCommande=!this.AllBonCommande;
   if(this.AllBonCommande){
-    this.filter(this.nomcatbon,this.statusbon,this.typebon,this.pointvente,null,null);
+    this.filter(this.nomcatbon,this.statusbon,this.typebon,this.pointvente,this.datedeb,this.datefin);
   }
   else{
-    this.filter(this.nomcatbon,this.statusbon,this.typebon,this.pointvente,new Date(),null);
+    this.datedeb=new Date()
+    this.filter(this.nomcatbon,this.statusbon,this.typebon,this.pointvente,this.datedeb,null);
   }
 }
 
@@ -247,95 +254,57 @@ loading2:boolean=false
 
     return this._bonCommandeService.findByIdCommandeAllDetailCommande(idc);
 }
-  async Traiter(bon:BonCommandePv){
-
-    let index = this.ListeBonCommande.findIndex(val=>val.idBonCommande==bon.idBonCommande);
-    let errormessage:string = "";
-    var responseComm = await this.getListeCommandeData(bon.idBonCommande,index).toPromise();
-
-   let correct:boolean = true;
-//
-if(responseComm.objectResponse.length>0){
-  
-  responseComm.objectResponse.filter(async value=>{
-    if(value.dateReelLivraision==null){
-      if(errormessage.length>0)
-      errormessage+=", La date du livraison du commande numero : "+value.numCommande+" est vide";
-      else
-      errormessage+="La date du livraison du commande numero : "+value.numCommande+" est vide";
-
-      var responseDetailCom = await this.getListeDetailCommandeData(value.idCommandePv).toPromise();
-      console.log(responseDetailCom)
-      if(responseDetailCom.objectResponse.length>0){
-      responseDetailCom.objectResponse.filter(val=>{
-        if(val.quantiteLivree==null){
-          errormessage+=" la quantité livrée du même commande est vide du produit : ."+val.nomProduit;
-        }
-      });
-    }
-    }
-    else{
-      responseComm.objectResponse.filter(val=>{
-        if(val.quantiteLivree==null){
-          errormessage+=" la quantité livrée du commande numero : "+value.numCommande+" est vide du produit : ."+val.nomProduit;
-        }
-      });
-    }
-    if(errormessage.length>0){
-      correct = false;
-      this._GlobalService.showToast("danger", "Erreur", errormessage);
-      console.log(errormessage)
-      errormessage="";
-      
-    }
-  });
+getData(id:String){
+  return this._bonCommandeService.findByIdCommandeAllDetailCommande(id);
 }
-if(correct==true){
-this._bonCommandeService.updateBonCommande(bon).subscribe(respone=>{
-  if (respone.result == 1){
-    //this.ListeBonCommande[index].statut= 2;
-    this._GlobalService.showToast("success", "success", "la Bon Commande ete traité avec succès")
-  } else {
-    this._GlobalService.showToast("danger", "Erreur", respone.errorDescription)
 
-  }
-}, erreur => {
-  this._GlobalService.showToast("danger", "Erreur", "erreur")
+update(bon:BonCommandePv){
+  bon.statut=2
+  this._bonCommandeService.updateBonCommande(bon).subscribe(respone=>{
+    if (respone.result == 1){
+      
+      let index = this.ListeBonCommande.findIndex(val => val.idBonCommande == bon.idBonCommande);
+        this.ListeBonCommande[index].statut = 2;
+      this._GlobalService.showToast("success", "success", "la Bon Commande ete traité avec succès")
+    } else {
+      this._GlobalService.showToast("danger", "Erreur", respone.errorDescription)
+  
+    }
+  }, erreur => {
+    this._GlobalService.showToast("danger", "Erreur", "erreur")
+  
+  })
+}
+  async Traiter(bon:BonCommandePv){
+    let find = true
+    let i
 
-})}
+     this._bonCommandeService.findByIdBonCommandeAllCommandes(bon.idBonCommande).subscribe(async val => {
+      if (val.objectResponse.length > 0) {
+        i=val.objectResponse.length 
+         val.objectResponse.forEach(async value =>{
+           i--
+           
+           if (value.dateReelLivraision == null) {
+            find=false
+            this._GlobalService.showToast("danger", "Erreur", "date de livreson du commande est vide");
 
-//
-
-    // this.ListeBonCommande[index].ListeCommandes.filter(value=>{
-    //   if(value.dateReelLivraision==null){
-    //     if(errormessage.length>0)
-    //     errormessage+=", La date du livraison du commande numero : "+value.numCommande+" est vide";
-    //     else
-    //     errormessage+="La date du livraison du commande numero : "+value.numCommande+" est vide";
-    //     value.ListeDetailCommande.filter(val=>{
-    //       if(val.quantiteLivree==null){
-    //         errormessage+=" la quantité livrée du même commande est vide du produit : ."+val.nomProduit+" est vide";
-    //       }
-    //     });
-    //   }
-    //   else{
-    //     value.ListeDetailCommande.filter(val=>{
-    //       if(val.quantiteLivree==null){
-    //         errormessage+=" la quantité livrée du commande numero : "+value.numCommande+" est vide du produit : ."+val.nomProduit+" est vide";
-    //       }
-    //     });
-    //   }
-    //   if(errormessage.length>0){
-    //     this._GlobalService.showToast("danger", "Erreur", errormessage);
-    //     console.log(errormessage)
-    //     errormessage="";
-        
-    //   }
-    // });
+           }
+           else if(i<=0 && find == true){
+             
+             this.update(bon);
+           }
+           
+           
+        }
+        )
 
 
-    //bon.statut=2;
-    
+      }
+      else{
+        this._GlobalService.showToast("danger", "Erreur", "Bon Commande Vide")
+      }
+    });  
   }
   //EDIT DETAIL COMMANDE
 clonedProducts: { [s: string]: DetailCommandePv; } = {}
@@ -378,8 +347,7 @@ Now:Date = new Date();
 @ViewChild('tableCommandes', { static: false }) private tableCommandes: Table;
 clonedCommandes: { [s: string]: CommandePv; } = {}
   onRowEditInitCommande(commande: CommandePv,rb:number,rc:number) {
-    console.log(rb)
-    console.log(rc)
+    
     let index = parseInt(rb.toString()+rc.toString());
     this.clonedCommandes[index] = {...commande};
     commande.dateReelLivraision = new Date(this.ListeBonCommande[rb].date);
@@ -399,7 +367,7 @@ onRowEditSaveCommande(commande: CommandePv,rb:number) {
            this._GlobalService.showToast("success", "success", "Commande mise a jour");
            }
         else{
-            this._GlobalService.showToast("danger", "Erreur", response.errorDescription);
+            this._GlobalService.showToast("danger", "Erreur1", response.errorDescription);
             this.tableCommandes.initRowEdit(commande);
        }
          }, erreur => {
@@ -409,7 +377,7 @@ onRowEditSaveCommande(commande: CommandePv,rb:number) {
          });
   }
     else {
-      console.log(commande.dateReelLivraision);
+      
       this._GlobalService.showToast('danger',"Erreur","Heure doit etre superieur a l'heure actuelle");
       this.tableCommandes.initRowEdit(commande);
     }
@@ -427,7 +395,7 @@ onRowEditCancelCommande(commande: CommandePv, rb:number,rc:number) {
     delete this.clonedCommandes[index];
 }
 //
-onSubmit(bon:BonCommandePv) {
+async onSubmit(bon:BonCommandePv) {
 
 
   let dates = bon.date

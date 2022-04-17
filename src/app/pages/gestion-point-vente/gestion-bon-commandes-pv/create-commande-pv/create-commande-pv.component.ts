@@ -35,7 +35,7 @@ export class CreateCommandePvComponent implements OnInit {
         this.dateLivraison.setHours(new Date().getHours());
         this.dateLivraison.setMinutes(new Date().getMinutes());
         this.dateLivraison.setMilliseconds(new Date().getMilliseconds());
-        console.log(this.dateLivraison);
+        
       }
       else{
         this._GlobalServiceService.showToast('danger',"Erreur",response.errorDescription);
@@ -47,7 +47,7 @@ getAllProduitByIdCategorie(id:String){
   this._produitService.findAllProductByIdCategorieArticleAndIdPointVente(id,this.PointVenteid).subscribe(val=>{
     if(val.objectResponse!=null){
       this.ListeProduit = val.objectResponse;
-      console.log(this.ListeProduit)
+      
       this.ListeProduit.forEach(e => {
         if(e!=null){
         let ligne:DetailCommandePv = new DetailCommandePv();
@@ -83,12 +83,12 @@ Submit(){
             this._GlobalServiceService.showToast('success','succès',"la commande a éte ajouter avec succees");
             this.router.navigateByUrl("/pages/Pointvente/gestionBonCommandePv");
           }else{
-            this._GlobalServiceService.showToast('danger',"Erreur",response.errorDescription);
+            this._GlobalServiceService.showToast('danger',"Erreur1",response.errorDescription);
           }
         });
       }
       else{
-        this._GlobalServiceService.showToast('danger',"Erreur",response.errorDescription);
+        this._GlobalServiceService.showToast('danger',"Erreur2",response.errorDescription);
       }
     });
   }

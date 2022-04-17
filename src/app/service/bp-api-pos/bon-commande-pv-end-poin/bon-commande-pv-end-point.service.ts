@@ -74,7 +74,7 @@ export class BonCommandePvEndPointService {
       return this.httpclient.get<any>(environment.backend_url_Pos+"findallBonCommandePv/",{ headers: this.header });  }
     
     updateCommande(commande:CommandePv){
-      return this.httpclient.put<any>(environment.backend_url_Pos+"UpdateCommandePv/",commande,{ headers: this.header });
+      return this.httpclient.put<any>(environment.backend_url_Pos+"UpdateCommandepv/",commande,{ headers: this.header });
     }
   }
  

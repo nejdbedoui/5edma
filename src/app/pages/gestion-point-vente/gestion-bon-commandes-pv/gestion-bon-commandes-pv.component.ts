@@ -142,13 +142,17 @@ export class GestionBonCommandesPvComponent implements OnInit {
     this.AllBonCommande = false;
     this.filter(this.nomcatbon, this.statusbon, this.typebon, this.datedeb, this.datefin)
   }
+
   ShowAllBons() {
+    this.datedeb = null;
+    this.datefin = null;
     this.AllBonCommande = !this.AllBonCommande;
     if (this.AllBonCommande) {
-      this.filter(this.nomcatbon, this.statusbon, this.typebon, null, null);
+      this.filter(this.nomcatbon, this.statusbon, this.typebon, this.datedeb, this.datefin);
     }
     else {
-      this.filter(this.nomcatbon, this.statusbon, this.typebon, new Date(), null);
+      this.datedeb = new Date();
+      this.filter(this.nomcatbon, this.statusbon, this.typebon,this.datedeb, null);
     }
   }
 
@@ -226,20 +230,23 @@ export class GestionBonCommandesPvComponent implements OnInit {
 
   Envoyer(bon: BonCommandePv) {
     let find = true
+    let i
 
      this._bonCommandeService.findByIdBonCommandeAllCommandes(bon.idBonCommande).subscribe(async val => {
       if (val.objectResponse.length > 0) {
+        i=val.objectResponse.length
          val.objectResponse.forEach(async value =>{
+           i--
            var response = await this.getData(value.idCommandePv).toPromise();
            if (response.objectResponse.length <= 0) {
-
+            find=false
             this._GlobalService.showToast("danger", "Erreur", "commande vide");
 
            }
-           else{
+           else if(i<=0 && find){
              this.update(bon);
            }
-           
+           i++
         }
         )
 
@@ -278,7 +285,7 @@ export class GestionBonCommandesPvComponent implements OnInit {
   comi: number;
   clonedProducts: { [s: string]: DetailCommandePv; } = {}
   onRowEditInit(detail: DetailCommandePv, rb: number, rc: number, ri: number, idcat: String) {
-    console.log(detail);
+    
     if (detail.idDetailPV != null) {
       //let bonci = this.ListeBonCommande.findIndex(val=>val.idBonCommande==idb);
       //let comi = this.ListeBonCommande[bonci].ListeCommandes.findIndex(val=>val.idCommandePv==idc);
@@ -289,20 +296,19 @@ export class GestionBonCommandesPvComponent implements OnInit {
   }
 
   onRowEditSave(detail: DetailCommandePv, index: number, rb: number, rc: number, idc: String) {
-    console.log(detail.quantiteDemande)
+    
     if (detail.quantiteDemande > 0) {
       if (detail.idDetailPV == null) {
         if (this.selectedprod != null) {
           detail.nomProduit = this.selectedprod.designation;
           detail.idProduit = this.selectedprod.idProduit;
           detail.idCommandePV = idc;
-          console.log(detail);
+          
           this._bonCommandeService.createDetailCommandePv(detail).subscribe(response => {
             if (response.result == 1) {
               //let bonci = this.ListeBonCommande.findIndex(val=>val.idBonCommande==idb);
               //let comi = this.ListeBonCommande[bonci].ListeCommandes.findIndex(val=>val.idCommandePv==idc);
               this.ListeBonCommande[rb].ListeCommandes[rc].ListeDetailCommande[index].idDetailPV = response.objectResponse.idDetailPV;
-              console.log(this.ListeBonCommande[rb].ListeCommandes[rc].ListeDetailCommande[index])
               this.selectedprod = null;
               this._GlobalService.showToast("success", "success", "Produit ajouter ");
             } else {
@@ -320,7 +326,7 @@ export class GestionBonCommandesPvComponent implements OnInit {
       } else {
         this._bonCommandeService.updateDetailCommande(detail).subscribe(response => {
           if (response.result == 1) {
-            console.log(detail);
+            
             this._GlobalService.showToast("success", "success", "Detail commande mise a jour")
           }
           else {
@@ -391,7 +397,7 @@ export class GestionBonCommandesPvComponent implements OnInit {
             this.ListeProduit.push(element);
 
         });
-        console.log(this.ListeProduit)
+        
 
       }
     })

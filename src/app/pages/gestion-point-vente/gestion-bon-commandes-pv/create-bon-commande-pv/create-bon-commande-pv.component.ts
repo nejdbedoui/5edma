@@ -43,7 +43,7 @@ export class CreateBonCommandePvComponent implements OnInit {
 
   getAllCategorie(){
   this._CategorieEndPointService.listcategorieArticleForPointVente(localStorage.getItem("pointventeid")).subscribe(res => {
-    console.log(res);
+    
     if (res.result == 1){
       this.Categories = res.objectResponse;
     }
@@ -90,7 +90,7 @@ export class CreateBonCommandePvComponent implements OnInit {
       bonCommandePv.nomPointVente = this.pointVente.designation;
 
       this._bonCommandeService.createBonCommandePv(bonCommandePv).subscribe(response=>{
-        console.log(bonCommandePv);
+       
         if(response.result==1){
           this._GlobalServiceService.showToast('success','succès',"le categorie a été crée avec succès")
           this.loading=true
